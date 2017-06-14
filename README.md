@@ -267,16 +267,17 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
  
 - **totally random flag**: In the code below, we store an entirely random flag in the solvable's `/var/flag/flag.txt` file. This file is also accessible for the controller container. 
     
-    solvable/opt/start.sh
+    controller/opt/server.py
     ```
-    # /start.sh is executed before sshd starts. Make sure you do not block!
-    rm -f /start.sh
-    echo -n $RANDOM$RANDOM$RANDOM$RANDOM > /var/flag/flag.txt
-    chown -R flagserver:flagserver /var/flag/
-    chmod 700 /var/flag/ 
-    ```
-    controller/opt/server.py:  
-    ```
+    #random flag generation
+    with open("/home/user/flag.txt","w") as f:
+        f.write("Ea5Y_Pea5Y_")
+        for x in random.sample(range(1, 5000), 8):
+            f.write(str(x))
+            if x%2 == 0:
+                f.write("_/")
+
+    # solution checking
     def solution_check():
         submitted_solution = request.json['solution']
         if submitted_solution != open('/var/flag/flag.txt').read():
