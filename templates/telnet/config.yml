@@ -1,0 +1,22 @@
+#Version
+version: v1
+#Required DOCKER capabilities to add
+capabilities: []
+#Ports: #protocol: ssh | tcp | http #type: raw | embedded
+ports:
+     8888: {tcp: raw}
+#Difficulty: 10 - 500
+difficulty: 80
+#Enable inputbox to submit flag: true | false
+enable_flag_input: true
+#Flag if flag is static.
+flag: 'SaH{wh4t_4n_EXCLUSIVE_ch4llenge_they_sur3_SW1TCHED_th1ngs_up_a_bit_ahaha_get_1t?}'
+#Name of the challenge
+name: 'Black box crypto'
+#Skills
+skills: ['Cryptography']
+#Recommended readings
+recommendations:
+    https://en.wikipedia.org/wiki/Black_box: 'Black box (Wikipedia)'
+#Original creator of a challenge
+owner: ['your@mail.com']

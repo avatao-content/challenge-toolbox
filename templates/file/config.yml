@@ -1,0 +1,19 @@
+#Version
+version: v1
+#Difficulty: 10 - 500
+difficulty: 20
+#Enable inputbox to submit flag: true | false
+enable_flag_input: true
+#Flag if flag is static.
+flag: 'SaH{Th3_b3st_part_1s_h4ving_to_type_in_all_th1s_text_403fccc83712f4084a3e5df3f576617c}'
+#Name of the challenge
+name: 'Censored'
+#Skills related to the challenge: ['SQL injection','Web','Linux']
+skills: ['Steganography', 'File Format Internals']
+#recommendations:
+#    www.docker.com: 'Docker website'
+#    www.ubuntu.com: 'Ubuntu webpage'
+recommendations:
+    https://www.libreoffice.org/: 'Libreoffice'
+#Creator of the challenge
+owner: ['your@mail.com']
