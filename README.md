@@ -8,7 +8,7 @@ The challenge engine is a small component which allows you to create, run and ch
 
 - **Ownership of challenges**: We released this tool to help people to run their own exercises locally and share with others. 
 - **Open-source licensing**: The value to the community contribution is huge - each one is given in service and respect to the community. To respect this, we release the challenge engine and the related templates under *Apache 2.0* License. We do not restrict the use of derived challenges as long as they are contributed back under the same license. 
-- **Business services**: Avatao provides a 24/7 runtime environment that allows you to expose your challenge online in any easy way. Note that Avatao provides additional services (e.g., custom-tailored challenges for businesses, community organizations, enterprise support, training programs, customized learning) as part of a business offering.
+- **Business services**: Avatao provides a 24/7 runtime environment that allows you to expose your challenge online in an easy way. Note that Avatao provides additional services (e.g., custom-tailored challenges for businesses, community organizations, enterprise support, training programs, customized learning) as part of a business offering.
 
 
 ## Concepts
