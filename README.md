@@ -1,5 +1,4 @@
 # challenge-engine
-==================
 
 The challenge engine is a small component which allows you to create, run and check new challenges locally. If you have any questions don't hesitate to contact us at [content@avatao.com](mailto:content@avatao.com).  
 
@@ -42,12 +41,12 @@ There are descriptor files for a challenge, you can see the right structure form
 	    [downloads] ------------------------ (DIR)	    
     	config.yml ------------------------- (FILE)
     		version ------------------------ (ITEM)
+            name --------------------------- (ITEM)
+            difficulty --------------------- (ITEM)
+            [flag] ------------------------- (ITEM)
+            enable_flag_input -------------- (ITEM)
+            ports (D) ---------------------- (ITEM)                 
     		[capabilities] (D) ------------- (ITEM)
-    		difficulty --------------------- (ITEM)
-    		[flag] ------------------------- (ITEM)
-    		name --------------------------- (ITEM)
-    		enable_flag_input -------------- (ITEM)
-    		ports (D) ---------------------- (ITEM)    		    	
     		skills ------------------------- (ITEM)
     		recommendations ---------------- (ITEM)
     		owner -------------------------- (ITEM)    		

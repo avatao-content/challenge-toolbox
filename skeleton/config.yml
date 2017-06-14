@@ -1,19 +1,32 @@
 version: v1
+
+#Name of the challenge
+name: A brand new avatao challenge
+
+#Difficulty: 10 - 500
+difficulty: 100
+
 # Flag if the flag is static
 flag: 'flag'
-# Enable input box to submit flags: true|false
-enable_flag_input: true
 
-# Challenge Runtime Provider configuration (docker in this case)
-crp_config:
-  # The main solvable (optional)
-  solvable:
-    # List of [port/protocol] to expose to the user
-    ports: [8888/http, 2222/ssh]
-  # The controller (optional)
-  controller:
-    # Similarly. Use 5555/controller for dynamic controllers.
-    # You can expose other services that if needed
-    ports: [5555/controller]
-  # Additional solvable
-  #solvable2:
+#Enable inputbox to submit flag: true | false
+enable_flag_input: false
+
+#Ports: #protocol: ssh | tcp | http #type: raw | embedded
+ports:
+     8888: {http: raw}
+
+#Required DOCKER capabilities to add
+capabilities: []
+  
+#Skills related to the challenge: ['SQL injection','Web','Linux']
+skills: ['skill1','skill2','skill3']
+
+#recommendations:
+#    www.docker.com: 'Docker website'
+#    www.ubuntu.com: 'Ubuntu webpage'
+recommendations:
+    <url>: '<name>'
+
+#Original creator of a challenge: ['MITRE Cyber Academy']
+owner: ['owner1']
