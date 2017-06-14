@@ -11,97 +11,6 @@ The challenge engine is a small component which allows you to create, run and ch
 - **Business services**: Avatao provides a 24/7 runtime environment that allows you to expose your challenge online in an easy way. Note that Avatao provides additional services (e.g., custom-tailored challenges for businesses, community organizations, enterprise support, training programs, customized learning) as part of a business offering.
 
 
-## Concepts
-
-### Challenge
-
-A challenge refers to an exercise to be solved by users. There are different types of challenges supported by the platform. A challenge can be solved by dissecting files, completing programming exercises or there can be even more exotic ones such as network traffic analysis. The type of a challenge depends on the related resources. Such resources may include files or access to a virtual environment based on docker containers.  
-
-### Containers
-
-There can be two types of challenge containers defined:
-
-- **solvable**: the challenge to be solved by the user (_solvable_ from here on)  
-- **controller**: the controller checks the submitted user solution and tests if the challenge can be solved and works fine (_controller_ from here on). The controller inherits the volumes of the solvable and shares a network namespace with the solvable. Thus, they can communicate with eachother via localhost. Beware that the root user in the solvable may monitor or alter the network traffic of the controller in that case. 
-
-We use two distinct containers to guarantee PID and IPC namespace isolation between the solvable challenge and the controller.
-
-### Challenge types
-
-Refers to the type of challenge which can be one of the following: _ssh, tcp, web, static_.  
-
-- **ssh** challenges allow users to connect to the solvable container via SSH.
-- **tcp** challenges allow users to connect to the solvable container exposed to a random TCP port using known clients such as `telnet` or `nc`.  
-- **web** challenges can be accessed by users via their web browser on TCP port 80\. This type includes, for example, programming or web hacking challenges. Programming challenges can be solved in a built-in web IDE.  
-- **static** challenges do not use docker containers, consist of files (e.g., binaries to reverse). The user can download all the related files to solve the challenge.  
-
-## Challenge directory structure
-
-There are descriptor files for a challenge, you can see the right structure format below:  
-
-
-(D) = for Docker challenges only  
-[ ] = optional / if it is really needed  
-
-    repository_name ------------------------ (DIR)
-        controller (D) --------------------- (DIR)
-        solvable (D) ----------------------- (DIR)
-        src -------------------------------- (DIR)
-        [downloads] ------------------------ (DIR)      
-        config.yml ------------------------- (FILE)
-            version ------------------------ (ITEM)
-            name --------------------------- (ITEM)
-            difficulty --------------------- (ITEM)
-            [flag] ------------------------- (ITEM)
-            enable_flag_input -------------- (ITEM)
-            ports (D) ---------------------- (ITEM)                 
-            [capabilities] (D) ------------- (ITEM)
-            skills ------------------------- (ITEM)
-            recommendations ---------------- (ITEM)
-            owner -------------------------- (ITEM)                 
-        [CHANGELOG] ------------------------ (FILE)
-        [README.md] ------------------------ (FILE)
-        metadata --------------------------- (DIR)
-            description.md ----------------- (FILE)
-            summary.md --------------------- (FILE)
-            writeup.md --------------------- (FILE)
-
-### Structure details
-In this section we detail the directory structure of challenges. Under the [skel](https://github.com/avatao/challenge-engine/tree/master/skeleton) directory in this repository you can find example content for all the items below. Also, we have prepared various challenge templates for different challenge types (e.g., [c](https://github.com/avatao/challenge-engine/tree/master/templates/c), [c#](https://github.com/avatao/challenge-engine/tree/master/templates/csharp), [static](https://github.com/avatao/challenge-engine/tree/master/templates/file), [java](https://github.com/avatao/challenge-engine/tree/master/templates/java), [ssh](https://github.com/avatao/challenge-engine/tree/master/templates/ssh), [telnet](https://github.com/avatao/challenge-engine/tree/master/templates/telnet), [xss](https://github.com/avatao/challenge-engine/tree/master/templates/xss)) that you can fork and customize according to your needs. So the structure is the following:
-
-- **controller** [docker]: The directory for controller should always exist for docker-based challenges. Place here the scripts to check submitted user solution if the flag is not static (e.g., dynamically generated upon container start). The files in this directory _won't_ be accessible for users.
-- **solvable** [docker]: The directory for solvable exists for most of the docker-based challenges. Place here all your challenges files (e.g., flag.txt, your server, database files).
-- **downloads** [optional]: Optionally, if you want to share challenge files (e.g., crackme, some components, source code) with users please place them here. These can be also relative symlinks which point to another file (e.g., a file in the _solvable_ directory) in the challenge repository. *IMPORTANT* This directory is mandatory for static challenges. 
-- **src**: Place all the other source codes and source files of a challenge into this directory. No matter if you have already placed some of these files under the `solvable` or `downloads` directory, please also put them here to have everything in one place.
-- **config.yml**: A well-formatted YAML file which contains all the _long_run_ configuration parameters of the challenge. These parameters are the following:
-    - **version**: Version number of the config file.  Currently it is `v1`.
-    - **capabilities** \[docker]: Place here the list of required linux/docker capabilities. Have only the minimal capability (CAP drop all by default), and add only those you really need. [Read more.](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities)
-    - **difficulty**: Guessed difficulty of a challenge should range from 10 to 500.  
-    - **flag** [optional]: If a docker challenge has static flag or the challenge itself is static then insert your flag here. In that case we won't need to start up a distinct container for solution checking. **IMPORTANT**: _However, you have to still create controller for docker-based challenges with the `test` function implemented. This way, we make sure that your challenge is working properly and can be solved._ 
-    - **name**: Name of the challenge limited to **200** characters.  
-    - **enable_flag_input**: Solution submission can happen in two ways. The first option is that the user submits a text (flag) in an input field on the platform. In this case please set it *true* to tell the platform to create an input field for the solution submission. The second option is when the solution checking works by checking the state changes (e.g., files created, configuration modified) inside the container the user is working on. For example, when the user solves a programming challenge and the controller executes multiple unit tests to accept their code. In that case please set it *false* as their source code is the solution.
-    - **ports** [docker]: Please insert internal ports and corresponding protocols here that your solvable container exposes. The corresponding external ports will be generated automatically by our platform. For example:      
-        ```
-        ports:
-            8080: {http: embedded}
-            8081: {http: raw}
-            8888: {tcp: embedded}
-            8889: {tcp: raw}
-            2222: {ssh: raw}  
-        ```
-        As the example shows, we store this information in key-value pairs as follows: `<port>: {ssh|tcp|http: embedded|raw}`. Port and protocols are straightforward. The `embedded` keyword tells the platform to use the embedded web client (e.g., terminal, IDE) and connect to challenge directly. Otherwise, the frontend only exposes the connection information (e.g., web link, SSH port and password) and users have to connect manually. Note that currently only the latter is supported.
- 
-    - **skills**: Skill tags related to this challenge. Available skill tags are listed on our [API](https://platform.avatao.com/api-explorer/#/api/core/skills/). If you cannot find a proper skill, please [contact us](content@avatao.com).  
-    - **recommendations**: Contains external links to resources related to a challenge. Each line of this parameter consists of two parts. The first part is the corresponding URL to the resource, while the second part is the name of the recommended resource.
-    - **owner**: Who owns the Intellectual Property. Somebody originally created a challenge and you fork it. In that case, we should mention the original creator, too beside the license information. In case of MITRE cyberacademy challenges, for example, the IP belongs to MITRE, however, we do not have a MITRE community to link the challenge to. Note that it is also possible that the owner equals to the content creator
-  
-- **README.md** [optional]: Any additional information that you would like to tell about the challenge. If the original challenge is licensed this should be the extended README.md of that challenge.
-- **CHANGELOG** [optional]: If you modified an existing licensed challenge, please summarize what your changes were.
- - **metadata**: A directory for challenge description, summary and writeup in markdown format. You can use the online markdown editor [dillinger.io](http://dillinger.io) to format your text properly.
-    - **description.md**: Challenge description in markdown format limited to **30000** characters. It is important to use maximally H4 section names (####) so as to fit into the current frontend style. In the `skel` directory you can find an [example](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/description.md). 
-    - **summary.md**: Short, Twitter-style description of the challenge limited to **200** characters. This is used for teasers and previews.  
-    - **writeup.md**: It describes how to solve the challenge. Detailed information can be read under the **Writeup guide** section of this guide. A nice writeup example can be found [here](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/writeup.md).   
-
 ## Create your own challenge
 
 ### Prerequisites
@@ -114,10 +23,11 @@ In this section we detail the directory structure of challenges. Under the [skel
 ### Quick Reference
 
 * Choose a challenge template from the `templates` directory
-* Build challenge: `./build.py <challenge_folder>` (e.g., `./build.py templates/xss`)
-* Start challenge: `./start.py <challenge_folder>` (e.g., `./start.py templates/xss`)
-* Check challenge format: `./check-format.py <challenge_folder>` (e.g., `./check-format.py templates/xss`)
-* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `./check-solution`)
+* Build challenge: `./build.py <challenge_folder>` (e.g., `python ./build.py templates/xss`)
+* Start challenge: `./start.py <challenge_folder>` (e.g., `python ./start.py templates/xss`)
+* Check challenge format: `./check-format.py <challenge_folder>` (e.g., `python ./check-format.py templates/xss`)
+* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `python ./check-solution`)
+* Create tests to check the correct solution
 * Cleanup: `./docker-cleanup.sh`
 
 
@@ -134,27 +44,6 @@ So as to ease challenge development we've prepared templates for different chall
 - [XSS challenges](https://github.com/avatao/challenge-engine/tree/master/templates/xss)  
  
 By cloning this [guide](https://github.com/avatao/challenge-engine) you get **scripts** and **skeleton** files that will help you a lot in challenge creation.
-
-### **Modify and check format**
-
-In the next step, please modify the cloned template in accordance with 
-your challenge. If you have prepared everything, run our checker script of this guide repository by simply
-typing.
-
-    ./check-fomat.py <repository_path>
-    
-For example, if your challenge is located at path `/home/user/my-challenge`, your command is the following.
-
-    ./check-format.py /home/user/my-challenge
-
-
-Note that `check-format.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
-Please fine-tune your files until you see errors. This script will help you a lot:
-
-1. Checks if your files are in place
-2. Checks if your configuration (config.yml) and markdown files (e.g., writeup.md) are correct
-3. Invokes solution check and the **test** function automatically for docker-based challenges to check if your challenge is working well. 
-
 
 ### **Build**
 
@@ -183,12 +72,35 @@ To start your challenge, simply type:
 
 When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](https://github.com/avatao/challenge-engine/blob/master/templates/xss/controller/opt/solution.js) for more details.
 
+
+### **Modify and check format**
+
+In the next step, please modify the cloned template in accordance with 
+your challenge. If you have prepared everything, run our checker script of this guide repository by simply
+typing.
+
+    ./check-fomat.py <repository_path>
+    
+For example, if your challenge is located at path `/home/user/my-challenge`, your command is the following.
+
+    ./check-format.py /home/user/my-challenge
+
+
+Note that `check-format.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
+Please fine-tune your files until you see errors. This script will help you a lot:
+
+1. Checks if your files are in place
+2. Checks if your configuration (config.yml) and markdown files (e.g., writeup.md) are correct
+3. Invokes solution check and the **test** function automatically for docker-based challenges to check if your challenge is working well. 
+
+
 ### **Manual solution checking**  
 
 Avatao platform calls into the controller via HTTP with the (optional) flag that user submitted. You will be able test that functionality locally with following command:  
 
     ./check-solution.py <optional_flag>
  
+
 
 ### **Manual challenge testing**  
 
@@ -301,6 +213,9 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
 9. The last section should be called `Complete solution` which does not have a cost as it is only revealed when somebody asks for the complete solution. In that case we show him the entire writeup.
 *IMPORTANT* We highly recommend to insert a few lines of notes about mitigations (e.g., how to fix the vulnerability) if the challenge is an offensive one.  
 
+## Documentation
+
+[Please read the docs for more information](https://github.com/avatao/challenge-engine/tree/master/docs/README.md).
 
 ## Troubleshooting  
 
