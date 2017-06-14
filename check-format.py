@@ -437,16 +437,13 @@ if __name__ == '__main__':
     """
     Sanity check and test an avatao challenge repository. Simply add the challenge repository path as
     the first argument and the script does the rest.
-
-    Python dependencies:
-        - PyYAML (http://pyyaml.org/) or simply `pip3 install PyYAML`
-          (on Ubuntu you additionally need `apt-get install python3-yaml`)
+   
     """
 
     _set_logger()
 
     if len(sys.argv) != 2:
-        logging.info('Usage: ./check.py <repository_path>')
+        logging.info('Usage: ./check-format.py <repository_path>')
         sys.exit(1)
 
     os.chdir(sys.argv[1])

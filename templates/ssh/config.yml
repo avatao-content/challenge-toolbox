@@ -1,0 +1,23 @@
+#Version
+version: v1
+#Required DOCKER capabilities to add
+capabilities: []
+#Ports: #protocol: ssh | tcp | http #type: raw | embedded
+ports:
+    2222: {ssh: raw}
+#Difficulty: 10 - 500
+difficulty: 25
+#Enable inputbox to submit flag: true | false
+enable_flag_input: true
+#Flag if flag is static.
+flag: "doctor@177.143.65.198"
+#Name of the challenge
+name: 'Analyzing Logs - Part 1'
+#Skills
+skills: ['Forensics', 'Linux']
+#Recommended readings
+recommendations:
+    www.docker.com: 'Docker website'
+    www.ubuntu.com: 'Ubuntu webpage'
+#Creator of the challenge
+owner: ['your@mail.com']
