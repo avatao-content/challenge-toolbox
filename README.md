@@ -105,12 +105,11 @@ In this section we detail the directory structure of challenges. Under the [skel
 * Check challenge solution `./check-solution.py <optional_flag>` - (flag is optional)
 * Cleanup: `sh docker-cleanup.sh`
 
-
 ### Prerequisites
 
-> docker
-> python3
-> pip3 install -r requirements.txt
+* Docker
+* Python 3
+* Run `pip3 install -r requirements.txt`
 
 ### **Fork an example challenge template**
 
