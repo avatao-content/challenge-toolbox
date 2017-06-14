@@ -1,8 +1,17 @@
 # challenge-engine
 
-The challenge engine is a small component which allows you to create, run and check new challenges locally. If you have any questions don't hesitate to contact us at [content@avatao.com](mailto:content@avatao.com).  
+The challenge engine is a small component which allows you to create, run and check new avatao challenges locally. If you have any questions don't hesitate to contact us at [content@avatao.com](mailto:content@avatao.com).  
 
-## Terms
+## Rules of participation
+
+[Avatao](https://avatao.com) is a company that wants to make hands-on training accessible to everyone. This includes open-source communities and other businesses also. 
+
+- **Ownership of challenges**: We released this tool to help people to run their own exercises locally and share with others. 
+- **Open-source licensing**: The value to the community contribution is huge - each one is given in service and respect to the community. To respect this, we release the challenge engine and the related templates under *Apache 2.0* License. We do not restrict the use of derived challenges as long as they are contributed back under the same license. 
+- **Business services**: Avatao provides a 24/7 runtime environment that allows you to expose your challenge online in any easy way. Note that Avatao provides additional services (e.g., custom-tailored challenges for businesses, community organizations, enterprise support, training programs, customized learning) as part of a business offering.
+
+
+## Concepts
 
 ### Challenge
 
@@ -49,8 +58,7 @@ There are descriptor files for a challenge, you can see the right structure form
     		[capabilities] (D) ------------- (ITEM)
     		skills ------------------------- (ITEM)
     		recommendations ---------------- (ITEM)
-    		owner -------------------------- (ITEM)    		
-    	[LICENSE] -------------------------- (FILE)
+    		owner -------------------------- (ITEM)    		    	
     	[CHANGELOG] ------------------------ (FILE)
     	[README.md] ------------------------ (FILE)
     	metadata --------------------------- (DIR)
@@ -87,7 +95,6 @@ In this section we detail the directory structure of challenges. Under the [skel
     - **recommendations**: Contains external links to resources related to a challenge. Each line of this parameter consists of two parts. The first part is the corresponding URL to the resource, while the second part is the name of the recommended resource.
     - **owner**: Who owns the Intellectual Property. Somebody originally created a challenge and you fork it. In that case, we should mention the original creator, too beside the license information. In case of MITRE cyberacademy challenges, for example, the IP belongs to MITRE, however, we do not have a MITRE community to link the challenge to. Note that it is also possible that the owner equals to the content creator
   
-- **LICENSE** [optional]: Place here the (original) license file if necessary. This should be applied to copied or modified challenges in most of the cases. In any case, please check the license information.
 - **README.md** [optional]: Any additional information that you would like to tell about the challenge. If the original challenge is licensed this should be the extended README.md of that challenge.
 - **CHANGELOG** [optional]: If you modified an existing licensed challenge, please summarize what your changes were.
  - **metadata**: A directory for challenge description, summary and writeup in markdown format. You can use the online markdown editor [dillinger.io](http://dillinger.io) to format your text properly.
