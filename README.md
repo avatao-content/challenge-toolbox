@@ -104,19 +104,22 @@ In this section we detail the directory structure of challenges. Under the [skel
 
 ## Create your own challenge
 
-### Quick Reference
-
-* Build challenge: `./build.py <challenge_folder>`
-* Start challenge: `./start.py <challenge_folder>`
-* Check challenge format: `./check-format.py <challenge_folder>`
-* Check challenge solution `./check-solution.py <optional_flag>` - (flag is optional)
-* Cleanup: `./docker-cleanup.sh`
-
 ### Prerequisites
 
 * Docker
 * Python 3
 * Run `pip3 install -r requirements.txt`
+
+
+### Quick Reference
+
+* Choose a challenge template from the `templates` directory
+* Build challenge: `./build.py <challenge_folder>` (e.g., `./build.py templates/xss`)
+* Start challenge: `./start.py <challenge_folder>` (e.g., `./start.py templates/xss`)
+* Check challenge format: `./check-format.py <challenge_folder>` (e.g., `./check-format.py templates/xss`)
+* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `./check-solution`)
+* Cleanup: `./docker-cleanup.sh`
+
 
 ### **Start with a challenge template**
 
