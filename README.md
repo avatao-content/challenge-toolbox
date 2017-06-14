@@ -103,7 +103,7 @@ In this section we detail the directory structure of challenges. Under the [skel
 * Start challenge: `./start.py <challenge_folder>`
 * Check challenge format: `./check-format.py <challenge_folder>`
 * Check challenge solution `./check-solution.py <optional_flag>` - (flag is optional)
-* Cleanup: `sh docker-cleanup.sh`
+* Cleanup: `./docker-cleanup.sh`
 
 ### Prerequisites
 
