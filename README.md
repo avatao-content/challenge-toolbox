@@ -111,9 +111,9 @@ In this section we detail the directory structure of challenges. Under the [skel
 * Python 3
 * Run `pip3 install -r requirements.txt`
 
-### **Fork an example challenge template**
+### **Start with a challenge template**
 
-So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., ubuntu, controller, exploitation, lamp, web-ide). These templates are placed into separate repositories in this [challengestore](https://challengestore.avatao.com). These templates contain examples for static and container-based challenges. Please *fork* the ones which fit your needs and customize them as you like.
+So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., ubuntu, controller, exploitation, web-ide). These templates contain examples for static and container-based challenges. Please use the one which fit your needs and customize it as you like.
 
 - [Static challenges without containers](https://challengestore.avatao.com/templates/static)
 - [Challenges running a server and accept client connections](https://challengestore.avatao.com/templates/tcp)  
