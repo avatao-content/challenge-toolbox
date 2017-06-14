@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
+
 import requests
 import sys
-
-
 
 flag = "null"
 if len(sys.argv) > 1:
