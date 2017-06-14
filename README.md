@@ -44,27 +44,27 @@ There are descriptor files for a challenge, you can see the right structure form
 [ ] = optional / if it is really needed  
 
     repository_name ------------------------ (DIR)
-	    controller (D) --------------------- (DIR)
-	    solvable (D) ----------------------- (DIR)
-	    src -------------------------------- (DIR)
-	    [downloads] ------------------------ (DIR)	    
-    	config.yml ------------------------- (FILE)
-    		version ------------------------ (ITEM)
+        controller (D) --------------------- (DIR)
+        solvable (D) ----------------------- (DIR)
+        src -------------------------------- (DIR)
+        [downloads] ------------------------ (DIR)      
+        config.yml ------------------------- (FILE)
+            version ------------------------ (ITEM)
             name --------------------------- (ITEM)
             difficulty --------------------- (ITEM)
             [flag] ------------------------- (ITEM)
             enable_flag_input -------------- (ITEM)
             ports (D) ---------------------- (ITEM)                 
-    		[capabilities] (D) ------------- (ITEM)
-    		skills ------------------------- (ITEM)
-    		recommendations ---------------- (ITEM)
-    		owner -------------------------- (ITEM)    		    	
-    	[CHANGELOG] ------------------------ (FILE)
-    	[README.md] ------------------------ (FILE)
-    	metadata --------------------------- (DIR)
-    		description.md ----------------- (FILE)
-    		summary.md --------------------- (FILE)
-    		writeup.md --------------------- (FILE)
+            [capabilities] (D) ------------- (ITEM)
+            skills ------------------------- (ITEM)
+            recommendations ---------------- (ITEM)
+            owner -------------------------- (ITEM)                 
+        [CHANGELOG] ------------------------ (FILE)
+        [README.md] ------------------------ (FILE)
+        metadata --------------------------- (DIR)
+            description.md ----------------- (FILE)
+            summary.md --------------------- (FILE)
+            writeup.md --------------------- (FILE)
 
 ### Structure details
 In this section we detail the directory structure of challenges. Under the [skel](https://github.com/avatao/challenge-engine/tree/master/skeleton) directory in this repository you can find example content for all the items below. Also, we have prepared various challenge templates for different challenge types (e.g., [c](https://github.com/avatao/challenge-engine/tree/master/templates/c), [c#](https://github.com/avatao/challenge-engine/tree/master/templates/csharp), [static](https://github.com/avatao/challenge-engine/tree/master/templates/file), [java](https://github.com/avatao/challenge-engine/tree/master/templates/java), [ssh](https://github.com/avatao/challenge-engine/tree/master/templates/ssh), [telnet](https://github.com/avatao/challenge-engine/tree/master/templates/telnet), [xss](https://github.com/avatao/challenge-engine/tree/master/templates/xss)) that you can fork and customize according to your needs. So the structure is the following:
@@ -169,8 +169,8 @@ Only the first build is slow. If you modify any file in those directories, you n
 
 If the build process was successful you should see your new docker image by typing the following command:
 
-	docker images
-	
+    docker images
+    
 
 ### **Start**  
 
