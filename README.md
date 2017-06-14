@@ -35,31 +35,31 @@ There are descriptor files for a challenge, you can see the right structure form
 [ ] = optional / if it is really needed  
 
     repository_name ------------------------ (DIR)
-        controller (D) --------------------- (DIR)
-        solvable (D) ----------------------- (DIR)
-        src -------------------------------- (DIR)
-        [downloads] ------------------------ (DIR)      
-        config.yml ------------------------- (FILE)
-            version ------------------------ (ITEM)
+	    controller (D) --------------------- (DIR)
+	    solvable (D) ----------------------- (DIR)
+	    src -------------------------------- (DIR)
+	    [downloads] ------------------------ (DIR)	    
+    	config.yml ------------------------- (FILE)
+    		version ------------------------ (ITEM)
             name --------------------------- (ITEM)
             difficulty --------------------- (ITEM)
             [flag] ------------------------- (ITEM)
             enable_flag_input -------------- (ITEM)
             ports (D) ---------------------- (ITEM)                 
-            [capabilities] (D) ------------- (ITEM)
-            skills ------------------------- (ITEM)
-            recommendations ---------------- (ITEM)
-            owner -------------------------- (ITEM)         
-        [LICENSE] -------------------------- (FILE)
-        [CHANGELOG] ------------------------ (FILE)
-        [README.md] ------------------------ (FILE)
-        metadata --------------------------- (DIR)
-            description.md ----------------- (FILE)
-            summary.md --------------------- (FILE)
-            writeup.md --------------------- (FILE)
+    		[capabilities] (D) ------------- (ITEM)
+    		skills ------------------------- (ITEM)
+    		recommendations ---------------- (ITEM)
+    		owner -------------------------- (ITEM)    		
+    	[LICENSE] -------------------------- (FILE)
+    	[CHANGELOG] ------------------------ (FILE)
+    	[README.md] ------------------------ (FILE)
+    	metadata --------------------------- (DIR)
+    		description.md ----------------- (FILE)
+    		summary.md --------------------- (FILE)
+    		writeup.md --------------------- (FILE)
 
 ### Structure details
-In this section we detail the directory structure of challenges. Under the [skel](https://challengestore.avatao.com/templates/guide/tree/master/skel) directory in this repository you can find example content for all the items below. Also, we have prepared various challenge templates for different challenge types (e.g., [tcp](https://challengestore.avatao.com/templates/tcp), [lamp](https://challengestore.avatao.com/templates/lamp), [c](https://challengestore.avatao.com/templates/c), [static](https://challengestore.avatao.com/templates/static), [exploitation](https://challengestore.avatao.com/templates/exploitation)) that you can fork and customize according to your needs. So the structure is the following:
+In this section we detail the directory structure of challenges. Under the [skel](https://github.com/avatao/challenge-engine/tree/master/skeleton) directory in this repository you can find example content for all the items below. Also, we have prepared various challenge templates for different challenge types (e.g., [c](https://github.com/avatao/challenge-engine/tree/master/templates/c), [c#](https://github.com/avatao/challenge-engine/tree/master/templates/csharp), [static](https://github.com/avatao/challenge-engine/tree/master/templates/file), [java](https://github.com/avatao/challenge-engine/tree/master/templates/java), [ssh](https://github.com/avatao/challenge-engine/tree/master/templates/ssh), [telnet](https://github.com/avatao/challenge-engine/tree/master/templates/telnet), [xss](https://github.com/avatao/challenge-engine/tree/master/templates/xss)) that you can fork and customize according to your needs. So the structure is the following:
 
 - **controller** [docker]: The directory for controller should always exist for docker-based challenges. Place here the scripts to check submitted user solution if the flag is not static (e.g., dynamically generated upon container start). The files in this directory _won't_ be accessible for users.
 - **solvable** [docker]: The directory for solvable exists for most of the docker-based challenges. Place here all your challenges files (e.g., flag.txt, your server, database files).
@@ -91,9 +91,9 @@ In this section we detail the directory structure of challenges. Under the [skel
 - **README.md** [optional]: Any additional information that you would like to tell about the challenge. If the original challenge is licensed this should be the extended README.md of that challenge.
 - **CHANGELOG** [optional]: If you modified an existing licensed challenge, please summarize what your changes were.
  - **metadata**: A directory for challenge description, summary and writeup in markdown format. You can use the online markdown editor [dillinger.io](http://dillinger.io) to format your text properly.
-    - **description.md**: Challenge description in markdown format limited to **30000** characters. It is important to use maximally H4 section names (####) so as to fit into the current frontend style. In the `skel` directory you can find an [example](https://challengestore.avatao.com/templates/guide/blob/master/skel/metadata/description.md). 
+    - **description.md**: Challenge description in markdown format limited to **30000** characters. It is important to use maximally H4 section names (####) so as to fit into the current frontend style. In the `skel` directory you can find an [example](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/description.md). 
     - **summary.md**: Short, Twitter-style description of the challenge limited to **200** characters. This is used for teasers and previews.  
-    - **writeup.md**: It describes how to solve the challenge. Detailed information can be read under the **Writeup guide** section of this guide. A nice writeup example can be found [here](https://challengestore.avatao.com/templates/guide/blob/master/skel/metadata/writeup.md).   
+    - **writeup.md**: It describes how to solve the challenge. Detailed information can be read under the **Writeup guide** section of this guide. A nice writeup example can be found [here](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/writeup.md).   
 
 ## Create your own challenge
 
@@ -115,13 +115,15 @@ In this section we detail the directory structure of challenges. Under the [skel
 
 So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., ubuntu, controller, exploitation, web-ide). These templates contain examples for static and container-based challenges. Please use the one which fit your needs and customize it as you like.
 
-- [Static challenges without containers](https://challengestore.avatao.com/templates/static)
-- [Challenges running a server and accept client connections](https://challengestore.avatao.com/templates/tcp)  
-- [Challenges using PHP and MySQL](https://challengestore.avatao.com/templates/lamp)  
-- [C programming challenges](https://challengestore.avatao.com/templates/c)  
-- [Challenges for container-internal exploitation and debugging and SSH connection](https://challengestore.avatao.com/templates/exploitation)  
+- [Static challenges without containers](https://github.com/avatao/challenge-engine/tree/master/templates/file)
+- [Challenges running a server and accept client connections via telnet](https://github.com/avatao/challenge-engine/tree/master/templates/telnet)  
+- [Challenges accepting connections via SSH](https://github.com/avatao/challenge-engine/tree/master/templates/ssh)  
+- [C programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/c)  
+- [C# programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/csharp)  
+- [Java programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/java)  
+- [XSS challenges](https://github.com/avatao/challenge-engine/tree/master/templates/xss)  
  
-By cloning this [guide](https://challengestore.avatao.com/templates/guide) you get **scripts** and **skeleton** files that will help you a lot in challenge creation.
+By cloning this [guide](https://github.com/avatao/challenge-engine) you get **scripts** and **skeleton** files that will help you a lot in challenge creation.
 
 ### **Modify and check format**
 
@@ -160,8 +162,8 @@ Only the first build is slow. If you modify any file in those directories, you n
 
 If the build process was successful you should see your new docker image by typing the following command:
 
-    docker images
-    
+	docker images
+	
 
 ### **Start**  
 
@@ -169,7 +171,7 @@ To start your challenge, simply type:
 
     ./start.py <repository_path>   
 
-When a controller-solvable pair is started, you can address them internally as `solvable` and `controller`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](https://challengestore.avatao.com/templates/tcp/blob/master/controller/opt/solution.py) for more details.
+When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](https://github.com/avatao/challenge-engine/blob/master/templates/xss/controller/opt/solution.js) for more details.
 
 ### **Manual solution checking**  
 
@@ -180,7 +182,7 @@ Avatao platform calls into the controller via HTTP with the (optional) flag that
 
 ### **Manual challenge testing**  
 
-Before every challenge deployment on avatao, we automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](https://challengestore.avatao.com/templates/c/blob/master/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
+Before every challenge deployment on avatao, we automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](https://github.com/avatao/challenge-engine/blob/master/templates/c/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
 
 After implementing the `test` function you can simply run `curl` to make sure that everything works well.  
 
@@ -278,7 +280,7 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
 ### **Writeup guide**
 
 1. Every challenge should have an own separate `writeup.md` file under the `metadata` directory.
-2. Add the challenge name in H1 style as the example [writeup.md](https://challengestore.avatao.com/templates/guide/blob/master/skel/metadata/writeup.md) shows it.
+2. Add the challenge name in H1 style as the example [writeup.md](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/writeup.md) shows it.
 3. The writeup should have at least 3 sections.
 4. The cost of first section should be 0%, because it's just a detailed "What to do here?".
 5. Each section describes a relevant part from the complete solution. Thus, users should be able to solve the challenge by simply following the instructions of each section. 
