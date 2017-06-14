@@ -1,0 +1,19 @@
+version: v1
+# Flag if the flag is static
+flag: 'flag'
+# Enable input box to submit flags: true|false
+enable_flag_input: true
+
+# Challenge Runtime Provider configuration (docker in this case)
+crp_config:
+  # The main solvable (optional)
+  solvable:
+    # List of [port/protocol] to expose to the user
+    ports: [8888/http, 2222/ssh]
+  # The controller (optional)
+  controller:
+    # Similarly. Use 5555/controller for dynamic controllers.
+    # You can expose other services that if needed
+    ports: [5555/controller]
+  # Additional solvable
+  #solvable2:

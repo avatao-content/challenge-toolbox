@@ -33,12 +33,10 @@ NAME_RANGE = {'min': 3, 'max': 200}
 SUMMARY_RANGE = {'min': 30, 'max': 200}
 DESCRIPTION_RANGE = {'min': 100, 'max': 30000}
 
-VISIBILITIES = {'public', 'community_private', 'private'}
-
 COST_SUM = 90
 MIN_H2_NUM = 3
 
-CONFIG_KEYS = {'version', 'capabilities', 'ports', 'difficulty', 'enable_flag_input', 'flag', 'name', 'visibility', 'community', 'skills', 'recommendations', 'owner', 'source_dependency'}
+CONFIG_KEYS = {'version', 'capabilities', 'ports', 'difficulty', 'enable_flag_input', 'flag', 'name', 'community', 'skills', 'recommendations', 'owner', 'source_dependency'}
 
 IP = '127.0.0.1'
 CONTROLLER_PORT = 5555
