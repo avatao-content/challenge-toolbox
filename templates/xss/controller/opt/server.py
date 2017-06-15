@@ -54,7 +54,7 @@ def test():
     """
 
     #injects the payload into the site
-    inject_args=['curl', '--data', '"name=test&message=%3Cscript%3Ealert%28%27xss%27%29%3C%2Fscript%3E&btnSign=Sign+Guestbook"', 
+    inject_args=['curl', '--data', '"name=test&message=%3Csvg%2Fonload%3D%22alert(1)%22&btnSign=Sign+Guestbook"', 
     'http://localhost:8888/action.php']
     subprocess.check_output(inject_args,stderr=subprocess.STDOUT,universal_newlines=True)    
 
