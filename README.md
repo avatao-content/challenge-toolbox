@@ -51,6 +51,10 @@ To build your challenge images (e.g., solvable, controller) please use our
 build script as follows.
  
     ./build.py <repository_path>
+
+![build1](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/build1.png)
+
+![build2](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/build2.png)
         
 For example, if your repository path is `/home/user/my-challenge`, your images will be called
 `my-challenge-solvable` and `my-challenge-controller`, if you have `Dockerfile` for both controller and solvable.
@@ -70,7 +74,11 @@ To start your challenge, simply type:
 
     ./start.py <repository_path>   
 
+![start](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/start.png)
+
 When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](https://github.com/avatao/challenge-engine/blob/master/templates/xss/controller/opt/solution.js) for more details.
+
+![browser](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/browser.png)
 
 
 ### **Modify and check format**
@@ -84,6 +92,8 @@ typing.
 For example, if your challenge is located at path `/home/user/my-challenge`, your command is the following.
 
     ./check-format.py /home/user/my-challenge
+
+![check](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/check.png)
 
 
 Note that `check-format.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
@@ -168,6 +178,8 @@ It might take too much time to keep waiting for `build.py` and `start.py` to fin
 It is much simpler to start your challenges with `start.py` and the run 
 
     docker exec -ti <name> bash
+
+![debug](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/debug.png)
     
 For example, if you have problems with implementing the test endpoint in the controller, it is better if you simply
 copy `server.py` at a writeable path (e.g., added with the `VOLUME` command) and edit locally with `vim` for example.
@@ -249,6 +261,8 @@ If sshd's non-root login is not enough for you. You can still use `docker exec`.
 After that simple execute the following command  
 
     docker exec -ti <name|ID> bash
+
+![debug](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/debug.png)
 
 ## **Questions**  
 
