@@ -1,13 +1,13 @@
-# challenge-engine
+# challenge-toolbox
 
-The challenge engine is a small component which allows you to create, run and check new avatao challenges locally. If you have any questions don't hesitate to contact us at [content@avatao.com](mailto:content@avatao.com).  
+The challenge toolbox is a small component which allows you to create, run and check new avatao challenges locally. If you have any questions don't hesitate to contact us at [content@avatao.com](mailto:content@avatao.com).  
 
 ## Rules of participation
 
 [Avatao](https://avatao.com) is a company that wants to make hands-on training accessible to everyone. This includes open-source communities and other businesses also. 
 
 - **Ownership of challenges**: We released this tool to help people to run their own exercises locally and share with others. 
-- **Open-source licensing**: The value to the community contribution is huge - each one is given in service and respect to the community. To respect this, we release the challenge engine and the related templates under *Apache 2.0* License. We do not restrict the use of derived challenges as long as they are contributed back under the same license. 
+- **Open-source licensing**: The value to the community contribution is huge - each one is given in service and respect to the community. To respect this, we release the challenge toolbox and the related templates under *Apache 2.0* License. We do not restrict the use of derived challenges as long as they are contributed back under the same license. 
 - **Business services**: Avatao provides a 24/7 runtime environment that allows you to expose your challenge online in an easy way. Note that Avatao provides additional services (e.g., custom-tailored challenges for businesses, community organizations, enterprise support, training programs, customized learning) as part of a business offering.
 
 
@@ -35,27 +35,27 @@ The challenge engine is a small component which allows you to create, run and ch
 
 So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., ubuntu, controller, exploitation, web-ide). These templates contain examples for static and container-based challenges. Please use the one which fit your needs and customize it as you like.
 
-- [Static challenges without containers](https://github.com/avatao/challenge-engine/tree/master/templates/file)
-- [Challenges running a server and accept client connections via telnet](https://github.com/avatao/challenge-engine/tree/master/templates/telnet)  
-- [Challenges accepting connections via SSH](https://github.com/avatao/challenge-engine/tree/master/templates/ssh)  
-- [C programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/c)  
-- [C# programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/csharp)  
-- [Java programming challenges](https://github.com/avatao/challenge-engine/tree/master/templates/java)  
-- [XSS challenges](https://github.com/avatao/challenge-engine/tree/master/templates/xss)  
- 
-By cloning this [guide](https://github.com/avatao/challenge-engine) you get **scripts** and **skeleton** files that will help you a lot in challenge creation.
+- [Static challenges without containers](templates/file)
+- [Challenges running a server and accept client connections via telnet](templates/telnet)  
+- [Challenges accepting connections via SSH](templates/ssh)  
+- [C programming challenges](templates/c)  
+- [C# programming challenges](templates/csharp)  
+- [Java programming challenges](templates/java)  
+- [XSS challenges](templates/xss)  
+
+By cloning this repository you get **scripts** and **skeleton** files that will help you a lot in challenge creation.
 
 ### **Build**
 
 To build your challenge images (e.g., solvable, controller) please use our 
 build script as follows.
- 
+
     ./build.py <repository_path>
 
-![build1](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/build1.png)
+![build1](img/build1.png)
 
-![build2](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/build2.png)
-        
+![build2](img/build2.png)
+
 For example, if your repository path is `/home/user/my-challenge`, your images will be called
 `my-challenge-solvable` and `my-challenge-controller`, if you have `Dockerfile` for both controller and solvable.
 
@@ -74,11 +74,11 @@ To start your challenge, simply type:
 
     ./start.py <repository_path>   
 
-![start](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/start.png)
+![start](img/start.png)
 
-When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](https://github.com/avatao/challenge-engine/blob/master/templates/xss/controller/opt/solution.js) for more details.
+When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](templates/xss/controller/opt/solution.js) for more details.
 
-![browser](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/browser.png)
+![browser](img/browser.png)
 
 
 ### **Modify and check format**
@@ -93,7 +93,7 @@ For example, if your challenge is located at path `/home/user/my-challenge`, you
 
     ./check-format.py /home/user/my-challenge
 
-![check](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/check.png)
+![check](img/check.png)
 
 
 Note that `check-format.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
@@ -114,7 +114,7 @@ Avatao platform calls into the controller via HTTP with the (optional) flag that
 
 ### **Manual challenge testing**  
 
-Before every challenge deployment on avatao, we automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](https://github.com/avatao/challenge-engine/blob/master/templates/c/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
+Before every challenge deployment on avatao, we automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](templates/c/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
 
 After implementing the `test` function you can simply run `curl` to make sure that everything works well.  
 
@@ -167,10 +167,11 @@ There are various runtime docker options that we plan to turn on when starting y
 - By default we drop all the capabilities with `--cap-drop=ALL` as you can see in `start.py`. To add extra capabilities please use the capabilities field of `config.py`. If you do not need extra capability just simply leave the array empty (['']). 
  
 _Reference_:  
-[https://docs.docker.com/engine/reference/builder/](https://docs.docker.com/engine/reference/builder/)  
-[https://docs.docker.com/engine/reference/commandline/run/](https://docs.docker.com/engine/reference/commandline/run/)  
-[https://docs.docker.com/engine/reference/run/#runtime-privilege-linux-capabilities-and-lxc-configuration](https://docs.docker.com/engine/reference/run/#runtime-privilege-linux-capabilities-and-lxc-configuration)  
-[https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/) 
+
+* https://docs.docker.com/engine/reference/builder/
+* https://docs.docker.com/engine/reference/commandline/run/
+* https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
+* https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
 
 ### **Challenge debugging**
 
@@ -179,7 +180,7 @@ It is much simpler to start your challenges with `start.py` and the run
 
     docker exec -ti <name> bash
 
-![debug](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/debug.png)
+![debug](img/debug.png)
     
 For example, if you have problems with implementing the test endpoint in the controller, it is better if you simply
 copy `server.py` at a writeable path (e.g., added with the `VOLUME` command) and edit locally with `vim` for example.
@@ -215,7 +216,7 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
 ### **Writeup guide**
 
 1. Every challenge should have an own separate `writeup.md` file under the `metadata` directory.
-2. Add the challenge name in H1 style as the example [writeup.md](https://github.com/avatao/challenge-engine/blob/master/skeleton/metadata/writeup.md) shows it.
+2. Add the challenge name in H1 style as the example [writeup.md](skeleton/metadata/writeup.md) shows it.
 3. The writeup should have at least 3 sections.
 4. The cost of first section should be 0%, because it's just a detailed "What to do here?".
 5. Each section describes a relevant part from the complete solution. Thus, users should be able to solve the challenge by simply following the instructions of each section. 
@@ -227,7 +228,7 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
 
 ## Documentation
 
-[Please read the docs for more information](https://github.com/avatao/challenge-engine/tree/master/docs/README.md).
+[Please read the docs for more information](docs/README.md).
 
 ## Troubleshooting  
 
@@ -262,7 +263,7 @@ After that simple execute the following command
 
     docker exec -ti <name|ID> bash
 
-![debug](https://raw.githubusercontent.com/avatao/challenge-engine/master/img/debug.png)
+![debug](img/debug.png)
 
 ## **Questions**  
 
