@@ -1,0 +1,22 @@
+# Version
+version: v1
+# Required DOCKER capabilities to add
+capabilities: ['SETGID','SETUID', 'AUDIT_WRITE']
+# Ports: #protocol: ssh | tcp | http #type: raw | embedded
+ports:
+     8888: {http: embedded}
+# Difficulty: 10 - 500
+difficulty: 15
+# Enable inputbox to submit flag: true | false
+enable_flag_input: false
+# Name of the challenge
+name: 'Geometric mean'
+# Skills related to the challenge
+skills: ['Cpp']
+# Recommended readings
+recommendations:
+    http://en.cppreference.com/w/cpp/language/parameter_pack: 'Variadic templates'
+    http://en.cppreference.com/w/cpp/language/template_argument_deduction: 'Template argument deduction'
+    http://en.cppreference.com/w/cpp/language/adl: 'ADL'
+# Visibility: public | community_private | private
+visibility: community_private
