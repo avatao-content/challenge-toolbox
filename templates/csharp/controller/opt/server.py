@@ -3,6 +3,7 @@ from subprocess import STDOUT, check_output
 from shutil import copyfile
 import subprocess
 import os
+import cgi
 
 os.chdir('/nunit/bin')
 
@@ -10,19 +11,15 @@ app = Flask(__name__)
 
 @app.route('/%s/test' % os.environ['SECRET'], methods=['GET'])
 def test():   
-    output = ""
-    error = ""
-    build = ['xbuild', '/home/user/App/App.sln']
-    test = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
+    BUILD = ['xbuild', '/home/user/App/App.sln']
+    TEST = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
+        copyfile('/home/user/solvable/Program.cs', '/home/user/App/App/Program.cs')
+        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode("utf-8")
+    except subprocess.CalledProcessError as exc:
+        output = exc.output.decode("utf-8").replace("/home/user/App/", "").split("->\n\n")[1].lstrip("\t").lstrip(":").lstrip()
+        abort(500, output)
     try:
-        copyfile('/opt/Solution.cs', '/home/user/App/App/Program.cs')
-        output = str(subprocess.check_output(build, stderr=subprocess.STDOUT))
-        if not "0 Error(s)" in output:
-            abort(500, "Error while building")
-    except Exception as e:
-        abort(500, "Error while building")
-    try:
-        subprocess.call(test)
+        subprocess.call(TEST)
         with open('/nunit/bin/TestResult.xml', 'r') as f:
             for line in f.read().splitlines():
                 if '<test-case' in line:
@@ -38,21 +35,19 @@ def test():
 
 @app.route('/' + os.environ['SECRET'], methods=['POST'])
 def solution_check():
-    output = ""
-    error = ""
-    build = ['xbuild', '/home/user/App/App.sln']
-    test = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
+    BUILD = ['xbuild', '/home/user/App/App.sln']
+    TEST = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
     try:
         copyfile('/home/user/solvable/Program.cs', '/home/user/App/App/Program.cs')
-        output = str(subprocess.check_output(build, stderr=subprocess.STDOUT))
-        if not "0 Error(s)" in output:
-            return jsonify(solved=False, message="Error while building. \
-Make sure, your code doesn't have syntax errors and you have implemented the function!")
-    except Exception as e:
-        return jsonify(solved=False, message="Error while building. \
-Make sure, your code doesn't have syntax errors and you have implemented the function!")
+        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode("utf-8")
+    except subprocess.CalledProcessError as exc:
+        output = exc.output.decode("utf-8").replace("/home/user/App/", "").split("->\n\n")[1].lstrip("\t").lstrip(":").lstrip()
+        error = "<pre><code>" + cgi.escape(output) + "</code></pre>"
+        return jsonify(solved=False, message=error)
     try:
-        subprocess.call(test)
+        subprocess.call(TEST)
+        error = ""
+        # Parsing output
         with open('/nunit/bin/TestResult.xml', 'r') as f:
             for line in f.read().splitlines():
                 if '<test-case' in line:
@@ -60,11 +55,11 @@ Make sure, your code doesn't have syntax errors and you have implemented the fun
                         error = error + line.split('"')[3] + " FAILED\n"
         if error == "":
             return jsonify(solved=True)
-        else:
-            return jsonify(solved=False, message=error)
+        return jsonify(solved=False, message=error)
                   
     except Exception as e:
         return jsonify(solved=False, message=str(e))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5555, debug=False)
+    app.run(host='0.0.0.0', port=int(os.environ['CONTROLLER_PORT']),
+            debug=(os.environ['DEBUG'].lower() == 'true'))
