@@ -1,8 +1,6 @@
-FROM avatao/controller:ubuntu-14.04
+FROM avatao/xss-controller:ubuntu-16.04
 
 USER root
-RUN apt-get -qy update \ 
-	&& apt-get install -qy libfontconfig
 
 COPY ./controller /
 
