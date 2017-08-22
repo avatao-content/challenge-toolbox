@@ -8,6 +8,7 @@ RUN  chown -R user: /solvable/app \
 	&& chmod 600 /solvable/tests/* \
 	&& chmod 700 /solvable/tests \
 	&& python3 /opt/setup.py /solvable/app /solvable/app/geomean.cpp \
+	&& chmod 444 /var/www/codiad/data/projects.php \
 	&& ln -s /solvable/app/geomean.cpp /solvable/tests/geomean.cpp \
 	&& cd /solvable/tests \
 	&& cmake CMakeLists.txt \
