@@ -1,4 +1,4 @@
-FROM avatao/java-controller:ubuntu-14.04
+FROM avatao/java-controller:ubuntu-16.04
 MAINTAINER Gergo Turcsanyi <gergo.turcsanyi@avatao.com>
 
 COPY ./controller/ /
