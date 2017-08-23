@@ -1,4 +1,4 @@
-FROM avatao/controller:ubuntu-14.04
+FROM avatao/controller:ubuntu-16.04
 
 # Copy is prefered for simple files/directories as
 # it doesn't try to decompress archives or fetch URLs.

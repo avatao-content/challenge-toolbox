@@ -1,105 +1,151 @@
-from glob import glob
-import socket
-import struct
-import subprocess
+from contextlib import suppress
+from enum import Enum
+from functools import partial
 import os
+import pickle
+import socketserver
+import subprocess
+import sys
 
-os.chdir('/solvable')
+SOLUTION = 'src/app.c'
+OBJECT = 'solution.o'
+TEST_EXECUTABLE = 'test/apptest'
 
-POPEN_ARGS = ['sudo', 'gcc', 'app/app.c'] + glob('tests/test*.c') + ['-o', 'apptest', '-lcmocka']
-VALGRIND = ['sudo', '-u', 'user', 'valgrind', '--leak-check=full', './apptest']
-OBJDUMP = ['sudo', '-u', 'user', 'objdump', '--dynamic-syms', './apptest']
-DISABLED_F = ['rand', 'fork', 'popen', 'pipe', 'exec', 'system', 'readdir', 'opendir', 'time', 'clock']
+LINKED_DYNAMICALLY = False
 
-# Bind to the exposed HTTP port to allow the controller container to connect to
-BIND_TO = ('0.0.0.0', 7777)
+COMPILE_TEST_EXECUTABLE = ['sudo', 'make']
+COMPILE_OBJECT = ['sudo', 'gcc', '-std=c11', '-c', SOLUTION, '-o', OBJECT]
+VALGRIND = ['sudo', '-u', 'user', 'valgrind', '--leak-check=full', '--show-leak-kinds=all', TEST_EXECUTABLE]
+OBJDUMP = ['sudo', '-u', 'user', 'objdump', '--syms', TEST_EXECUTABLE]
+OBJDUMP_DYNAMIC = ['sudo', '-u', 'user', 'objdump', '--dynamic-syms', TEST_EXECUTABLE]
+DISABLED_FUNCTIONS = ['fork', 'popen', 'pipe', 'exec', 'system', 'readdir', 'opendir', 'clock', 'time']
+
+
+SolutionCheckTypes = Enum('SolutionCheckTypes',
+                          [
+                              'MEMORY_LEAK',
+                              'INVALID_READ_WRITE',
+                              'DISABLED_FUNCTION',
+                              'FAILED_UNIT_TEST'
+                          ])
+
+
+class SolutionCheckError(Exception):
+    error_messages = {
+        SolutionCheckTypes.MEMORY_LEAK: 'Memory leak detected!\n',
+        SolutionCheckTypes.INVALID_READ_WRITE: 'Invalid read/write!',
+        SolutionCheckTypes.DISABLED_FUNCTION: 'You should not use the following function: {}',
+        SolutionCheckTypes.FAILED_UNIT_TEST: 'Not all unit tests passed:\n{}'
+    }
+
+    def __init__(self, cause: SolutionCheckTypes, *args):
+        super().__init__()
+        self.cause = cause
+        self.message = self.error_messages[cause].format(*args)
+
+
+run_command = partial(subprocess.check_output, stderr=subprocess.STDOUT, universal_newlines=True)
 
 
 def check_valgrind():
-    try:
-        output = subprocess.check_output(VALGRIND, stderr=subprocess.STDOUT, universal_newlines=True)
-    except subprocess.CalledProcessError as e:
-        output = e.output
-    finally:
-        if str(output).find(" 0 errors") != -1:
-            return True, str(output)
-    return False, str(output)
+    """
+    Check the output of the valgrind tool for memory leaks and other problems
+    present in the submitted solution
+
+    :return: True if the solution did not raise any error during testing
+    """
+    valgrind_output = run_command(VALGRIND)
+    if valgrind_output.find(' 0 errors') != -1:
+        return True
+    if valgrind_output.find("All heap blocks were freed") == -1:
+        raise SolutionCheckError(SolutionCheckTypes.MEMORY_LEAK)
+    else:
+        raise SolutionCheckError(SolutionCheckTypes.INVALID_READ_WRITE)
 
 
 def check_imports():
-    try:
-        output = subprocess.check_output(OBJDUMP, stderr=subprocess.STDOUT, universal_newlines=True)
-    except subprocess.CalledProcessError as e:
-        output = e.output
-    finally:
-        for f in DISABLED_F:
-            if str(output).find(f) != -1:
-                return False
+    """
+    Check the output of the objdump tool for dangerous functions present in the
+    submitted solution
+
+    :return: True if the solution did not contain any of the disabled functions
+    """
+    objdump_output = run_command(OBJDUMP)
+    objdump_dynamic_output = run_command(OBJDUMP_DYNAMIC) if LINKED_DYNAMICALLY else ''
+    for func in DISABLED_FUNCTIONS:
+        if objdump_output.find(func) != -1 or objdump_dynamic_output.find(func) != -1:
+            raise SolutionCheckError(SolutionCheckTypes.DISABLED_FUNCTION, func)
     return True
 
 
-def run():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(BIND_TO)
-    sock.listen(2)
+def check_cmocka():
+    """
+    Check the output of the unit tests linked to the submitted solution
 
-    while True:
+    :return: True, if all unit tests passed
+    """
+    output = run_command(['sudo', '-u', 'user', TEST_EXECUTABLE])
+    if output.find("FAILED") != -1 and output.find("PASSED") == -1:
+        raise SolutionCheckError(SolutionCheckTypes.FAILED_UNIT_TEST, output)
+    return True, output
+
+
+class SolutionCheckHandler(socketserver.BaseRequestHandler):
+    def handle(self):
+        """
+        Serve an incoming request with the result of compiling and testing the
+        submitted solution
+        """
         try:
-            conn, addr = sock.accept()
-            try:
-                success = 0
-                valgrind = False
-                imports = False
-                subprocess.check_output(['chmod', '-R', '+x'] + glob('tests/'), stderr=subprocess.STDOUT)
-                try:
-                    try:
-                        os.remove("./apptest")
-                    except:
-                        pass
-                    output = subprocess.check_output(POPEN_ARGS, stderr=subprocess.STDOUT, universal_newlines=True) + subprocess.check_output(['sudo', '-u', 'user', './apptest'], stderr=subprocess.STDOUT, universal_newlines=True)
-                except subprocess.CalledProcessError as e:
-                    output = e.output
-                output = str(output)
+            run_command(COMPILE_OBJECT)
+            run_command(COMPILE_TEST_EXECUTABLE)
 
-                if os.path.isfile("./apptest"):
-                    additional_errors = ""
-                    valgrind, val_out = check_valgrind()
-                    if not valgrind:
-                        if val_out.find("All heap blocks were freed") == -1:
-                            additional_errors = "Memory leak detected!\n" + additional_errors
-                        else:
-                            additional_errors = "Invalid read/write!\n" + additional_errors
+            imports = check_imports()
+            valgrind = check_valgrind()
+            cmocka, output = check_cmocka()
 
-                    if check_imports():
-                        imports = True
-                    else:
-                        additional_errors = "You should not use that function!\n" + additional_errors
+            success_exit_code = 0 if all((imports, valgrind, cmocka)) else 1
+            self._send_data(success_exit_code, output)
+        except SolutionCheckError as sce:
+            self._send_data(sce.cause, sce.message)
+        except subprocess.CalledProcessError as cpe:
+            self._send_data(cpe.returncode, str(cpe.output))
 
-                    if output.find("FAILED") == -1 and output.find("[  PASSED  ] 9 test(s)") != -1:
-                        if valgrind and imports:
-                            success = 1
-                        else:
-                            output = additional_errors + output
+    def setup(self):
+        """
+        Set up the environment to properly serve an incoming request
+        """
+        with suppress(FileNotFoundError):
+            os.remove(OBJECT)
+            os.remove(TEST_EXECUTABLE)
+        run_command(['chmod', '-R', 'o+x', '/solvable/test'])
 
-                output = output.encode()
-                conn.send(struct.pack('h', success))
-                conn.send(struct.pack('I', len(output)))
-                conn.send(output)
-            except subprocess.CalledProcessError as e:
-                output = str(e.output).encode()
-                conn.send(struct.pack('h', 0))
-                conn.send(struct.pack('I', len(output)))
-                conn.send(output)
-            finally:
-                try:
-                    subprocess.check_output(['chmod', '-R', '-x'] + glob('tests/'), stderr=subprocess.STDOUT)
-                except:
-                    pass
-        except Exception as e:
-            print(e)
-        finally:
-            conn.close()
-    sock.close()
+    def finish(self):
+        """
+        Reset the environment after serving an incoming request
+        """
+        run_command(['chmod', '-R', 'o-x', '/solvable/test'])
+
+    def _send_data(self, exit_code, data):
+        message = {
+            'success': exit_code == 0,
+            'output': str(data) if data else ''
+        }
+
+        pickled_message = pickle.dumps(message)
+        self.request.sendall(pickled_message)
 
 if __name__ == '__main__':
-    run()
+    os.chdir('/solvable')
+
+    # Bind to the exposed HTTP port to allow the controller container to connect to
+    SERVER_ADDRESS = ('0.0.0.0', 7777)
+
+    server = socketserver.TCPServer(SERVER_ADDRESS, SolutionCheckHandler)
+
+    try:
+        server.serve_forever()
+    except Exception as e:
+        server.server_close()
+        print(e)
+        sys.exit(1)
