@@ -1,23 +1,35 @@
-#Version
-version: v1
-#Required DOCKER capabilities to add
-capabilities: []
-#Ports: #protocol: ssh | tcp | http #type: raw | embedded
-ports:
-    8888: {http: raw}
-#Difficulty: 10 - 500
+version: v2.0.0
+
+# Name of the challenge
+name: "Buy All The Things - Part 2" 
+
+# Challenge difficulty: 10 - 500
 difficulty: 10
-#Enable inputbox to submit flag: true | false
+
+# Enable inputbox to submit flag: true | false
 enable_flag_input: false
-#Flag if flag is static.
-#flag: "notstatic"
-#Name of the challenge
-name: "Buy All The Things - Part 2"
-#Skills related to the challenge: ['SQL injection','Web','Linux']
-skills: ['Java']
-#Recommended readings
+
+# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# flag: "This_iS_the_Solution"
+
+# Skills related to the challenge: ["SQL injection","Web","Linux"]
+skills: ["Java"]
+
+# Recommended readings
 recommendations:
-    http://www.tutorialspoint.com/java/java_basic_datatypes.htm: 'Java data types'
-    http://www.java2s.com/Tutorial/Java/0040__Data-Type/IntegerMAXMINVALUE.htm: 'Java max/min integer value'
-#Creator of the challenge
-owner: ['your@mail.com']
+    http://www.tutorialspoint.com/java/java_basic_datatypes.htm: "Java data types"
+    http://www.java2s.com/Tutorial/Java/0040__Data-Type/IntegerMAXMINVALUE.htm: "Java max/min integer value"
+
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
+owners: ["your@mail.com","another@mail.com"]
+
+# CRP Config
+crp_config:
+    controller:
+		# Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list). 
+		# For example ["SETGID","SETUID"]
+    	#capabilities: [] # Not needed if empty
+		ports: ['5555/controller']
+    solvable:
+        #capabilities: [] # Not needed if empty
+		ports: ['8888/http']
