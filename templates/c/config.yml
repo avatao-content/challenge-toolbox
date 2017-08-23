@@ -1,30 +1,33 @@
-#Version
-version: v1
-#Required DOCKER capabilities to add
-capabilities: ['SETGID','SETUID']
-#Ports: #protocol: ssh | tcp | http #type: raw | embedded
-ports:
-     8888: {http: embedded}
-#Difficulty: 10 - 500
+version: v2.0.0
+
+# Name of the challenge
+name: "Oh My Secure Sums"
+
+# Difficulty: 10 - 500
 difficulty: 200
-#Enable inputbox to submit flag: true | false
+
+# Enable inputbox to submit flag: true | false
 enable_flag_input: false
-#Name of the challenge
-name: 'Oh My Secure Sums'
-#Skills related to the challenge: ['SQL injection','Web','Linux']
-skills: ['Secure C Programming']
+
+# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# flag: "This_iS_the_Solution"
+
+# Skills related to the challenge: ["SQL injection","Web","Linux"]
+skills: ["Secure C Programming"]
+
 # Recommended readings
 recommendations:
-    www.example.com: 'Example webpage'
-#Creator of a challenge
-owner: ['your@mail.com']
+    www.example.com: "Example webpage"
+
+# Creator of a challenge
+owner: ["your@mail.com"]
+
 # CRP Config
 crp_config:
     controller:
+        ports: ["5555/controller"]
+    solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list). 
         # For example ["SETGID","SETUID"]
-        #capabilities: [] # Not needed if empty
-        ports: ['5555/controller']
-    solvable:
-        #capabilities: [] # Not needed if empty
-        ports: ['8888/http']
+        capabilities: ["SETGID","SETUID"] # Not needed if empty
+        ports: ["8888/http"]
