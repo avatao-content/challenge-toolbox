@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Avatao Demo Challenge</title>
+ 
+ 
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+ 
+    <link href="{{ url_for('static', filename='jumbotron-narrow.css') }}" rel="stylesheet">
+    
+
+    <script src="{{ url_for('static', filename='offcanvas.css') }}"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="/admin">Home</a></li>
+            <li role="presentation"><a href="/logout">Logout</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">Admin Panel</h3>
+      </div>
+
+      <div class="container">
+
+	<div class="alert alert-success" role="alert">Well done! Your flag is: <b>C0NGR4TULAT1ONS</b> (submit it on the platform!)</div>
+
+    </div><!--/.container-->
+
+      
+      <footer class="footer">
+        <p>&copy; 2016 Avatao</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+
+  </body>
+</html>
+
