@@ -32,14 +32,18 @@ PORT_RANGE = {'min': 1, 'max': 65535}
 CONTROLLER_PROTOCOL = 'controller'
 
 COST_SUM = 90
-MIN_H2_NUM = 3
+MIN_WRITEUP_SECTIONS = 3
 
 
 def check_config(path, is_static):
     config = read_config(path)
 
-    if config['version'] != 'v1':
-        logging.error('Invalid version. Valid values: v1')
+    if config['version'][:1] != 'v':
+        logging.error('Invalid version. The version number must start with the letter v')
+    elif config['version'] == 'v1':
+        logging.error('This version is deprecated, please use v2.0.0')
+    elif config['version'] != 'v2.0.0':
+        logging.error('Invalid version. The supplied config version is not supported')
 
     if not is_static:
         controller_found = False
@@ -60,7 +64,14 @@ def check_config(path, is_static):
             for port in item.get('ports', []):
                 try:
                     port, proto = port.split('/', 1)
-                    port = int(port)
+                    try:
+                        port = int(port)
+                    except Exception:
+                        logging.error('Invalid port. The port should be a number between 1 and 65535')
+
+                    if PORT_RANGE['min'] > port or PORT_RANGE['max'] < port:
+                        logging.error('Invalid port. The port should be a number between 1 and 65535')
+
                     if proto == CONTROLLER_PROTOCOL:
                         controller_found = True
                 except Exception:
@@ -70,7 +81,7 @@ def check_config(path, is_static):
             logging.error('Missing controller port [5555/%s] for a dynamic challenge.' % CONTROLLER_PROTOCOL)
 
     if str(config.get('enable_flag_input')).lower() not in ('true', 'false', '1', '0'):
-        logging.error('Invalid enable_flag_input. Should be boolean.')
+        logging.error('Invalid enable_flag_input. Should be a boolean.')
 
     if is_static:
         try:
@@ -96,8 +107,8 @@ def check_writeup(f):
     h2_pattern = r'\n## [A-Z].{5,150}\n'
     h2 = re.findall(h2_pattern, w)
 
-    if len(h2) < MIN_H2_NUM:
-        logging.error('There should be at least %d sections in writeup.md' % MIN_H2_NUM)
+    if len(h2) < MIN_WRITEUP_SECTIONS:
+        logging.error('There should be at least %d sections in writeup.md' % MIN_WRITEUP_SECTIONS)
 
     h2_last = h2.pop()
     if h2_last != '\n## Complete solution\n':
