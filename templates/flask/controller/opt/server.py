@@ -1,7 +1,17 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
+import requests
 import os
 
 app = Flask(__name__)
+
+
+@app.route('/%s/test' % os.environ['SECRET'], methods=['GET'])
+def test():
+    flag_response = requests.post('http://127.0.0.1:8888/admin', data={"username": "admin", "password": "admin"})
+    if 'C0NGR4TULAT1ONS' in flag_response.text:
+        return make_response('OK', 200)
+
+    return make_response('FAILED!', 500)
 
 
 @app.route('/' + os.environ['SECRET'], methods=['POST'])

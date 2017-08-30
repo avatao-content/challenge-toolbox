@@ -108,7 +108,6 @@ def check_config(config, is_static):
         if email_re.fullmatch(owner) is None:
             logging.error('Invalid owner email (%s) found in config.yml. Make sure you list the email addresses of the owners' % owner)
 
-
     if not is_static:
         controller_found = False
         for item in config['crp_config'].values():
@@ -204,10 +203,7 @@ def check_controller():
 
     else:
         # Invoke test endpoint if not static
-        if not static_flag:
-            _http_request('http://%s:%d/secret/test' % (IP, CONTROLLER_PORT))
-        else:
-            logging.info('Skipped calling test endpoint, because static flag is supplied!')
+        _http_request('http://%s:%d/secret/test' % (IP, CONTROLLER_PORT))
 
         # Check controller's solution_check endpoint.
         solution_check_pattern = 'def solution_check\(\):'

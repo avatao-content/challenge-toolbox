@@ -1,20 +1,27 @@
-#Version
+# Version of the config.yml
 version: "v2.0.0"
-#Difficulty: 10 - 500
-difficulty: 10
-#Enable inputbox to submit flag: true | false
-enable_flag_input: false
-#Flag if flag is static.
-flag: "C0NGR4TULAT1ONS"
-#Name of the challenge
+
+# Name of the challenge
 name: 'Getting Started'
-# Skills related to the challenge: ['SQL injection','Web','Linux']
+
+# Challenge difficulty: 10 - 500
+difficulty: 10
+
+# Enable inputbox to submit flag: true | false
+enable_flag_input: false
+
+# If the solution is a fix string (static flag) you can add it here
+flag: "C0NGR4TULAT1ONS"
+
+# Skills related to the challenge: ["SQL injection","Web","Linux"]
 skills: ['Authentication', 'Web Security', 'Offensive', 'OWASP Top 10']
+
 # Recommended readings
 recommendations:
     https://blog.lastpass.com/2012/03/latest-review-of-security-issues-and.html/: 'New study - Passwords are still the weakest link'
     http://www.makeuseof.com/tag/7-password-mistakes-will-likely-get-hacked/: '7 Password Mistakes That Will Likely Get You Hacked'
-# Original creator of a challenge: ['MITRE Cyber Academy']
+
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
 owners: ['gergo.turcsanyi@avatao.com']
 
 # CRP Config

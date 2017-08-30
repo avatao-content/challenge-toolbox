@@ -1,3 +1,4 @@
+# Version of the config.yml
 version: v2.0.0
 
 # Name of the challenge
@@ -9,7 +10,7 @@ difficulty: 10
 # Enable inputbox to submit flag: true | false
 enable_flag_input: false
 
-# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# If the solution is a fix string (static flag) you can add it here
 # flag: "This_iS_the_Solution"
 
 # Skills related to the challenge: ["SQL injection","Web","Linux"]
