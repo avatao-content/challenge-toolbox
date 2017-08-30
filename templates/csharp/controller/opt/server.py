@@ -13,6 +13,7 @@ app = Flask(__name__)
 def test():   
     BUILD = ['xbuild', '/home/user/App/App.sln']
     TEST = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
+    try:
         copyfile('/home/user/solvable/Program.cs', '/home/user/App/App/Program.cs')
         output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode("utf-8")
     except subprocess.CalledProcessError as exc:
