@@ -116,7 +116,7 @@ def run_container(short_name: str, crp_config_item: dict, share_with: str=None) 
     try:
         logging.debug(' '.join(map(str, drun)))
         proc = subprocess.Popen(drun)
-        time.sleep(1)
+        time.sleep(2)
 
         return proc, name
 
