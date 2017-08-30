@@ -1,10 +1,5 @@
 #Version
-version: v1
-#Required DOCKER capabilities to add
-capabilities: []
-#Ports: #protocol: ssh | tcp | http #type: raw | embedded
-ports:
-     8888: {http: raw}
+version: "v2.0.0"
 #Difficulty: 10 - 500
 difficulty: 10
 #Enable inputbox to submit flag: true | false
@@ -20,4 +15,15 @@ recommendations:
     https://blog.lastpass.com/2012/03/latest-review-of-security-issues-and.html/: 'New study - Passwords are still the weakest link'
     http://www.makeuseof.com/tag/7-password-mistakes-will-likely-get-hacked/: '7 Password Mistakes That Will Likely Get You Hacked'
 # Original creator of a challenge: ['MITRE Cyber Academy']
-owner: ['gergo.turcsanyi@avatao.com']
+owners: ['gergo.turcsanyi@avatao.com']
+
+# CRP Config
+crp_config:
+    controller:
+        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
+        # For example ["SETGID","SETUID"]
+        # capabilities: [] # Not needed if empty
+        ports: ['5555/controller']
+    solvable:
+        # capabilities: [] # Not needed if empty
+        ports: ['8888/http']

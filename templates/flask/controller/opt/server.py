@@ -3,6 +3,7 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route('/' + os.environ['SECRET'], methods=['POST'])
 def solution_check():
     submitted_solution = request.json['solution']
