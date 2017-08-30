@@ -148,6 +148,12 @@ if __name__ == '__main__':
 
     proc_list = []
     first = None
+
+    if 'crp_config' not in read_config(repo_path):
+        logging.error("There is no crp_config in the config.yml,"
+                      " if this is a static challenge you don't need to run it.")
+        sys.exit(0)
+
     for short_name, crp_config_item in get_crp_config(repo_path, repo_name).items():
         proc, container = run_container(short_name, crp_config_item, share_with=first)
         proc_list.append(proc)
