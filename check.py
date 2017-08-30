@@ -296,7 +296,7 @@ def _check_description(description_file):
                       DESCRIPTION_RANGE['min'], DESCRIPTION_RANGE['max'])
 
     section_too_long_pattern = re.compile(r'^ {0,3}#{1,6} +.{151,}$', re.MULTILINE)
-    section_too_short_pattern = re.compile(r'^ {0,3}#{1,6} +.{0,6}$', re.MULTILINE)
+    section_too_short_pattern = re.compile(r'^ {0,3}#{1,6} +.{0,4}$', re.MULTILINE)
 
     section_long = re.findall(section_too_long_pattern, description)
     section_short = re.findall(section_too_short_pattern, description)
@@ -308,7 +308,7 @@ def _check_description(description_file):
         logging.error('Sections must be between 5 and 150 characters'
                      '\n\tDetails: %s' % section_long)
 
-    section_not_capitalized_pattern = re.compile(r'^ {0,3}#{1,6} [a-z0-9]+.*$', re.MULTILINE)
+    section_not_capitalized_pattern = re.compile(r'^ {0,3}#{1,6} +[^A-Z].+.*$', re.MULTILINE)
 
     section_not_capitalized = re.findall(section_not_capitalized_pattern, description)
 
@@ -323,22 +323,6 @@ def _check_description(description_file):
         logging.error('Section name font size is too large in description.md. '
                       'Please use H4 (####) or H5 (#####) section names.'
                       '\n\tDetails: %s' % maxh3)
-
-    # Check if newlines embrace section names
-    minh4_nonewline_pattern = re.compile(r' {0,3}#{1,6} +[a-zA-Z0-9].*')
-    minh4_nonewline = set(re.findall(minh4_nonewline_pattern, description))
-
-    # There is a new line before and after sections (except first line)
-    minh4_pattern_except_first = re.compile(r'\n\n {0,3}#{1,6} +[a-zA-Z0-9].*\n\n')
-    minh4_except_first = re.findall(minh4_pattern_except_first, '\n'+'\n'.join(description.split('\n')[1:]))
-
-    # There is a new line after the section if it is the first line
-    minh4_pattern_first_only = re.compile(r' {0,3}#{1,6} +[a-zA-Z0-9].*\n\n')
-    minh4_first_only = re.findall(minh4_pattern_first_only, '\n'.join(description.split('\n')[:3]))
-
-    invalid_sections = minh4_nonewline - set(''.join(minh4_except_first).split('\n')) - set(''.join(minh4_first_only).split('\n'))
-    if len(invalid_sections):
-        logging.error('No starting or ending newline for section(s) in description.md: %s' % invalid_sections)
 
 
 def _check_writeup(writeup_file):
