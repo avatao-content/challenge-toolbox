@@ -7,7 +7,7 @@ import socketserver
 import subprocess
 import sys
 
-SOLUTION = 'src/app.c'
+SOLUTION = '/solvable/src/app.c'
 OBJECT = 'solution.o'
 TEST_EXECUTABLE = 'test/apptest'
 
@@ -136,7 +136,7 @@ class SolutionCheckHandler(socketserver.BaseRequestHandler):
         self.request.sendall(pickled_message)
 
 if __name__ == '__main__':
-    os.chdir('/solvable')
+    os.chdir('/solvable/build')
 
     # Bind to the exposed HTTP port to allow the controller container to connect to
     SERVER_ADDRESS = ('0.0.0.0', 7777)

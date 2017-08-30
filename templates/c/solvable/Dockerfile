@@ -9,8 +9,8 @@ RUN  chown -R user: /solvable/src \
     && chmod 700 /solvable/test \
     && python3 /opt/setup.py /solvable/wd /solvable/wd/app.c \
     && chmod 444 /var/www/codiad/data/projects.php \
-    && cd /solvable \
-    && cmake CMakeLists.txt \
+    && mkdir /solvable/build && cd /solvable/build \
+    && cmake /solvable \
     && make
 
 # Usage of the setup script (/opt/setup.py):
