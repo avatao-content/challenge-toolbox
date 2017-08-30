@@ -1,15 +1,16 @@
+# Version of the config.yml
 version: v2.0.0
 
 # Name of the challenge
 name: "Oh My Secure Sums"
 
-# Difficulty: 10 - 500
+# Challenge difficulty: 10 - 500
 difficulty: 200
 
 # Enable inputbox to submit flag: true | false
 enable_flag_input: false
 
-# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# If the solution is a fix string (static flag) you can add it here
 # flag: "This_iS_the_Solution"
 
 # Skills related to the challenge: ["SQL injection","Web","Linux"]
@@ -19,15 +20,16 @@ skills: ["Secure C Programming"]
 recommendations:
     www.example.com: "Example webpage"
 
-# Creator of a challenge
-owner: ["your@mail.com"]
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
+owners: ["your@mail.com"]
 
 # CRP Config
 crp_config:
     controller:
+        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
+        # For example ["SETGID","SETUID"]
+        # capabilities: [] # Not needed if empty
         ports: ["5555/controller"]
     solvable:
-        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list). 
-        # For example ["SETGID","SETUID"]
-        capabilities: ["SETGID","SETUID"] # Not needed if empty
+        capabilities: ["SETGID", "SETUID", "AUDIT_WRITE"]
         ports: ["8888/http"]
