@@ -1,5 +1,5 @@
 # Version of the config.yml
-version: v2.0.0
+version: "v2.0.0"
 
 # Name of the challenge
 name: "Buy All The Things - Part 2" 
