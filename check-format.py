@@ -58,7 +58,7 @@ def check_config(config, is_static):
         logging.error('Invalid version. The supplied config version is not supported')
 
 
-        # Difficulty
+    # Difficulty
     try:
         assert int(config['difficulty']) in range(DIFFICULTY_RANGE['min'], DIFFICULTY_RANGE['max'] + 1)
     except Exception:

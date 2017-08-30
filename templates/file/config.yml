@@ -1,15 +1,16 @@
-version: v2.0.0
+# Version of the config.yml
+version: "v2.0.0"
 
-#Name of the challenge
+# Name of the challenge
 name: 'Censored'
 
-# Difficulty: 10 - 500
+# Challenge difficulty: 10 - 500
 difficulty: 20
 
 # Enable inputbox to submit flag: true | false
 enable_flag_input: true
 
-# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# If the solution is a fix string (static flag) you can add it here
 flag: 'SaH{Th3_b3st_part_1s_h4ving_to_type_in_all_th1s_text_403fccc83712f4084a3e5df3f576617c}'
 
 # Skills related to the challenge: ['SQL injection','Web','Linux']
@@ -18,5 +19,6 @@ skills: ['Steganography', 'File Format Internals']
 # Recommended readings
 recommendations:
     https://www.libreoffice.org/: 'Libreoffice'
+
 # The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
-owner: ['your@mail.com']
+owners: ['your@mail.com']
