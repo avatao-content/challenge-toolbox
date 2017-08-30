@@ -14,19 +14,27 @@ def test():
     BUILD = ['xbuild', '/home/user/App/App.sln']
     TEST = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
     try:
-        copyfile('/home/user/solvable/Program.cs', '/home/user/App/App/Program.cs')
-        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode("utf-8")
+        # Copying solution
+        copyfile('/opt/Solution.cs', '/home/user/App/App/Program.cs')
+        # Building project
+        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode('utf-8')
     except subprocess.CalledProcessError as exc:
-        output = exc.output.decode("utf-8").replace("/home/user/App/", "").split("->\n\n")[1].lstrip("\t").lstrip(":").lstrip()
+        # Parsing build errors
+        output = exc.output.decode('utf-8').replace('/home/user/App/', '').split('->\n\n')[1].lstrip('\t').lstrip(':').lstrip()
         abort(500, output)
     try:
+        # Running unit tests
         subprocess.call(TEST)
         with open('/nunit/bin/TestResult.xml', 'r') as f:
+            # For-each line in test results
+            error = ''
             for line in f.read().splitlines():
                 if '<test-case' in line:
-                    if line.split('"')[9] == "Failed":
-                        error = error + line.split('"')[3] + " FAILED\n"
-        if error == "":
+                    if line.split('"')[9] == 'Failed':
+                    # Appending 'error' if failed test case found
+                        error = error + line.split('"')[3] + ' FAILED\n'
+        # Solution is accepted if no errors found
+        if error == '':
             return make_response('OK', 200)
         else:
             abort(500, error)                 
@@ -39,22 +47,30 @@ def solution_check():
     BUILD = ['xbuild', '/home/user/App/App.sln']
     TEST = ['mono', 'nunit3-console.exe', '/home/user/App/Test/Test.csproj']
     try:
+        # Copying solution
         copyfile('/home/user/solvable/Program.cs', '/home/user/App/App/Program.cs')
-        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode("utf-8")
+        # Building project
+        output = subprocess.check_output(BUILD, stderr=subprocess.STDOUT).decode('utf-8')
     except subprocess.CalledProcessError as exc:
-        output = exc.output.decode("utf-8").replace("/home/user/App/", "").split("->\n\n")[1].lstrip("\t").lstrip(":").lstrip()
-        error = "<pre><code>" + cgi.escape(output) + "</code></pre>"
+        # Parsing build errors
+        output = exc.output.decode('utf-8').replace('/home/user/App/', '').split('->\n\n')[1].lstrip('\t').lstrip(':').lstrip()
+        # Returning them in 'pre' and 'code' blocks (to keep format)
+        error = '<pre><code>' + cgi.escape(output) + '</code></pre>'
         return jsonify(solved=False, message=error)
     try:
+        # Running unit tests
         subprocess.call(TEST)
-        error = ""
+        error = ''
         # Parsing output
         with open('/nunit/bin/TestResult.xml', 'r') as f:
+            # For-each line in test results
             for line in f.read().splitlines():
                 if '<test-case' in line:
-                    if line.split('"')[9] == "Failed":
-                        error = error + line.split('"')[3] + " FAILED\n"
-        if error == "":
+                    if line.split('"')[9] == 'Failed':
+                    # Appending 'error' if failed test case found
+                        error = error + line.split('"')[3] + ' FAILED\n'
+        # Solution is accepted if no errors found
+        if error == '':
             return jsonify(solved=True)
         return jsonify(solved=False, message=error)
                   
