@@ -124,6 +124,23 @@ def check_config(config, is_static):
                 if len(invalid_caps) > 0:
                     logging.error('Invalid capabilities: %s. Valid values: %s', invalid_caps, CAPABILITIES)
 
+            if 'mem_limit' in item:
+
+                if not isinstance(item['mem_limit'], str):
+                    logging.error('Invalid mem_limit value: %s, The mem_limit should be a string like: 100M')
+
+                if item['mem_limit'][-1] not in "M":
+                    logging.error('Invalid mem_limit value: %s, The mem_limit should be a string ending with M'
+                                  '(megabytes) no other unit is allowed')
+                try:
+                    mem_limit_number_part = int(item['mem_limit'][:-1])
+                    if mem_limit_number_part > 999:
+                        logging.error('Invalid mem_limit value: %s, The mem_limit can not be greater'
+                                      ' than 999M')
+                except Exception:
+                    logging.error('Invalid mem_limit value: %s, mem_limit must start with a number and end with '
+                                  'M (megabytes) no other unit is allowed')
+
             for port in item.get('ports', []):
                 try:
                     port, protocol = port.split('/', 1)
