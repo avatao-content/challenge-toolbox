@@ -1,7 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 import os
 
 app = Flask(__name__)
+
+
+@app.route('/%s/test' % os.environ['SECRET'], methods=['GET'])
+def test():
+    return make_response('OK', 200)
+
 
 @app.route('/' + os.environ['SECRET'], methods=['POST'])
 def solution_check():
