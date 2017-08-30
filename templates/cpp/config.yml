@@ -1,15 +1,16 @@
+# Version of the config.yml
 version: v2.0.0
 
 # Name of the challenge
 name: 'Geometric mean'
 
-# Difficulty: 10 - 500
+# Challenge difficulty: 10 - 500
 difficulty: 15
 
 # Enable inputbox to submit flag: true | false
 enable_flag_input: false
 
-# If the solution of is a static flag (i.e., fix character sequence) you can add it here
+# If the solution is a fix string (static flag) you can add it here
 # flag: "This_iS_the_Solution"
 
 # Skills related to the challenge: ["SQL injection","Web","Linux"]
@@ -21,8 +22,8 @@ recommendations:
     http://en.cppreference.com/w/cpp/language/template_argument_deduction: 'Template argument deduction'
     http://en.cppreference.com/w/cpp/language/adl: 'ADL'
 
-# Creator of a challenge
-owner: ["your@mail.com"]
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
+owners: ["your@mail.com"]
 
 # CRP Config
 crp_config:
