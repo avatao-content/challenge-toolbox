@@ -27,9 +27,9 @@ owners: ['gergo.turcsanyi@avatao.com']
 crp_config:
     controller:
         ports: ['5555/controller']
+        memlimit: '200M'
     solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
         # For example ["SETGID","SETUID"]
         # capabilities: [] # Not needed if empty
-        mem_limit: '200M' # Only set this if the default 100M is not enough (max 999M)
         ports: ['8888/http']
