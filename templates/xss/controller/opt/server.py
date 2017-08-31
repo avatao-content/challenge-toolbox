@@ -21,7 +21,7 @@ def solution_check():
 
     try:
         path = '/' + urlparse(request.json['solution']).path.lstrip('/')
-        if not path == '/':
+        if not path == '/null':
             URL = path + '?' + urlparse(request.json['solution']).query.rstrip('?')
         TEST_ARGS = ['/opt/phantomjs25', '/opt/check.js', URL]
         output = subprocess.check_output(TEST_ARGS, stderr=subprocess.STDOUT, universal_newlines=True, timeout=3)
