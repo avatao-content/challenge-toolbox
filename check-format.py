@@ -57,7 +57,6 @@ def check_config(config, is_static):
     elif config['version'] != 'v2.0.0':
         logging.error('Invalid version. The supplied config version is not supported')
 
-
     # Difficulty
     try:
         assert int(config['difficulty']) in range(DIFFICULTY_RANGE['min'], DIFFICULTY_RANGE['max'] + 1)
@@ -65,7 +64,7 @@ def check_config(config, is_static):
         logging.error('Invalid difficulty in config.yml. '
                       'Valid values: %d - %d' % (DIFFICULTY_RANGE['min'], DIFFICULTY_RANGE['max']))
 
-        # Name
+    # Name
     try:
         assert len(config['name']) in range(NAME_RANGE['min'], NAME_RANGE['max'] + 1)
     except Exception:
@@ -78,7 +77,7 @@ def check_config(config, is_static):
                       '\tValid skills are listed here: \n'
                       '\thttps://platform.avatao.com/api-explorer/#/api/core/skills/')
 
-    # Skills
+    # Recommendations
     if not isinstance(config['recommendations'], dict):
         logging.error('Invalid recommendations in config.yml. Recommendations should be added in the following '
                       'format:\n\n'
@@ -87,9 +86,8 @@ def check_config(config, is_static):
                       '\thttp://www.example2.com: \'Example2 webpage\''
                       '\thttp://example3.com: \'Example3 webpage\'')
 
-    # Recommendations
-    url_re = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)' \
-                        r'(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]' \
+    url_re = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)'
+                        r'(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]'
                         r'+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))')
 
     for item in config['recommendations'].items():
