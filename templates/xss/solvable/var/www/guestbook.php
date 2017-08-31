@@ -38,7 +38,7 @@
           <td><textarea name="message" class="form-control" placeholder="Enter message here" cols="50" rows="3" maxlength="500"></textarea></td>
           </tr>
           <tr>
-          <td style="text-align: center;"><input name="btnSign" type="submit" class="btn btn-lg btn-primary" value="Sign Guestbook"></td>
+          <td style="text-align: center;"><button name="btnSign" type="submit" class="btn btn-lg btn-primary">Sign Guestbook</button></td>
           </tr>
           </table>
           </form>       

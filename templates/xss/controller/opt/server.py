@@ -2,6 +2,7 @@ import os
 import subprocess
 from flask import Flask, abort, make_response, jsonify, request
 from urllib.parse import urlparse
+import requests
 
 app = Flask(__name__)
 
@@ -36,8 +37,9 @@ def solution_check():
     if 'XSS FOUND' in open('/opt/result.txt').read():
         return jsonify(solved=True, message='Successfully injected xss!')
 
-    return jsonify(solved=False, message='No injection took place. Make sure your payload doesn\'t contain external URLs!')
-    
+    return jsonify(solved=False,
+                   message='No injection took place. Make sure your payload doesn\'t contain external URLs!')
+
 
 @app.route('/%s/test' % os.environ['SECRET'], methods=['GET'])
 def test():
@@ -51,27 +53,27 @@ def test():
     Please adjust if necessary.
     """
 
+    # This is a generic XSS checker for stored and reflected vulnerabilities
+    # Please comment or remove unnecessary parts
+
     URL = '/guestbook.php'
 
     try:
         # IF REFLECTED:
         #    Change URL here
-        URL = URL # Solution URL
+        URL = URL  # Solution URL
         # IF STORED:
         #     Inject payload here
-        INJECT_ARGS=['curl', \
-                 '--data', \
-                 'name=test&message=%3Csvg%2Fonload%3D%22alert(1)%22&btnSign=Sign+Guestbook', \
-                 'http://localhost:8888/guestbook.php']
-        subprocess.check_output(INJECT_ARGS, stderr=subprocess.STDOUT, universal_newlines=True)
-	# Comment the lines above if XSS is reflected
+        PAYLOAD = {'name': 'test', 'message': '<svg/onload="alert(1)"'}
+        r = requests.post('http://localhost:8888/action.php', data=PAYLOAD)
+        # Comment the lines above if XSS is reflected
         TEST_ARGS = ['/opt/phantomjs25', '/opt/check.js', URL]
         output = subprocess.check_output(TEST_ARGS, stderr=subprocess.STDOUT, universal_newlines=True, timeout=3)
     except OSError as e:
-        abort(500, 'File is not accessible: %s' % ' '.join(test_static))
+        abort(500, 'File is not accessible: %s' % ' '.join(TEST_ARGS))
 
     except subprocess.CalledProcessError:
-        abort(500, 'Failed to invoke %s' % ' '.join(test_static))
+        abort(500, 'Failed to invoke %s' % ' '.join(TEST_ARGS))
 
     except Exception as e:
         abort(500, e)
@@ -81,6 +83,8 @@ def test():
 
     abort(500, 'No injection took place.')
 
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ['CONTROLLER_PORT']),
-            debug=(os.environ['DEBUG'].lower() == 'true'))
+            #            debug=(os.environ['DEBUG'].lower() == 'true'))
+            debug=True)

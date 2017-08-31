@@ -1,6 +1,6 @@
 <?php
 
-if( isset( $_POST[ 'btnSign' ] ) ) {
+if( isset( $_POST[ 'name' ] ) && isset( $_POST[ 'message' ] ) ) {
 
 	// Update database
         $db = new SQLite3('/db/database.sqlite3');

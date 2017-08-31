@@ -21,7 +21,7 @@ int comp(const void * elem1, const void * elem2){
 static void test_normal(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
     int expected[] = {1, 2, 3};
 
@@ -36,7 +36,7 @@ static void test_normal(void **state)
 static void test_negative(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
     int expected[] = {-2, -1, 3, 4};
 
@@ -52,7 +52,7 @@ static void test_negative(void **state)
 static void test_skip_overflowing_num(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
     int expected[] = {-2, -1, 3, 4};
 
@@ -67,7 +67,7 @@ static void test_skip_overflowing_num(void **state)
 static void test_skip_underflowing_num(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
     int expected[] = {-2, -1, 3, 4};
 
@@ -82,7 +82,7 @@ static void test_skip_underflowing_num(void **state)
 static void test_randomness(void **state)
 {
     int *res1,*res2,*res3;
-    int count;
+    unsigned count;
     int sum;
 
     res1 = get_randomized("1 2 3 4 5 6 7 8 9 10", &count, &sum);
@@ -104,7 +104,7 @@ static void test_randomness(void **state)
 static void test_normal_noisy(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
     int expected[] = {-43, 12, 56, 2147483547};
 
@@ -121,7 +121,7 @@ static void test_normal_noisy(void **state)
 static void test_empty(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
 
     res = get_randomized("", &count, &sum);
@@ -133,7 +133,7 @@ static void test_empty(void **state)
 static void test_overflow(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
 
     res = get_randomized("2147483647 5", &count, &sum);
@@ -145,7 +145,7 @@ static void test_overflow(void **state)
 static void test_underflow(void **state)
 {
     int *res;
-    int count;
+    unsigned count;
     int sum;
 
     res = get_randomized("-2147483647 -5", &count, &sum);
