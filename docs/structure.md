@@ -60,11 +60,11 @@ In this section we detail the directory structure of challenges. Under the [skel
             - **capabilities**: Place here the list of required linux/docker capabilities for the solvable.
             - **ports**: Same as the controller 
             - **mem_limit**: Same as the controller            
-        ```
-        available ports and protocols:
-            8888/http
-            2222/ssh
-        ```
+                ```
+                available ports and protocols:
+                    8888/http
+                    2222/ssh
+                ```
  
     - **skills**: Skill tags related to this challenge. Available skill tags are listed on our [API](https://platform.avatao.com/api-explorer/#/api/core/skills/). If you cannot find a proper skill, please [contact us](content@avatao.com).  
     - **recommendations**: Contains external links to resources related to a challenge. Each line of this parameter consists of two parts. The first part is the corresponding URL to the resource, while the second part is the name of the recommended resource.
