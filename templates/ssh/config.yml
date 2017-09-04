@@ -1,23 +1,35 @@
-#Version
-version: v1
-#Required DOCKER capabilities to add
-capabilities: []
-#Ports: #protocol: ssh | tcp | http #type: raw | embedded
-ports:
-    2222: {ssh: raw}
-#Difficulty: 10 - 500
+# Version of the config.yml
+version: "v2.0.0"
+
+# Name of the challenge
+name: 'Analyzing Logs - Part 1'
+
+# Challenge difficulty: 10 - 500
 difficulty: 25
+
 #Enable inputbox to submit flag: true | false
 enable_flag_input: true
-#Flag if flag is static.
+
+# If the solution is a fix string (static flag) you can add it here
 flag: "doctor@177.143.65.198"
-#Name of the challenge
-name: 'Analyzing Logs - Part 1'
-#Skills
+
+# Skills related to the challenge: ['SQL injection','Web','Linux']
 skills: ['Forensics', 'Linux']
-#Recommended readings
+
+# Recommended readings
 recommendations:
     www.docker.com: 'Docker website'
     www.ubuntu.com: 'Ubuntu webpage'
-#Creator of the challenge
-owner: ['your@mail.com']
+
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
+owners: ['your@mail.com']
+
+# CRP Config
+crp_config:
+    controller:
+        ports: ['5555/controller']
+    solvable:
+        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
+        # For example ["SETGID","SETUID"]
+        # capabilities: [] # Not needed if empty
+        ports: ['2222/ssh']

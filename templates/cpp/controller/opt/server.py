@@ -7,7 +7,7 @@ import socket
 
 
 CONNECT_TO = ('localhost', 7777)
-SOLVABLE_SOLUTION = '/solvable/src/app.c'
+SOLVABLE_SOLUTION = '/solvable/app/geomean.cpp'
 
 app = Flask(__name__)
 
@@ -67,7 +67,7 @@ def test():
 
     try:
         # Move working solution `solution.cpp` to solvable
-        copyfile('/usr/share/solution.c', SOLVABLE_SOLUTION)
+        copyfile('/usr/share/solution.cpp', SOLVABLE_SOLUTION)
     except Exception as e:
         abort(500, 'Could not copy solution file to solvable. Details: {}'.format(e))
 

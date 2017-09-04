@@ -1,32 +1,38 @@
-version: v1
+# Version of the config.yml
+version: "v2.0.0"
 
-#Name of the challenge
-name: A brand new avatao challenge
+# Name of the challenge
+name: "A brand new avatao challenge"
 
-#Difficulty: 10 - 500
+# Challenge difficulty: 10 - 500
 difficulty: 100
 
-# Flag if the flag is static
-flag: 'flag'
-
-#Enable inputbox to submit flag: true | false
+# Enable inputbox to submit flag: true | false
 enable_flag_input: false
 
-#Ports: #protocol: ssh | tcp | http #type: raw | embedded
-ports:
-     8888: {http: raw}
+# If the solution is a fix string (static flag) you can add it here
+flag: "flag"
 
-#Required DOCKER capabilities to add
-capabilities: []
-  
-#Skills related to the challenge: ['SQL injection','Web','Linux']
-skills: ['skill1','skill2','skill3']
+# Skills related to the challenge: ["SQL injection","Web","Linux"]
+skills: ["skill1", "skill2", "skill3"]
 
-#recommendations:
+# Recommended readings
 #    www.docker.com: 'Docker website'
 #    www.ubuntu.com: 'Ubuntu webpage'
 recommendations:
     <url>: '<name>'
 
-#Original creator of a challenge: ['MITRE Cyber Academy']
-owner: ['owner1']
+# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
+owners: ["your@mail.com"]
+
+# CRP Config
+crp_config:
+    controller:
+        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
+        # For example ["SETGID","SETUID"]
+        #capabilities: [] # Not needed if empty
+        ports: ['5555/controller']
+    solvable:
+        #capabilities: [] # Not needed if empty
+        ports: ['8888/http']
+

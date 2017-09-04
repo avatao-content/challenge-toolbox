@@ -1,7 +1,7 @@
 import os
 import subprocess
-from flask import Flask, abort, make_response
 import yaml
+from flask import Flask, abort, make_response, request, jsonify
 
 app = Flask(__name__)
 
@@ -62,6 +62,15 @@ def test():
     return make_response('OK', 200)
 
 
+@app.route('/' + os.environ['SECRET'], methods=['POST'])
+def solution_check():
+    submitted_solution = request.json['solution']
+
+    if submitted_solution != 'flag':
+        return jsonify(solved=False)
+
+    return jsonify(solved=True)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ['CONTROLLER_PORT']),
-            debug=(os.environ['DEBUG'].lower() == 'true'))
+    app.run(host='0.0.0.0', port=5555, debug=False)

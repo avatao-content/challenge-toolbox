@@ -1,141 +1,134 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # -*- mode: python; -*-
-
+from collections import defaultdict, OrderedDict
+from posixpath import join
 import atexit
 import logging
 import os
-import posixpath
 import subprocess
 import sys
 import time
-import yaml
+
+from common import get_sys_args, get_image_url, read_config
+from common import run_cmd, init_logger
+
+BIND_ADDR = '127.0.0.1'
+ULIMIT_NPROC = '2048:4096'
+ULIMIT_NOFILE = '8192:16384'
+MEMORY_LIMIT = '100M'
+SECRET = 'secret'
+
+CONNECTION_USAGE = defaultdict(lambda: 'nc ' + BIND_ADDR + ' %d')
+CONNECTION_USAGE.update({
+    'ssh': 'ssh -p %d user@' + BIND_ADDR + ' Password: ' + SECRET,
+    'http': 'http://' + BIND_ADDR + ':%d',
+})
 
 
-CONTROLLER_PORT = 5555
+def get_crp_config(repo_path: str, repo_name: str) -> dict:
+    crp_config = read_config(repo_path)['crp_config']
 
-CONNECTION_USAGE = {
-    'tcp': 'nc 127.0.0.1 %d',
-    'http': 'http://127.0.0.1:%d',
-    'ssh': 'ssh -p %d user@127.0.0.1 \n\n password: p\n'
-}
+    # The order is important because of namespace and volume sharing!
+    crp_config_ordered = OrderedDict()
 
-_docker_repo_name = os.getenv('CI_BUILD_REPO', '/avatao/').split('/')[-2]
-DOCKER_REPO = os.getenv('DOCKER_REPOSITORY', _docker_repo_name)
+    # The main solvable always comes first if it's defined
+    if 'solvable' in crp_config:
+        crp_config_ordered['solvable'] = crp_config.pop('solvable')
+
+    # Then the controller if it's defined
+    if 'controller' in crp_config:
+        crp_config_ordered['controller'] = crp_config.pop('controller')
+
+    # Then any other solvable
+    crp_config_ordered.update(crp_config)
+    del crp_config
+
+    # Set all ports on the first container in the format below...
+    # Also set absolute image URLs here
+    ports = {}
+    for short_name, config in crp_config_ordered.items():
+
+        if not isinstance(config, dict):
+            raise TypeError('crp_config items must be dicts!')
+
+        # Set the absolute image URL for this container
+        if 'image' not in config:
+            config['image'] = get_image_url(repo_name, short_name)
+        else:
+            config['image'] = get_image_url(config['image'])
+
+        # Convert ['port/L7_proto'] format to {'port/L4_proto': 'L7_proto'}
+        # * We do not differentiate udp at layer 7
+        for port in config.pop('ports', []):
+            parts = port.lower().split('/', 1)
+            proto_l7 = parts[1] if len(parts) == 2 else 'tcp'
+            port_proto = join(parts[0], 'udp' if proto_l7 == 'udp' else 'tcp')
+            ports[port_proto] = proto_l7
+
+    first = next(iter(crp_config_ordered.values()))
+    first['ports'] = ports
+
+    return crp_config_ordered
 
 
-def _set_logger():
+def run_container(short_name: str, crp_config_item: dict, share_with: str=None) \
+        -> (subprocess.Popen, str):
 
-    root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
+    name = '-'.join((crp_config_item['image'].split('/')[-1].split(':')[0], short_name))
+    drun = [
+        'docker', 'run',
+        '-e', 'CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
+        '-e', 'USER_ID=00000000-0000-0000-0000-000000000000',
+        '-e', 'SHORT_NAME=%s' % short_name,
+        '-e', 'SECRET=%s' % SECRET,
+        '--name=%s' % name,
+        '--label=com.avatao.typed_crp_id=docker',
+        '--memory=%s' % crp_config_item.get('mem_limit', MEMORY_LIMIT),
+        '--ulimit=nproc=%s' % ULIMIT_NPROC,
+        '--ulimit=nofile=%s' % ULIMIT_NOFILE,
+        '--read-only',
+    ]
 
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(levelname)s] %(message)s')
-    ch.setFormatter(formatter)
-    root.addHandler(ch)
+    if 'ports' in crp_config_item:
+        for port, proto_l7 in crp_config_item['ports'].items():
+            port_num = int(port.split('/')[0])
+            drun += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]
+            logging.info('Connection: %s' % CONNECTION_USAGE[proto_l7] % port_num)
 
+    if 'capabilities' in crp_config_item:
+        drun += ['--cap-drop=ALL']
+        drun += ['--cap-add=%s' % cap for cap in crp_config_item['capabilities']]
 
-def _read_config(key):
+    if share_with is None:
+        # Disable DNS as there will be no internet access in production
+        drun += ['--dns=0.0.0.0', '--hostname=avatao']
+    else:
+        # Share the first container's network namespace and volumes
+        drun += [
+            '--network=container:%s' % share_with,
+            '--volumes-from=%s' % share_with,
+        ]
 
-    config = None
+    # Absolute URL of the image
+    drun += [get_image_url(repo_name, short_name)]
 
     try:
-        with open('./config.yml', 'r') as f:
-            config = yaml.load(f)
-    except FileNotFoundError as e:
-        logging.error('Missing config.py')
-        logging.error(e)
+        logging.debug(' '.join(map(str, drun)))
+        proc = subprocess.Popen(drun)
+        time.sleep(2)
 
-    return config[key] if config else None
+        return proc, name
 
-
-def cleanup(repo_name):
-
-    solvable = '%s-%s' % (repo_name, 'solvable')
-    logging.info('Killing solvable...')
-    subprocess.Popen(['docker', 'rm', '-fv', solvable]).wait()
-
-    controller = '%s-%s' % (repo_name, 'controller')
-    logging.info('Killing controller...')
-    subprocess.Popen(['docker', 'rm', '-fv', controller]).wait()
-    logging.info('Bye')
+    except subprocess.CalledProcessError:
+        logging.error('Failed to run %s. Please make sure that is was built.' % drun[-1])
+        sys.exit(1)
 
 
-def _run_container(repo_name):
-
-    solvable_name = '%s-%s' % (repo_name, 'solvable')
-
-    solvable, controller = (None, None)
-    for image_type in ('solvable', 'controller'):
-
-        name = '%s-%s' % (repo_name, image_type)
-        image = posixpath.join(DOCKER_REPO, name)
-
-        dimg = ['docker', 'images', image]
-        output = str(subprocess.check_output(dimg, universal_newlines=True, stderr=subprocess.STDOUT))
-
-        if output.find(image) == -1:
-            logging.warning('Could not find docker image %s. Skipping...' % image)
-            continue
-
-        logging.info('Starting %s...' % image_type)
-
-        drun = ['docker',
-                'run',
-                '--rm',
-                '--name', name,
-                '-e', 'SECRET=secret',
-                '--read-only',
-                '--cap-drop', 'ALL']
-
-
-        if image_type == 'solvable':
-            # Network settings for the solvable
-            drun += ['--dns', '0.0.0.0', '--hostname', 'avatao']
-
-            # Add capabilities
-            capabilities = _read_config('capabilities')
-            capabilities = ['--cap-add=%s' % capability for capability in capabilities]
-            drun += capabilities
-
-            # Add solvable ports
-            config_ports = _read_config('ports')
-            ports = []
-            for item in config_ports.items():
-                ports += ['-p', '127.0.0.1:%s:%s' % (item[0], item[0])]
-                conn_info = CONNECTION_USAGE[next(iter(item[1].keys()))] % item[0]
-                logging.info('Solvable connection: %s' % conn_info)
-            drun += ports
-
-            # Expose the internal controller port via the solvable
-            # because of the shared network namespace
-            drun += ['-p', '127.0.0.1:%s:%s' % (CONTROLLER_PORT, CONTROLLER_PORT)]
-
-        else:
-            # Share the solvable's network namespace and volumes with the controller
-            drun += ['--net', 'container:%s' % solvable_name,
-                     '--volumes-from', solvable_name]
-            logging.info('Controller connection: http://127.0.0.1:%d' % CONTROLLER_PORT)
-
-        drun += [image]
-        logging.debug('Command: %s' % ' '.join(drun))
-
-        try:
-            proc = subprocess.Popen(drun)
-
-        except subprocess.CalledProcessError:
-            logging.error('Failed to run %s. Please make sure that is was built.' % image_type)
-            continue
-
-        if image_type == 'solvable':
-            solvable = proc
-        else:
-            controller = proc
-
-        time.sleep(4)
-
-    return solvable, controller
+def remove_containers():
+    subprocess.Popen(
+        ['sh', '-c', 'docker rm -fv $(docker ps -aq --filter=label=com.avatao.typed_crp_id=docker)'],
+        stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
 
 
 if __name__ == '__main__':
@@ -147,24 +140,30 @@ if __name__ == '__main__':
         - PyYAML (http://pyyaml.org/) or simply `pip3 install PyYAML`
           (on Ubuntu you additionally need `apt-get install python3-yaml`)
     """
+    init_logger()
+    repo_path, repo_name = get_sys_args()
 
-    _set_logger()
+    os.chdir(repo_path)
+    atexit.register(remove_containers)
 
-    if len(sys.argv) != 2:
-        logging.info('Usage: ./start.py <repository_path>')
-        sys.exit(1)
+    proc_list = []
+    first = None
 
-    os.chdir(sys.argv[1])
-    repo_name = os.path.basename(os.path.realpath(sys.argv[1]))
+    if 'crp_config' not in read_config(repo_path):
+        logging.error("There is no crp_config in the config.yml,"
+                      " if this is a static challenge you don't need to run it.")
+        sys.exit(0)
 
-    solvable, controller = _run_container(repo_name)
-    atexit.register(cleanup, repo_name)
+    for short_name, crp_config_item in get_crp_config(repo_path, repo_name).items():
+        proc, container = run_container(short_name, crp_config_item, share_with=first)
+        proc_list.append(proc)
+        if first is None:
+            first = container
 
-    logging.info('All up!')
-    logging.info('When you gracefully (Ctrl+C) terminate this script, both containers will be destroyed.')
-    logging.info('Container log: \n')
+    logging.info('When you gracefully terminate this script [Ctrl+C] the containers will be destroyed.')
 
-    if solvable:
-      solvable.wait()
-    if controller:
-      controller.wait()
+    for proc in proc_list:
+        try:
+            proc.wait()
+        except KeyboardInterrupt:
+            break

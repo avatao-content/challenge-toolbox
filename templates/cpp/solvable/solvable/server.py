@@ -7,18 +7,20 @@ import socketserver
 import subprocess
 import sys
 
-SOLUTION = '/solvable/src/app.c'
+SOLUTION = 'app/geomean.cpp'
 OBJECT = 'solution.o'
-TEST_EXECUTABLE = 'test/apptest'
+EXECUTABLE = 'solution'
+TEST_EXECUTABLE = 'tests/apptest'
 
 LINKED_DYNAMICALLY = False
 
-COMPILE_TEST_EXECUTABLE = ['sudo', 'make']
-COMPILE_OBJECT = ['sudo', 'gcc', '-std=c11', '-c', SOLUTION, '-o', OBJECT]
+COMPILE_TEST_EXECUTABLE = ['sudo', 'make', '-C', 'tests']
+COMPILE_OBJECT = ['sudo', 'g++', '-std=c++14', '-c', SOLUTION, '-o', OBJECT]
+COMPILE_EXECUTABLE = ['sudo', 'g++', '-std=c++14', 'main.cpp', '-o', EXECUTABLE]
 VALGRIND = ['sudo', '-u', 'user', 'valgrind', '--leak-check=full', '--show-leak-kinds=all', TEST_EXECUTABLE]
-OBJDUMP = ['sudo', '-u', 'user', 'objdump', '--syms', TEST_EXECUTABLE]
-OBJDUMP_DYNAMIC = ['sudo', '-u', 'user', 'objdump', '--dynamic-syms', TEST_EXECUTABLE]
-DISABLED_FUNCTIONS = ['fork', 'popen', 'pipe', 'exec', 'system', 'readdir', 'opendir', 'clock', 'time']
+OBJDUMP = ['sudo', '-u', 'user', 'objdump', '--syms', EXECUTABLE]
+OBJDUMP_DYNAMIC = ['sudo', '-u', 'user', 'objdump', '--dynamic-syms', EXECUTABLE]
+DISABLED_FUNCTIONS = ['fork', 'popen', 'pipe', 'exec', 'system', 'readdir', 'opendir', 'clock', 'time', 'rand']
 
 
 SolutionCheckTypes = Enum('SolutionCheckTypes',
@@ -78,7 +80,7 @@ def check_imports():
     return True
 
 
-def check_cmocka():
+def check_gtest():
     """
     Check the output of the unit tests linked to the submitted solution
 
@@ -98,13 +100,14 @@ class SolutionCheckHandler(socketserver.BaseRequestHandler):
         """
         try:
             run_command(COMPILE_OBJECT)
+            run_command(COMPILE_EXECUTABLE)
             run_command(COMPILE_TEST_EXECUTABLE)
 
             imports = check_imports()
             valgrind = check_valgrind()
-            cmocka, output = check_cmocka()
+            gtest, output = check_gtest()
 
-            success_exit_code = 0 if all((imports, valgrind, cmocka)) else 1
+            success_exit_code = 0 if all((imports, valgrind, gtest)) else 1
             self._send_data(success_exit_code, output)
         except SolutionCheckError as sce:
             self._send_data(sce.cause, sce.message)
@@ -117,14 +120,15 @@ class SolutionCheckHandler(socketserver.BaseRequestHandler):
         """
         with suppress(FileNotFoundError):
             os.remove(OBJECT)
+            os.remove(EXECUTABLE)
             os.remove(TEST_EXECUTABLE)
-        run_command(['chmod', '-R', 'o+x', '/solvable/test'])
+        run_command(['chmod', '-R', 'o+x', '/solvable/tests'])
 
     def finish(self):
         """
         Reset the environment after serving an incoming request
         """
-        run_command(['chmod', '-R', 'o-x', '/solvable/test'])
+        run_command(['chmod', '-R', 'o-x', '/solvable/tests'])
 
     def _send_data(self, exit_code, data):
         message = {
@@ -136,7 +140,7 @@ class SolutionCheckHandler(socketserver.BaseRequestHandler):
         self.request.sendall(pickled_message)
 
 if __name__ == '__main__':
-    os.chdir('/solvable/build')
+    os.chdir('/solvable')
 
     # Bind to the exposed HTTP port to allow the controller container to connect to
     SERVER_ADDRESS = ('0.0.0.0', 7777)

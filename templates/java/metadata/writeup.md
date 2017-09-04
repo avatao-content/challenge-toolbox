@@ -52,3 +52,8 @@ public class Program {
 }
 
 ```
+
+### Lessons learned
+ *  Integer overflow occurs when the result of an arithmetic operation exceeds the maximum size of the integer type
+ *  `if (x + y > MAX_INT)` is not working here, because you are checking for an overflow **after** it occurred
+ *  The proper way to check it is `if (x > Integer.MAX_VALUE - y)`
