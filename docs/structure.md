@@ -52,18 +52,22 @@ In this section we detail the directory structure of challenges. Under the [skel
     - **enable_flag_input**: Solution submission can happen in two ways. The first option is that the user submits a text (flag) in an input field on the platform. In this case please set it *true* to tell the platform to create an input field for the solution submission. The second option is when the solution checking works by checking the state changes (e.g., files created, configuration modified) inside the container the user is working on. For example, when the user solves a programming challenge and the controller executes multiple unit tests to accept their code. In that case please set it *false* as their source code is the solution.
     - **crp_config \[docker\]**: The configuration on how to run the containers can be set here
         - **controller**:        
-            - **capabilities**: Place here the list of required linux/docker capabilities for the controller. Have only the minimal capability (CAP drop all by default), and add only those you really need. [Read more.](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities)
-            - **ports**: A list containing strings in a style of 'port_number/protocol' eg.: '5555/controller'
+            - **capabilities**: Place here the list of required linux/docker capabilities for the controller. Have only the minimal capability (CAP drop all by default), and add only those you really need.
+             [Read more.](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) e.g.: \["SETGID","SETUID"\]
+            - **ports**: A list containing strings in a style of 'port_number/protocol' for the controller it should be \['5555/controller'\] by default
             - **mem_limit**: The memory limit for the controller. This is a string that ends with a capital M for megabyte e.g.: '100M'
            (Maximum '999M')
         - **solvable**:
             - **capabilities**: Place here the list of required linux/docker capabilities for the solvable.
-            - **ports**: Same as the controller 
+            - **ports**: A list containing strings in a style of 'port_number/protocol'
             - **mem_limit**: Same as the controller            
                 ```
                 available ports and protocols:
+                    PORT/tcp
+                    PORT/udp
                     8888/http
                     2222/ssh
+                    PORT/ws            
                 ```
  
     - **skills**: Skill tags related to this challenge. Available skill tags are listed on our [API](https://platform.avatao.com/api-explorer/#/api/core/skills/). If you cannot find a proper skill, please [contact us](content@avatao.com).  
