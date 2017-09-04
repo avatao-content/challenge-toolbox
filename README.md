@@ -13,6 +13,10 @@ The challenge toolbox is a small component which allows you to create, run and c
 
 ## Create your own challenge
 
+### Video tutorial \[new\]
+
+We recorded a [tutorial video series](https://www.youtube.com/watch?v=wlaEQlXo8N8&list=PLALqwhWHQH2aryTOTrzfU49hvmB0aNxRk) to help you create your own avatao security challenges.
+
 ### Prerequisites
 
 * Docker
@@ -20,7 +24,7 @@ The challenge toolbox is a small component which allows you to create, run and c
 * Run `pip3 install -r requirements.txt`
 
 
-### Quick Reference
+### Quick reference
 
 * Choose a challenge template from the `templates` directory
 * Build challenge: `./build.py <challenge_folder>` (e.g., `python ./build.py templates/xss`)
