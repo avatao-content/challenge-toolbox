@@ -10,6 +10,8 @@ import yaml
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
 DEFAULT_TIMEOUT = 60 * 15  # timeout for commands
 
+_error_counter = 0
+
 
 def find_repo_path(base: str) -> str:
     """
@@ -124,3 +126,21 @@ def init_logger() -> None:
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def counted_error(*args, **kwargs) -> None:
+    """
+    Wrapper for logging.error that will increase the error_counter
+    """
+    global _error_counter
+    _error_counter += 1
+    logging.error(*args, **kwargs)
+
+
+def at_exit() -> None:
+    """
+    Call at the end of execution to handle errors
+    """
+    logging.info('Finished with %d error(s).' % _error_counter)
+    if _error_counter > 0:
+        sys.exit(1)

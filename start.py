@@ -150,8 +150,8 @@ if __name__ == '__main__':
     first = None
 
     if 'crp_config' not in read_config(repo_path):
-        logging.error("There is no crp_config in the config.yml,"
-                      " if this is a static challenge you don't need to run it.")
+        logging.error('There is no crp_config in the config.yml, if this is '
+                      'a static challenge you don\'t need to run it.')
         sys.exit(0)
 
     for short_name, crp_config_item in get_crp_config(repo_path, repo_name).items():
