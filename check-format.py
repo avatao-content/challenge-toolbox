@@ -353,7 +353,7 @@ def _check_writeup(writeup_file):
     config = read_config('config.yml')
     config_challenge_name = config['name']
 
-    h1_pattern = '^%s\n={1,}\n\n' % (config_challenge_name,)
+    h1_pattern = '^%s\n={1,}\n\n' % config_challenge_name
     try:
         writeup_challenge_name = re.search('^.*\n', writeup).group()[:-1]
         assert writeup_challenge_name == config_challenge_name

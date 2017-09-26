@@ -10,8 +10,8 @@ import subprocess
 import sys
 import time
 
-from common import get_sys_args, get_image_url, read_config
-from common import run_cmd, init_logger
+from common import get_sys_args, get_image_url
+from common import read_config, init_logger
 
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
@@ -150,8 +150,8 @@ if __name__ == '__main__':
     first = None
 
     if 'crp_config' not in read_config(repo_path):
-        logging.error('There is no crp_config in the config.yml, if this is '
-                      'a static challenge you don\'t need to run it.')
+        logging.warning('There is no crp_config in the config.yml, if this is '
+                        'a static challenge you don\'t need to run it.')
         sys.exit(0)
 
     for short_name, crp_config_item in get_crp_config(repo_path, repo_name).items():

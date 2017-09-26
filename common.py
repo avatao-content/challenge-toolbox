@@ -142,5 +142,4 @@ def at_exit() -> None:
     Call at the end of execution to handle errors
     """
     logging.info('Finished with %d error(s).' % _error_counter)
-    if _error_counter > 0:
-        sys.exit(1)
+    sys.exit(1 if _error_counter > 0 else 0)
