@@ -10,6 +10,8 @@ import yaml
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
 DEFAULT_TIMEOUT = 60 * 15  # timeout for commands
 
+_error_counter = 0
+
 
 def find_repo_path(base: str) -> str:
     """
@@ -48,30 +50,35 @@ def get_sys_args() -> tuple:
     return repo_path, repo_name
 
 
-def get_image_url(repo_name: str, short_name: str=None) -> str:
+def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> str:
     """
     Return an absolute docker image URL
 
     :param repo_name: name of the docker repository (challenge name)
     :param short_name: [optional] e.g. solvable or controller
+    :param absolute: [optional] return the absolute URL using the default registry?
     :return: absolute URL
     """
     if short_name is not None:
         repo_name = ':'.join((repo_name, short_name))
 
-    return posixpath.join(DOCKER_REGISTRY, repo_name)
+    if absolute:
+        return posixpath.join(DOCKER_REGISTRY, repo_name)
+    else:
+        return repo_name
 
 
-def yield_dockerfiles(repo_path: str, repo_name: str):
+def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool=True):
     """
     Yield (Dockerfile, image_url) pairs from the given repo_path
 
     :param repo_path: the repo path (parent of config.yml)  
     :param repo_name: name of the docker repository (challenge name)
+    :param absolute: [optional] yield absolute image URLs using the default registry?
     """
     for dockerfile in glob.glob(os.path.join(repo_path, '*', 'Dockerfile')):
         short_name = os.path.basename(os.path.dirname(dockerfile))
-        image = get_image_url(repo_name, short_name)
+        image = get_image_url(repo_name, short_name, absolute)
         yield dockerfile, image
 
 
@@ -119,3 +126,20 @@ def init_logger() -> None:
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def counted_error(*args, **kwargs) -> None:
+    """
+    Wrapper for logging.error that will increase the error_counter
+    """
+    global _error_counter
+    _error_counter += 1
+    logging.error(*args, **kwargs)
+
+
+def at_exit() -> None:
+    """
+    Call at the end of execution to handle errors
+    """
+    logging.info('Finished with %d error(s).' % _error_counter)
+    sys.exit(1 if _error_counter > 0 else 0)

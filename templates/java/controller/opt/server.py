@@ -3,6 +3,7 @@ from subprocess import STDOUT, check_output
 from shutil import copyfile
 import subprocess
 import os
+import cgi
 
 os.chdir('/home/user/test')
 
@@ -55,9 +56,11 @@ def solution_check():
     try:
         copyfile('/home/user/solvable/Program.java', '/home/user/test/Program.java')
         output = subprocess.check_output(build1, stderr=subprocess.STDOUT).decode("utf-8")
-        output = output + subprocess.check_output(build2, stderr=subprocess.STDOUT).decode("utf-8")
+        output = subprocess.check_output(build2, stderr=subprocess.STDOUT).decode("utf-8")
     except subprocess.CalledProcessError as exc:
-        return jsonify(solved=False, message="Error(s) in your code! Build failed.")
+        output = exc.output.decode("utf-8")
+        error = "<pre><code>" + cgi.escape(output.replace("/home/user/test/", "")) + "</code></pre>"
+        return jsonify(solved=False, message=error)
     except Exception as e:
         return jsonify(solved=False, message=str(e))
     try:

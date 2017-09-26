@@ -1,0 +1,9 @@
+# Do not modify this file or your builds will be automatically rejected!
+---
+pipeline:
+  build:
+    image: eu.gcr.io/avatao-challengestore/challenge-builder
+    volumes:
+      - /etc/docker:/etc/docker:ro
+      - /root/.docker:/root/.docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
