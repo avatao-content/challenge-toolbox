@@ -76,12 +76,14 @@ def run_container(short_name: str, crp_config_item: dict, share_with: str=None) 
         -> (subprocess.Popen, str):
 
     name = '-'.join((crp_config_item['image'].split('/')[-1].split(':')[0], short_name))
+    # TODO: set AVATAO_{PORTS,PROXY_PORTS,PROXY_SERVICES} env vars here as well!
     drun = [
         'docker', 'run',
-        '-e', 'CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
-        '-e', 'USER_ID=00000000-0000-0000-0000-000000000000',
-        '-e', 'SHORT_NAME=%s' % short_name,
-        '-e', 'SECRET=%s' % SECRET,
+        '-e', 'AVATAO_CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
+        '-e', 'AVATAO_USER_ID=00000000-0000-0000-0000-000000000000',
+        '-e', 'AVATAO_SHORT_NAME=%s' % short_name,
+        '-e', 'AVATAO_SECRET=%s' % SECRET,
+        '-e', 'SECRET=%s' % SECRET,  # for compatibility!
         '--name=%s' % name,
         '--label=com.avatao.typed_crp_id=docker',
         '--memory=%s' % crp_config_item.get('mem_limit', MEMORY_LIMIT),
