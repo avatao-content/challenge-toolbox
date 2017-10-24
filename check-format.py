@@ -49,7 +49,7 @@ CONTROLLER_PORT = 5555
 TOOLBOX_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def check_config(config, is_static):
+def check_config(config: dict, is_static):
     invalid_keys = set(config.keys()) - set(CONFIG_KEYS)
     if len(invalid_keys) > 0:
         counted_error('Invalid key(s) found in config.yml: %s' % invalid_keys)
@@ -63,14 +63,14 @@ def check_config(config, is_static):
 
     # Difficulty
     try:
-        assert int(config['difficulty']) in range(DIFFICULTY_RANGE['min'], DIFFICULTY_RANGE['max'] + 1)
+        assert DIFFICULTY_RANGE['min'] <= int(config['difficulty']) <= DIFFICULTY_RANGE['max']
     except Exception:
         counted_error('Invalid difficulty in config.yml. '
                       'Valid values: %d - %d' % (DIFFICULTY_RANGE['min'], DIFFICULTY_RANGE['max']))
 
     # Name
     try:
-        assert len(config['name']) in range(NAME_RANGE['min'], NAME_RANGE['max'] + 1)
+        assert NAME_RANGE['min'] <= len(config['name']) <= NAME_RANGE['max']
     except Exception:
         counted_error('Invalid challenge name in config.yml. '
                       'Name should be a string between %d - %d characters.' % (NAME_RANGE['min'], NAME_RANGE['max']))
@@ -277,12 +277,13 @@ def check_metadata():
 
         with open('metadata/summary.md', 'r', encoding='utf-8') as summary_file:
             s = summary_file.read()
-            if len(s) not in range(SUMMARY_RANGE['min'], SUMMARY_RANGE['max'] + 1):
+            if not SUMMARY_RANGE['min'] <= len(s) <= SUMMARY_RANGE['max']:
                 counted_error('Summary should be minimally %d, maximally %d characters long.',
                               SUMMARY_RANGE['min'], SUMMARY_RANGE['max'])
 
-        with open('metadata/writeup.md', 'r', encoding='utf-8') as writeup_file:
-            _check_writeup(writeup_file)
+        if os.path.exists('metadata/writeup.md'):
+            with open('metadata/writeup.md', 'r', encoding='utf-8') as writeup_file:
+                _check_writeup(writeup_file)
 
     except FileNotFoundError as e:
         counted_error('Missing %s from metadata.' % e.filename)
@@ -298,7 +299,7 @@ def sanity_check():
     # Check if the challenge is static
     is_static = len(list(yield_dockerfiles(repo_path, repo_name))) == 0
     if is_static and len(glob('downloads/*')) == 0:
-        counted_error('Static challenges should have a "downloads" directory for sharing challenge files with users.')
+        logging.warning('Static challenges should have a "downloads" directory for sharing challenge files with users.')
 
     check_yml('config.yml', is_static)
 
@@ -312,8 +313,8 @@ def sanity_check():
 
 def _check_description(description_file):
     description = description_file.read()
-    if len(description) not in range(DESCRIPTION_RANGE['min'], DESCRIPTION_RANGE['max'] + 1):
-        counted_error('Description should be minimum %d, maximum %d characters long.',
+    if not DESCRIPTION_RANGE['min'] <= len(description) <= DESCRIPTION_RANGE['max']:
+        counted_error('Description should be minimum %d and maximum %d characters long.',
                       DESCRIPTION_RANGE['min'], DESCRIPTION_RANGE['max'])
 
     section_too_long_pattern = re.compile(r'^ {0,3}#{1,6} +.{151,}$', re.MULTILINE)
