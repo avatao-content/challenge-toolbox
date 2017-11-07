@@ -252,6 +252,10 @@ def check_misc():
     if not len(glob('CHANGELOG')):
         logging.warning('No CHANGELOG file is found. If you modified an existing licensed challenge,\n\t'
                         'please, summarize what your changes were.')
+        
+    if not len(glob('.drone.yml')):
+        logging.warning('No .drone.yml file is found. This file is necessary for our automated tests,\n\t'
+                        'please, get it from any template before uploading your challenge.')
 
 
 def check_yml(filename, is_static: bool=False):
