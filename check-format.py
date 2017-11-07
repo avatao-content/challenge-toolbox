@@ -360,11 +360,11 @@ def _check_writeup(writeup_file):
         assert writeup_challenge_name == config_challenge_name
         re.search(h1_pattern, writeup).group()
     except AssertionError:
-        counted_error('The challenge name in writeup.md (%s) and config.yml (%s) have to be the same.' %
-                      (writeup_challenge_name, config_challenge_name))
+        logging.warning('The challenge name in writeup.md (%s) and config.yml (%s) have to be the same.' %
+                        (writeup_challenge_name, config_challenge_name))
     except Exception:
-        counted_error('The challenge names in writeup.md have to be in H1 style. For example:\n\n'
-                      'Challenge name\n==============\n')
+        logging.warning('The challenge names in writeup.md have to be in H1 style. For example:\n\n'
+                        'Challenge name\n==============\n')
 
     # Check if costs and H2 sections are correct in writeup.md
     cost_pattern = '\nCost: [0-9]{1,2}%\n'
