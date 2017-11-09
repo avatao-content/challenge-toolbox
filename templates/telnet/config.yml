@@ -2,7 +2,7 @@
 version: "v2.0.0"
 
 # Name of the challenge
-name: 'Black box crypto'
+name: 'Black box crypto - Template'
 
 #Difficulty: 10 - 500
 difficulty: 80
