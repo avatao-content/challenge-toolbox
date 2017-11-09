@@ -2,7 +2,7 @@
 version: "v2.0.0"
 
 # Name of the challenge
-name: "Oh My Secure Sums"
+name: "Oh My Secure Sums - Template"
 
 # Challenge difficulty: 10 - 500
 difficulty: 200
