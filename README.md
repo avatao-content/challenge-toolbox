@@ -30,7 +30,7 @@ We recorded a [tutorial video series](https://www.youtube.com/watch?v=wlaEQlXo8N
 * Build challenge: `./build.py <challenge_folder>` (e.g., `python3 ./build.py templates/xss`)
 * Start challenge: `./start.py <challenge_folder>` (e.g., `python3 ./start.py templates/xss`)
 * Check challenge format: `./check-format.py <challenge_folder>` (e.g., `python3 ./check-format.py templates/xss`)
-* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `python3 ./check-solution`)
+* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `python3 ./check-solution.py flag`)
 * Create tests to check the correct solution
 * Cleanup: `./docker-cleanup.sh`
 
