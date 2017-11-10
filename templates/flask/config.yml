@@ -8,7 +8,7 @@ name: 'Getting Started - Template'
 difficulty: 10
 
 # Enable inputbox to submit flag: true | false
-enable_flag_input: false
+enable_flag_input: true
 
 # If the solution is a fix string (static flag) you can add it here
 flag: "C0NGR4TULAT1ONS"
