@@ -398,6 +398,11 @@ def _check_writeup(writeup_file):
                       'format (take care of the starting and ending newlines):\n%s'
                       % (missing_costs, cost_pattern))
 
+    reference_style_links_pattern = r'(\[.*?\]\[.*?\])'
+    if re.search(reference_style_links_pattern, writeup) is not None:
+        logging.warning('The writeup contains reference style links like [this one][0], which might render incorrectly.\n\t'
+                        'Please use inline style ones like [this](http://example.net/)')
+
 
 def _http_request(url):
     # Check controller's test endpoint.
