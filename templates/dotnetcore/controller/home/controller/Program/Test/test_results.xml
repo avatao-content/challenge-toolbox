@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="11/14/2017 16:23:32">
+  <assembly name="Test.dll" environment="64-bit .NET Standard [collection-per-class, parallel (4 threads)]" test-framework="xUnit.net 2.3.1.3858" run-date="2017-11-14" run-time="16:23:32" total="1" passed="1" failed="0" skipped="0" time="0.231" errors="0">
+    <errors />
+    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for UnitTests.Test" time="0.019">
+      <test name="UnitTests.Test.CorrectHello" type="UnitTests.Test" method="CorrectHello" time="0.019265" result="Pass" />
+    </collection>
+  </assembly>
+</assemblies>

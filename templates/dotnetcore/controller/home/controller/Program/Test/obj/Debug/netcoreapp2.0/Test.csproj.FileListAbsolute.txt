@@ -1,0 +1,14 @@
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/Test.deps.json
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/Test.runtimeconfig.json
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/Test.runtimeconfig.dev.json
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/Test.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/Test.pdb
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/obj/Debug/netcoreapp2.0/Test.csproj.CoreCompileInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/obj/Debug/netcoreapp2.0/Test.AssemblyInfoInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/obj/Debug/netcoreapp2.0/Test.AssemblyInfo.cs
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/obj/Debug/netcoreapp2.0/Test.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/obj/Debug/netcoreapp2.0/Test.pdb
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/App.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/Test/bin/Debug/netcoreapp2.0/App.pdb
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/Test/obj/Debug/netcoreapp2.0/Test.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/Test/obj/Debug/netcoreapp2.0/Test.pdb
