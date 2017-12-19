@@ -13,7 +13,7 @@ from common import run_cmd, init_logger
 def build_image(repo_path, repo_name):
     for dockerfile, image in yield_dockerfiles(repo_path, repo_name):
         try:
-            run_cmd(['docker', 'build', '-t', image, '-f', dockerfile, repo_path])
+            run_cmd(['docker', 'build', '--pull', '-t', image, '-f', dockerfile, repo_path])
         except subprocess.CalledProcessError:
             logging.error('Failed to build %s!' % dockerfile)
             sys.exit(1)

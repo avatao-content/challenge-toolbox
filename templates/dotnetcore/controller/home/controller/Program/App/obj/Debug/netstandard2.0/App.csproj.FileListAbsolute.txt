@@ -1,0 +1,13 @@
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/bin/Debug/netstandard2.0/App.deps.json
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/bin/Debug/netstandard2.0/App.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/bin/Debug/netstandard2.0/App.pdb
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/obj/Debug/netstandard2.0/App.csproj.CoreCompileInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/obj/Debug/netstandard2.0/App.AssemblyInfoInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/obj/Debug/netstandard2.0/App.AssemblyInfo.cs
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/obj/Debug/netstandard2.0/App.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/user/App/obj/Debug/netstandard2.0/App.pdb
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/App/obj/Debug/netstandard2.0/App.csproj.CoreCompileInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/App/obj/Debug/netstandard2.0/App.AssemblyInfoInputs.cache
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/App/obj/Debug/netstandard2.0/App.AssemblyInfo.cs
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/App/obj/Debug/netstandard2.0/App.dll
+/Users/balazsrostas/Development/Avatao/ChallengeDevelopment/csharp/controller/home/controller/Program/App/obj/Debug/netstandard2.0/App.pdb
