@@ -184,7 +184,7 @@ def check_config(config: dict, is_static):
 
 
 def check_dockerfile(filename):
-    repo_pattern = 'FROM (docker\.io\/)?avatao\/'
+    repo_pattern = 'FROM ((docker\.io\/)?avatao|eu\.gcr\.io\/avatao-challengestore)\/'
 
     try:
         with open(filename, 'r') as f:
