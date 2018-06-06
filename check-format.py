@@ -182,6 +182,12 @@ def check_config(config: dict, is_static):
         except KeyError:
             counted_error('Missing flag. Static challenges must have a static flag set.')
 
+    if 'flag' in config and config['flag'][0:6] == 'regex:':
+        try:
+            re.compile(config['flag'][6:])
+        except Exception:
+            counted_error('Failed to compile regex flag.')
+
 
 def check_dockerfile(filename):
     repo_pattern = 'FROM ((docker\.io\/)?avatao|eu\.gcr\.io\/avatao-challengestore)\/'
