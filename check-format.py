@@ -238,7 +238,7 @@ def check_controller():
         solution_check = re.findall(solution_check_pattern, server)
 
         if not (solution_check or static_flag):
-            counted_error('Function "solution_check()" is missing from controller/opt/server.py. '
+            logging.warning('Function "solution_check()" is missing from controller/opt/server.py. '
                           '\n\tPlease implement it and check user solutions dynamically (e.g., random flag '
                           'checking)\n\tor insert a static flag into config.yml.')
 
