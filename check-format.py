@@ -25,6 +25,12 @@ CAPABILITIES = {
     'LINUX_IMMUTABLE', 'SYS_BOOT', 'BLOCK_SUSPEND', 'WAKE_ALARM',
 }
 
+# Allowed kernel parameters to set via the --sysctl docker run option:
+# This may be extended manually on a case-by-case basis.
+KERNEL_PARAMETERS = {
+    "net.ipv4.ip_forward",
+}
+
 PORT_RANGE = {'min': 1, 'max': 65535}
 
 CONTROLLER_PROTOCOL = 'controller'
@@ -129,7 +135,14 @@ def check_config(config: dict, is_static):
             if 'capabilities' in item:
                 invalid_caps = set(item['capabilities']) - CAPABILITIES
                 if len(invalid_caps) > 0:
-                    counted_error('Invalid capabilities: %s. Valid values: %s', invalid_caps, CAPABILITIES)
+                    counted_error('Forbidden capabilities: %s\n\tAllowed capabilities: %s',
+                                  invalid_caps, CAPABILITIES)
+
+            if 'kernel_params' in item:
+                invalid_parameters = set(item['kernel_params']) - KERNEL_PARAMETERS
+                if len(invalid_parameters) > 0:
+                    counted_error('Forbidden kernel parameters: %s\n\tAllowed parameters: %s',
+                                  invalid_parameters, KERNEL_PARAMETERS)
 
             if 'mem_limit' in item:
 

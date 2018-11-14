@@ -102,6 +102,9 @@ def run_container(short_name: str, crp_config_item: dict, share_with: str=None) 
         drun += ['--cap-drop=ALL']
         drun += ['--cap-add=%s' % cap for cap in crp_config_item['capabilities']]
 
+    if 'kernel_params' in crp_config_item:
+        drun += ['--sysctl=%s=%s' % (key, value) for key, value in crp_config_item['kernel_params'].items()]
+
     if share_with is None:
         # Disable DNS as there will be no internet access in production
         drun += ['--dns=0.0.0.0', '--hostname=avatao']
