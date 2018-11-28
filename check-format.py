@@ -333,6 +333,11 @@ def sanity_check():
     check_metadata()
     check_misc()
 
+def filter_source(ignore,pattern,text):
+    match = [m.span() for m in re.finditer(pattern,text)]
+    for i in ignore:
+        match = filter(lambda m: m[0] < i[0] or m[1] > i[1],match)
+    return list(match)
 
 def _check_description(description_file):
     description = description_file.read()
@@ -352,10 +357,13 @@ def _check_description(description_file):
     if section_long:
         counted_error('Sections must be between 5 and 150 characters.\n'
                       '\tDetails: %s' % section_long)
+    
+    tick = zip(*[re.finditer("```",description)]*2)
+    ignore = [((p[0].span()[1],p[1].span()[0])) for p in tick]
 
     section_not_capitalized_pattern = re.compile(r'^ {0,3}#{1,6} +[^A-Z].+.*$', re.MULTILINE)
 
-    section_not_capitalized = re.findall(section_not_capitalized_pattern, description)
+    section_not_capitalized = filter_source(ignore,section_not_capitalized_pattern, description)
 
     if section_not_capitalized:
         counted_error('Sections must start with a capitalized letter.\n'
@@ -363,7 +371,7 @@ def _check_description(description_file):
 
     # Description can contain only contain H4- or H5-style sections.
     maxh3_pattern = re.compile(r'^ {0,3}#{1,3} +.*$', re.MULTILINE)
-    maxh3 = re.findall(maxh3_pattern, description)
+    maxh3 = filter_source(ignore,maxh3_pattern, description)
     if maxh3:
         counted_error('A section name font size is too large in description.md. '
                       'Please, use H4 (####) or H5 (#####) section names.\n'
