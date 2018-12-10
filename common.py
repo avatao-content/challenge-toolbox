@@ -8,7 +8,7 @@ import sys
 import yaml
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
-DEFAULT_TIMEOUT = 60 * 15  # timeout for commands
+DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
 
 _error_counter = 0
 
