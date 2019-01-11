@@ -100,12 +100,17 @@ def check_config(config: dict, is_static):
                       '\thttp://www.example2.com: \'Example2 webpage\''
                       '\thttp://example3.com: \'Example3 webpage\'')
 
-    url_re = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)'
-                        r'(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]'
-                        r'+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))')
+    # https://mathiasbynens.be/demo/url-regex - https://gist.github.com/dperini/729294
+    url_strip_chr = r'!"#$%&\'()*+,-./@:;<=>[\\]^_`{|}~'
+    url_re = re.compile(r'^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})'
+                        r'(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})'
+                        r'(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}'
+                        r'(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|'
+                        r'(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*'
+                        r'(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$')
 
     for item in config['recommendations'].items():
-        if url_re.fullmatch(item[0]) is None:
+        if url_re.fullmatch(item[0].strip(url_strip_chr)) is None:
             counted_error('Invalid recommended URL (%s) found in config.yml' % item[0])
 
         if not isinstance(item[1], str):
