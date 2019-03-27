@@ -80,7 +80,7 @@ To start your challenge, simply type:
 
 ![start](img/start.png)
 
-When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](templates/xss/controller/opt/solution.js) for more details.
+When a controller-solvable pair is started, you can address them internally as `localhost`, thus no IP address is required. This is useful, for example, when you want to access the solvable with a solution checking script from the controller container. See the [example](templates/xss/controller/opt/check.js) for more details.
 
 ![browser](img/browser.png)
 
