@@ -1,3 +1,0 @@
-We've been refactoring and porting a lot of old and dusty C code to C++ lately. As you have applied for an internship at us, we'd like to test your abilities to write modern and type-safe C++ code. As you can see, the old function to calculate the geometric mean of a dataset is very ugly and error-prone. You'll have to write a function with the name `geometric_mean` which can take an arbitrary number of integer and floating-point types, and return their geometric mean.
-
-Your code will be compiled with gcc using `-std=c++14`, so you're free (and encouraged) to use features implemented in C++11 and C++14. You don't have to implement a root finding algorithm, using the 1/nth power as the nth root is accepted by the tests.

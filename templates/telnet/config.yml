@@ -1,34 +1,18 @@
-# Version of the config.yml
-version: "v2.0.0"
-
-# Name of the challenge
-name: 'Black box crypto - Template'
-
-#Difficulty: 10 - 500
-difficulty: 80
+version: "v3"
 
 #Enable inputbox to submit flag: true | false
 enable_flag_input: true
 
-# If the solution is a fix string (static flag) you can add it here
-flag: 'SaH{wh4t_4n_EXCLUSIVE_ch4llenge_they_sur3_SW1TCHED_th1ngs_up_a_bit_ahaha_get_1t?}'
+# If the solution is a fix string (static flag) you can add it here.
+flag: "SaH{wh4t_4n_EXCLUSIVE_ch4llenge_they_sur3_SW1TCHED_th1ngs_up_a_bit_ahaha_get_1t?}"
 
-# Skills related to the challenge: ['SQL injection','Web','Linux']
-skills: ['Cryptography']
+crp_type: "docker"
 
-# Recommended readings
-recommendations:
-    https://en.wikipedia.org/wiki/Black_box: 'Black box (Wikipedia)'
-
-# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
-owners: ['your@mail.com']
-
-# CRP Config
 crp_config:
     controller:
-        ports: ['5555/controller']
+        ports: ["5555/controller"]
     solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
-        # For example ["SETGID","SETUID"]
+        # For example ["SETGID", "SETUID"]
         # capabilities: [] # Not needed if empty
-        ports: ['8888/tcp']
+        ports: ["8888/tcp"]

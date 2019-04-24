@@ -1,1 +1,0 @@
-Update dusty, old C code to modern C++!

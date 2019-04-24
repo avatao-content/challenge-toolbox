@@ -1,0 +1,29 @@
+version: "v3"
+
+#Enable inputbox to submit flag: true | false
+enable_flag_input: false
+
+# If the solution is a fix string (static flag) you can add it here.
+#flag: "TurtlesAllTheWayDown"
+
+crp_type: "gce"
+
+crp_config:
+    # GCE base image family
+    source_image_family: "debian-9"
+    # User for packer and solution checking
+    ssh_username: "debian"
+    ports:
+      # SSH with GCP OS login is always active for solution checking
+      # but it does not have to be exposed to the user.
+      - "22/ssh"
+      # Plain old HTTP challenge port...
+      - "80/http"
+    # 1 or an even number of CPU cores.
+    cpu_cores: 1
+    # Between 0.9 * cpu_cores and 6.5 * cpu_cores MegaBytes in 0.25 increments.
+    mem_limit_gb: 1.75
+    # Between 10 and 100 GigaBtes.
+    storage_limit_gb: 10
+    # Enable nested KVM virtualization.
+    nested: true

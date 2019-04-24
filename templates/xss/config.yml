@@ -1,35 +1,19 @@
-# Version of the config.yml
-version: "v2.0.0"
+version: "v3"
 
-# Name of the challenge
-name: 'Alert Me N'
-
-# Challenge difficulty: 10 - 500
-difficulty: 100
-
-#Enable inputbox to submit flag: true | false
+# Enable inputbox to submit flag: true | false
 enable_flag_input: false
 
-# If the solution is a fix string (static flag) you can add it here
-# flag: 'ThisIsDaFlag'
+# If the solution is a fix string (static flag) you can add it here.
+# flag: "ThisIsDaFlag"
 
-# Skills related to the challenge: ['SQL injection','Web','Linux']
-skills: ['Web Security','XSS']
+crp_type: "docker"
 
-# Recommended readings
-recommendations:
-    https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet/: 'OWASP Cheat Sheet for XSS'
-
-# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
-owners: ['gergo.turcsanyi@avatao.com']
-
-# CRP Config
 crp_config:
     controller:
-        ports: ['5555/controller']
-        mem_limit: '200M'
+        ports: ["5555/controller"]
+        mem_limit_mb: 200
     solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
-        # For example ["SETGID","SETUID"]
+        # For example ["SETGID", "SETUID"]
         # capabilities: [] # Not needed if empty
-        ports: ['8888/http']
+        ports: ["8888/http"]
