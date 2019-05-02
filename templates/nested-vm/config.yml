@@ -11,7 +11,7 @@ crp_type: "gce"
 crp_config:
     # GCE base image family
     source_image_family: "debian-9"
-    # User for packer and solution checking
+    # SSH user for packer setup (depends on the cloud distro)
     ssh_username: "debian"
     ports:
       # SSH with GCP OS login is always active for solution checking

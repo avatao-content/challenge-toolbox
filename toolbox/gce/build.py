@@ -2,16 +2,18 @@ import logging
 import json
 import os
 import subprocess
+from datetime import datetime
 
 from toolbox.config import parse_bool
 from toolbox.docker.utils import yield_dockerfiles
 
 
 GOOGLE_PROJECT_ID = os.environ.get('GOOGLE_PROJECT_ID', 'avatao-crp-gce-dev-b16f85a6')
-
+GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 COMPUTE_ZONE = os.environ.get('CLOUDSDK_COMPUTE_ZONE', 'europe-west1-d')
 
-GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+AVATAO_USER = "user"
+CONTROLLER_USER = "controller"
 
 
 def packer_builders(repo_name: str, config: dict) -> list:
@@ -19,11 +21,12 @@ def packer_builders(repo_name: str, config: dict) -> list:
         'type': 'googlecompute',
         'project_id': GOOGLE_PROJECT_ID,
         'zone': COMPUTE_ZONE,
+        'image_name': '{}-{}'.format(repo_name, datetime.now().strftime("%Y%d%m-%H%M%S")),
         'image_family': repo_name,
         'source_image_family': config['crp_config']['source_image_family'],
         # Use 1 VCPU 1.7 GB RAM for building. User instances can be any size.
         'machine_type': 'n1-standard-1',
-        'min_cpu_platform': 'Intel Haswell',
+        'min_cpu_platform': 'Intel Skylake',
         'disk_size': config['crp_config']['storage_limit_gb'],
         'ssh_username': config['crp_config'].get('ssh_username', 'packer'),
         'communicator': 'ssh',
@@ -48,9 +51,13 @@ def packer_provisioners(repo_path: str) -> list:
         {
             'type': 'shell',
             'inline': [
+                'sudo useradd -m {}'.format(AVATAO_USER),
+                'sudo useradd -m -G google-sudoers {}'.format(CONTROLLER_USER),
                 'sudo chown -R root:root /var/tmp/rootfs',
                 'sudo mv /var/tmp/rootfs/* /',
                 'sudo rmdir /var/tmp/rootfs',
+                'sudo chown -R {0}: /home/{0}'.format(AVATAO_USER),
+                'sudo chown -R {0}: /home/{0}'.format(CONTROLLER_USER),
             ],
         },
         {
