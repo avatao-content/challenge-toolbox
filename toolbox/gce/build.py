@@ -15,6 +15,13 @@ COMPUTE_ZONE = os.environ.get('CLOUDSDK_COMPUTE_ZONE', 'europe-west1-d')
 AVATAO_USER = "user"
 CONTROLLER_USER = "controller"
 
+SSHD_CONFIG = """Port 22
+AuthenticationMethods password publickey
+PasswordAuthentication yes
+UsePAM yes
+UseDNS no
+"""
+
 
 def packer_builders(repo_name: str, config: dict) -> list:
     compute_builder = {
@@ -44,6 +51,14 @@ def packer_builders(repo_name: str, config: dict) -> list:
 def packer_provisioners(repo_path: str) -> list:
     provisioners = [
         {
+            'type': 'shell',
+            'inline': [
+                'echo "{}" | sudo tee /etc/ssh/sshd_config >/dev/null'.format(SSHD_CONFIG.replace('\n', '\\n')),
+                'sudo useradd -m {}'.format(AVATAO_USER),
+                'sudo useradd -m -G google-sudoers {}'.format(CONTROLLER_USER),
+            ],
+        },
+        {
             'type': 'file',
             'source': os.path.join(repo_path, 'rootfs'),
             'destination': '/var/tmp/rootfs',
@@ -51,13 +66,10 @@ def packer_provisioners(repo_path: str) -> list:
         {
             'type': 'shell',
             'inline': [
-                'sudo useradd -m {}'.format(AVATAO_USER),
-                'sudo useradd -m -G google-sudoers {}'.format(CONTROLLER_USER),
-                'sudo chown -R root:root /var/tmp/rootfs',
-                'sudo mv /var/tmp/rootfs/* /',
-                'sudo rmdir /var/tmp/rootfs',
+                'sudo cp -av --no-preserve=ownership /var/tmp/rootfs/* /',
                 'sudo chown -R {0}: /home/{0}'.format(AVATAO_USER),
                 'sudo chown -R {0}: /home/{0}'.format(CONTROLLER_USER),
+                'sudo rm -rf /var/tmp/rootfs',
             ],
         },
         {
