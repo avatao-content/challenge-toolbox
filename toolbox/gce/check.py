@@ -11,7 +11,7 @@ from toolbox.utils import counted_error
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
 
-CRP_CONFIG_KEYS = {'source_image_project_id', 'source_image_family', 'ports', 'cpu_cores', 'mem_limit_gb', 'storage_limit_gb', 'nested'}
+CRP_CONFIG_KEYS = {'source_image_project_id', 'source_image_family', 'ssh_username', 'ports', 'cpu_cores', 'mem_limit_gb', 'storage_limit_gb', 'nested'}
 
 
 def check_config(config: dict):
@@ -60,6 +60,20 @@ def check_config(config: dict):
     validate_flag(config)
 
 
+# TODO: Allow JavaScript and Go...
+def check_controller():
+    if not len(glob('controller/main.py')):
+        counted_error('Missing controller/main.py')
+
+    else:
+        controller_script = open('controller/main.py', 'r').read()
+        if 'def main(request' not in controller_script:
+            counted_error('Missing main(request: flask.Request) from controller/main.py')
+
+        if not len(glob('controller/requirements.txt')):
+            logging.warning('Missing controller/requirements.txt')
+
+
 def check_misc(repo_name: str):
     if re.match(r"^[a-z][a-z0-9-]{0,62}[a-z0-9]$", repo_name) is None:
         counted_error("Invalid repo name. Valid pattern: ^[a-z][a-z0-9-]{0,62}[a-z0-9]$")
@@ -91,3 +105,5 @@ def run(repo_path: str, repo_name: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc(repo_name)
+    if not config.get('flag'):
+        check_controller()

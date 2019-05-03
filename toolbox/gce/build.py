@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime
 
 from toolbox.config import parse_bool
-from toolbox.docker.utils import yield_dockerfiles
+from toolbox.utils import run_cmd
 
 
 GOOGLE_PROJECT_ID = os.environ.get('GOOGLE_PROJECT_ID', 'avatao-crp-gce-dev-b16f85a6')
@@ -80,7 +80,20 @@ def packer_provisioners(repo_path: str) -> list:
     return provisioners
 
 
+# TODO: Allow JavaScript and Go.
+def deploy_controller(repo_path: str, repo_name: str) -> list:
+    controller_path = os.path.join(repo_path, 'controller')
+    if os.path.isdir(controller_path):
+        run_cmd(
+            ['gcloud', 'functions', 'deploy', repo_name, '--entry-point=main', '--runtime=python37', '--trigger-http'],
+            cwd=controller_path,
+        )
+
+
 def run(repo_path: str, repo_name: str, config: dict):
+    # Do the controller first so if it fails we do not waste resources on the build.
+    deploy_controller(repo_path, repo_name)
+
     packer = json.dumps({
         'builders': packer_builders(repo_name, config),
         'provisioners': packer_provisioners(repo_path),
