@@ -61,8 +61,12 @@ def check_config(config: dict):
 
 
 # TODO: Allow JavaScript and Go...
-def check_controller():
-    if not len(glob('controller/main.py')):
+def check_controller(is_static: bool):
+    if is_static:
+        if len(glob('controller/*')):
+            counted_error('Controllers are incompatible with static flags.')
+
+    elif not len(glob('controller/main.py')):
         counted_error('Missing controller/main.py')
 
     else:
@@ -105,5 +109,4 @@ def run(repo_path: str, repo_name: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc(repo_name)
-    if not config.get('flag'):
-        check_controller()
+    check_controller(not config.get('flag'))
