@@ -1,7 +1,5 @@
-import logging
 import os
 import re
-import sys
 
 import yaml
 
@@ -10,7 +8,7 @@ try:
 except ImportError:
     from pkg_resources import parse_version
 
-from toolbox.utils import counted_error
+from .utils import counted_error, fatal_error
 
 
 CONTROLLER_PROTOCOL = 'controller'
@@ -38,8 +36,7 @@ def read_config(path: str) -> dict:
         return config
 
     except Exception as e:
-        logging.exception(e)
-        sys.exit(1)
+        fatal_error('%s(%s)', type(e).__name__, e)
 
 
 def validate_ports(ports: list):

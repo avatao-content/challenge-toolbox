@@ -1,0 +1,19 @@
+[google-cloud-sdk]
+name = Google Cloud SDK
+includepkgs = google-cloud-* kubectl
+baseurl = https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-$basearch
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google-cloud-package-key
+	file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google-cloud-yum-key
+gpgcheck = 1
+repo_gpgcheck = 1
+enabled = 1
+
+[google-cloud-sdk-unstable]
+name = Google Cloud SDK - Unstable
+includepkgs = google-cloud-* kubectl
+baseurl = https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-$basearch-unstable
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google-cloud-package-key
+	file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google-cloud-yum-key
+gpgcheck = 1
+repo_gpgcheck = 1
+enabled = 0

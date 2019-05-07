@@ -5,8 +5,8 @@ import re
 import subprocess
 from glob import glob
 
-from toolbox.config import validate_flag
 from toolbox.utils import counted_error
+from toolbox.utils.config import validate_flag
 
 
 CONFIG_KEYS = {'version', 'flag', 'enable_flag_input'}

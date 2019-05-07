@@ -1,9 +1,8 @@
 import os
-import posixpath
 from glob import glob
+from typing import Iterator
 
-
-DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
+from toolbox.docker.config import *
 
 
 def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> str:
@@ -19,12 +18,12 @@ def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> 
         repo_name = ':'.join((repo_name, short_name))
 
     if absolute:
-        return posixpath.join(DOCKER_REGISTRY, repo_name)
+        return '/'.join((DOCKER_REGISTRY, repo_name))
     else:
         return repo_name
 
 
-def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool=True):
+def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool=True) -> Iterator[(str, str)]:
     """
     Yield (Dockerfile, image_url) pairs from the given repo_path
 

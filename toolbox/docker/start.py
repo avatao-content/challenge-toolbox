@@ -4,9 +4,9 @@ import atexit
 import logging
 import os
 import subprocess
-import sys
 import time
 
+from toolbox.utils import fatal_error
 from toolbox.docker.utils import get_image_url
 
 
@@ -121,8 +121,7 @@ def run_container(repo_name: str, short_name: str, crp_config_item: dict, share_
         return proc, name
 
     except subprocess.CalledProcessError:
-        logging.error('Failed to run %s. Please make sure that is was built.' % drun[-1])
-        sys.exit(1)
+        fatal_error('Failed to run %s. Please make sure that is was built.' % drun[-1])
 
 
 def remove_containers():
@@ -133,8 +132,7 @@ def remove_containers():
 
 def run(repo_path: str, repo_name: str, config: dict):
     if 'crp_config' not in config:
-        logging.warning('There is no crp_config in config.yml')
-        sys.exit(1)
+        fatal_error('There is no crp_config in config.yml')
 
     os.chdir(repo_path)
     atexit.register(remove_containers)

@@ -5,13 +5,9 @@ import re
 import subprocess
 from glob import glob as glob
 
-from toolbox.config import validate_bool, validate_flag, validate_ports
 from toolbox.utils import counted_error
-
-
-CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
-
-CRP_CONFIG_KEYS = {'source_image_project_id', 'source_image_family', 'ssh_username', 'ports', 'cpu_cores', 'mem_limit_gb', 'storage_limit_gb', 'nested'}
+from toolbox.utils.config import validate_bool, validate_flag, validate_ports
+from toolbox.gce.config import *
 
 
 def check_config(config: dict):
@@ -109,4 +105,4 @@ def run(repo_path: str, repo_name: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc(repo_name)
-    check_controller(not config.get('flag'))
+    check_controller(is_static=bool(config.get('flag')))

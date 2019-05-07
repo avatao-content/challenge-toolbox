@@ -4,14 +4,15 @@ import subprocess
 import sys
 import time
 
-from toolbox.utils import run_cmd
+from toolbox.utils import fatal_error, run_cmd
 from toolbox.docker.utils import yield_dockerfiles
-
-
-PULL_BASEIMAGES = os.environ.get('TOOLBOX_PULL_BASEIMAGES', '0').lower() in ('true', '1')
+from toolbox.docker.config import *
 
 
 def run(repo_path: str, repo_name: str, config: dict):
+    if get_repo_branch(repo_path) not in ACTIVE_BRANCHES:
+        abort("Inactive branch. Active branches: %s", ACTIVE_BRANCHES)
+
     for dockerfile, image in yield_dockerfiles(repo_path, repo_name):
         try:
             build_cmd = ['docker', 'build', '-t', image, '-f', dockerfile, repo_path]
@@ -22,5 +23,4 @@ def run(repo_path: str, repo_name: str, config: dict):
             time.sleep(1)
 
         except subprocess.CalledProcessError:
-            logging.error('Failed to build %s!' % dockerfile)
-            sys.exit(1)
+            fatal_error('Failed to build %s!', dockerfile)

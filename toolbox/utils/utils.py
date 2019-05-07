@@ -28,17 +28,27 @@ def find_repo_path(base: str) -> str:
     sys.exit(1)
 
 
-def get_sys_args() -> (str, str, str):
+def get_repo_branch(repo_path: str) -> str:
+    """
+    Get the checked out branch of the repository
+
+    :return string: branch
+    """
+    if os.getenv('DRONE', '0').lower() in ('true', '1'):
+        return os.environ['DRONE_BRANCH']
+
+    return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD'], cwd=repo_path)
+
+
+def get_sys_args() -> (str, str):
     """
     Get parsed command line arguments
 
-    Command, absolute repository path, docker repository name (optional)
-    :return tuple: command, repo_path, repo_name
+    Absolute repository path, repository name (optional)
+    :return tuple: repo_path, repo_name
     """
-    command = os.path.splitext(os.path.basename(sys.argv[0]))[0]
-
     if os.getenv('DRONE', '0').lower() in ('true', '1'):
-        return command, os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME']
+        return os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME']
 
     if not 2 <= len(sys.argv) <= 3:
         logging.info('Usage: %s <git_repo_path> [docker_repo_name]', sys.argv[0])
@@ -47,7 +57,7 @@ def get_sys_args() -> (str, str, str):
     repo_path = find_repo_path(os.path.realpath(sys.argv[1]))
     repo_name = sys.argv[2] if len(sys.argv) >= 3 else os.path.basename(repo_path)
 
-    return command, repo_path, repo_name
+    return repo_path, repo_name
 
 
 def run_cmd(args: list, timeout: int=DEFAULT_TIMEOUT, **kwargs) -> int:
@@ -92,3 +102,19 @@ def counted_error_at_exit() -> None:
     """
     logging.info('Finished with %d error(s).', _error_counter)
     sys.exit(1 if _error_counter > 0 else 0)
+
+
+def fatal_error(*args, **kwargs) -> None:
+    """
+    Fatal error. Abort execution.
+    """
+    counted_error(*args, **kwargs)
+    counted_error_at_exit()
+
+
+def abort(*args, **kwargs) -> None:
+    """
+    Fatal error. Abort execution.
+    """
+    logging.info(*args, **kwargs)
+    counted_error_at_exit()

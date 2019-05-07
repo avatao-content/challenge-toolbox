@@ -2,4 +2,4 @@
 from toolbox.utils import command
 
 if __name__ == '__main__':
-    command.run('check', 'build')
+    command.run('check', 'build', 'deploy')

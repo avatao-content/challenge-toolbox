@@ -11,7 +11,7 @@ def check(request: flask.Request):
 
     with paramiko.SSHClient() as ssh_client:
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(data["host"], username=data.get("username", "controller"), password=data["password"])
+        ssh_client.connect(data["host"], username="controller", password=data["password"])
 
         stdin, stdout, stderr = ssh_client.exec_command("uname -a")
 
@@ -23,8 +23,9 @@ def check(request: flask.Request):
 
 
 def main(request: flask.Request):
+    # TODO: Validate the source of the request!
     try:
         return check(request)
 
     except Exception as e:
-        return flask.jsonify({"solved": False, "message": str(e)})
+        return flask.jsonify({"solved": False, "message": "{}({})".format(type(e).__name__, e)})

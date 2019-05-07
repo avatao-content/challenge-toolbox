@@ -4,30 +4,16 @@ import os
 import subprocess
 from datetime import datetime
 
-from toolbox.config import parse_bool
-from toolbox.utils import run_cmd
-
-
-GOOGLE_PROJECT_ID = os.environ.get('GOOGLE_PROJECT_ID', 'avatao-crp-gce-dev-b16f85a6')
-GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-COMPUTE_ZONE = os.environ.get('CLOUDSDK_COMPUTE_ZONE', 'europe-west1-d')
-
-AVATAO_USER = "user"
-CONTROLLER_USER = "controller"
-
-SSHD_CONFIG = """Port 22
-AuthenticationMethods password publickey
-PasswordAuthentication yes
-UsePAM yes
-UseDNS no
-"""
+from toolbox.utils import abort, get_repo_branch, run_cmd
+from toolbox.utils.config import parse_bool
+from toolbox.gce.config import *
 
 
 def packer_builders(repo_name: str, config: dict) -> list:
     compute_builder = {
         'type': 'googlecompute',
         'project_id': GOOGLE_PROJECT_ID,
-        'zone': COMPUTE_ZONE,
+        'zone': PACKER_COMPUTE_ZONE,
         'image_name': '{}-{}'.format(repo_name, datetime.now().strftime("%Y%d%m-%H%M%S")),
         'image_family': repo_name,
         'source_image_family': config['crp_config']['source_image_family'],
@@ -80,25 +66,16 @@ def packer_provisioners(repo_path: str) -> list:
     return provisioners
 
 
-# TODO: Allow JavaScript and Go.
-def deploy_controller(repo_path: str, repo_name: str) -> list:
-    controller_path = os.path.join(repo_path, 'controller')
-    if os.path.isdir(controller_path):
-        run_cmd(
-            ['gcloud', 'functions', 'deploy', repo_name, '--entry-point=main', '--runtime=python37', '--trigger-http'],
-            cwd=controller_path,
-        )
-
-
 def run(repo_path: str, repo_name: str, config: dict):
-    # Do the controller first so if it fails we do not waste resources on the build.
-    deploy_controller(repo_path, repo_name)
+    if get_repo_branch(repo_path) not in ACTIVE_BRANCHES:
+        abort("Inactive branch. Active branches: %s", ACTIVE_BRANCHES)
 
     packer = json.dumps({
         'builders': packer_builders(repo_name, config),
         'provisioners': packer_provisioners(repo_path),
     })
-    logging.info(packer)
+    logging.debug(packer)
+
     proc = subprocess.Popen(['packer', 'build', '-'], cwd=repo_path, stdin=subprocess.PIPE)
     proc.communicate(packer.encode('utf-8'))
     proc.wait()
