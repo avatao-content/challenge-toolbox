@@ -39,6 +39,10 @@ def read_config(path: str) -> dict:
         fatal_error('%s(%s)', type(e).__name__, e)
 
 
+def parse_bool(value) -> bool:
+    return str(value).lower() in ('true', '1')
+
+
 def validate_ports(ports: list):
     for port in ports:
         try:
@@ -59,10 +63,6 @@ def validate_ports(ports: list):
 def validate_bool(key, value):
     if str(value).lower() not in ('true', 'false', '1', '0'):
         counted_error('Invalid %s value. It must be boolean.', key)
-
-
-def parse_bool(value) -> bool:
-    return str(value).lower() in ('true', '1')
 
 
 def validate_flag(config: dict, flag_required: bool = False):

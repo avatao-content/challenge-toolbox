@@ -1,10 +1,9 @@
-import glob
 import logging
 import os
 import subprocess
 import sys
+from glob import glob
 
-import yaml
 
 DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
 
@@ -21,7 +20,7 @@ def find_repo_path(base: str) -> str:
     if os.path.exists(os.path.join(base, 'config.yml')):
         return base
 
-    for item in glob.glob(os.path.join(base, '**', 'config.yml'), recursive=True):
+    for item in glob(os.path.join(base, '**', 'config.yml'), recursive=True):
         return os.path.dirname(item)
 
     logging.error('Could not find a repository in %s', base)
@@ -37,7 +36,9 @@ def get_repo_branch(repo_path: str) -> str:
     if os.getenv('DRONE', '0').lower() in ('true', '1'):
         return os.environ['DRONE_BRANCH']
 
-    return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD'], cwd=repo_path)
+    return subprocess.check_output(
+        ['git', 'symbolic-ref', '--short', 'HEAD'], cwd=repo_path,
+    ).decode('utf-8').rstrip('\n')
 
 
 def get_sys_args() -> (str, str):
@@ -60,20 +61,6 @@ def get_sys_args() -> (str, str):
     return repo_path, repo_name
 
 
-def run_cmd(args: list, timeout: int=DEFAULT_TIMEOUT, **kwargs) -> int:
-    """
-    Run the given command with subprocess.check_call
-
-    :param args: list of args for Popen
-    :param timeout: [optional] process timeout (defaults to DEFAULT_TIMEOUT)
-    :param kwargs: [optional] additional key arguments
-    :raise subprocess.CalledProcessError
-    :return int
-    """
-    logging.debug('Running %s ...', ' '.join(map(str, args)))
-    return subprocess.check_call(args, timeout=timeout, **kwargs)
-
-
 def init_logger() -> None:
     """
     Configure the default python logger
@@ -91,7 +78,7 @@ def counted_error(*args, **kwargs) -> None:
     """
     Wrapper for logging.error that will increase the error_counter
     """
-    global _error_counter
+    global _error_counter  # pylint: disable=global-statement
     _error_counter += 1
     logging.error(*args, **kwargs)
 
@@ -118,3 +105,44 @@ def abort(*args, **kwargs) -> None:
     """
     logging.info(*args, **kwargs)
     counted_error_at_exit()
+
+
+def run_cmd(args: list, timeout: int = DEFAULT_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
+    """
+    Run the given command with subprocess.check_call
+
+    :param args: list of args for Popen
+    :param timeout: [optional] process timeout (defaults to DEFAULT_TIMEOUT)
+    :param raise_errors: [optional] raise errors instead of exiting? (defaults to False)
+    :param kwargs: [optional] additional key arguments
+    :raise subprocess.CalledProcessError
+    :return int
+    """
+    try:
+        logging.debug('Running %s ...', args)
+        return subprocess.check_call(args, timeout=timeout, **kwargs)
+
+    except subprocess.CalledProcessError:
+        if raise_errors:
+            raise
+        fatal_error('Failed to run: %s', args)
+
+
+def check_common_files(repo_path: str = None):
+    if repo_path is None:
+        repo_path = os.getcwd()
+
+    if not glob(os.path.join(repo_path, '.drone.yml')):
+        logging.warning('No .drone.yml file is found. This file is necessary for our automated tests,\n\t'
+                        'please, get it from any template before uploading your challenge.')
+
+    if not glob(os.path.join(repo_path, 'CHANGELOG')):
+        logging.warning('No CHANGELOG file is found. If you modified an existing licensed challenge,\n\t'
+                        'please, summarize what your changes were.')
+
+    if not glob(os.path.join(repo_path, 'LICENSE')):
+        logging.warning('No LICENSE file is found. Please add the (original) license file if you copied\n\t'
+                        'a part of your challenge from a licensed challenge.')
+
+    if not glob(os.path.join(repo_path, 'README.md')):
+        logging.warning('No README.md file is found. Readmes help others to understand your challenge.')

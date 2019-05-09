@@ -1,14 +1,12 @@
-import json
 import logging
 import os
 import re
-import subprocess
-from glob import glob as glob
+from glob import glob
 
-from toolbox.utils import counted_error
-from toolbox.utils.config import validate_bool, validate_flag, validate_ports
+from toolbox.docker.config import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES, KERNEL_PARAMETERS
 from toolbox.docker.utils import yield_dockerfiles
-from toolbox.docker.config import *
+from toolbox.utils import check_common_files, counted_error
+from toolbox.utils.config import validate_bool, validate_flag, validate_ports
 
 
 def check_config(config: dict):
@@ -30,13 +28,13 @@ def check_config(config: dict):
 
         if 'capabilities' in item:
             invalid_caps = set(item['capabilities']) - CAPABILITIES
-            if len(invalid_caps) > 0:
+            if invalid_caps > 0:
                 counted_error('Forbidden capabilities: %s\n\tAllowed capabilities: %s',
                               invalid_caps, CAPABILITIES)
 
         if 'kernel_params' in item:
             invalid_parameters = set(item['kernel_params']) - KERNEL_PARAMETERS
-            if len(invalid_parameters) > 0:
+            if invalid_parameters > 0:
                 counted_error('Forbidden kernel parameters: %s\n\tAllowed parameters: %s',
                               invalid_parameters, KERNEL_PARAMETERS)
 
@@ -52,7 +50,7 @@ def check_config(config: dict):
 
 
 def check_dockerfile(filename):
-    repo_pattern = 'FROM ((docker\.io\/)?avatao|eu\.gcr\.io\/avatao-challengestore)\/'
+    repo_pattern = r'FROM ((docker\.io\/)?avatao|eu\.gcr\.io\/avatao-challengestore)\/'
     try:
         with open(filename, 'r') as f:
             d = f.read()
@@ -67,29 +65,16 @@ def check_dockerfile(filename):
 
 
 def check_misc():
-    if not len(glob('src/*')):
+    check_common_files()
+
+    if not glob('src/*'):
         logging.warning('Missing or empty "src" directory. Please place your source files there '
                         'if your challenge has any.')
-
-    if not len(glob('README.md')):
-        logging.warning('No README.md file is found. Readmes help others to understand your challenge.')
-
-    if not len(glob('LICENSE')):
-        logging.warning('No LICENSE file is found. Please add the (original) license file if you copied'
-                        '\n\t  a part of your challenge from a licensed challenge.')
-
-    if not len(glob('CHANGELOG')):
-        logging.warning('No CHANGELOG file is found. If you modified an existing licensed challenge,\n\t'
-                        'please, summarize what your changes were.')
-
-    if not len(glob('.drone.yml')):
-        logging.warning('No .drone.yml file is found. This file is necessary for our automated tests,\n\t'
-                        'please, get it from any template before uploading your challenge.')
 
 
 def run(repo_path: str, repo_name: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc()
-    for dockerfile, image in yield_dockerfiles(repo_path, repo_name):
+    for dockerfile, _ in yield_dockerfiles(repo_path, repo_name):
         check_dockerfile(dockerfile)

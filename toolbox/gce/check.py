@@ -1,15 +1,14 @@
-import json
 import logging
 import os
 import re
-import subprocess
-from glob import glob as glob
+from glob import glob
 
-from toolbox.utils import counted_error
+from toolbox.gce.config import CONFIG_KEYS, CRP_CONFIG_KEYS
+from toolbox.utils import check_common_files, counted_error
 from toolbox.utils.config import validate_bool, validate_flag, validate_ports
-from toolbox.gce.config import *
 
 
+# pylint: disable=too-many-branches
 def check_config(config: dict):
     invalid_keys = set(config.keys()) - set(CONFIG_KEYS)
     if invalid_keys:
@@ -59,10 +58,10 @@ def check_config(config: dict):
 # TODO: Allow JavaScript and Go...
 def check_controller(is_static: bool):
     if is_static:
-        if len(glob('controller/*')):
+        if glob('controller/*'):
             counted_error('Controllers are incompatible with static flags.')
 
-    elif not len(glob('controller/main.py')):
+    elif not glob('controller/main.py'):
         counted_error('Missing controller/main.py')
 
     else:
@@ -70,35 +69,22 @@ def check_controller(is_static: bool):
         if 'def main(request' not in controller_script:
             counted_error('Missing main(request: flask.Request) from controller/main.py')
 
-        if not len(glob('controller/requirements.txt')):
+        if not glob('controller/requirements.txt'):
             logging.warning('Missing controller/requirements.txt')
 
 
 def check_misc(repo_name: str):
+    check_common_files()
+
     if re.match(r"^[a-z][a-z0-9-]{0,62}[a-z0-9]$", repo_name) is None:
         counted_error("Invalid repo name. Valid pattern: ^[a-z][a-z0-9-]{0,62}[a-z0-9]$")
 
-    if not len(glob('setup.sh')):
+    if not glob('setup.sh'):
         counted_error('Missing setup.sh file. Use it for what you would use a Dockerfile for.')
 
-    if not len(glob('rootfs/*')):
+    if not glob('rootfs/*'):
         logging.warning('Missing or empty "rootfs" directory. Please place your source files there '
                         'if your challenge has any.')
-
-    if not len(glob('README.md')):
-        logging.warning('No README.md file is found. Readmes help others to understand your challenge.')
-
-    if not len(glob('LICENSE')):
-        logging.warning('No LICENSE file is found. Please add the (original) license file if you copied'
-                        '\n\t  a part of your challenge from a licensed challenge.')
-
-    if not len(glob('CHANGELOG')):
-        logging.warning('No CHANGELOG file is found. If you modified an existing licensed challenge,\n\t'
-                        'please, summarize what your changes were.')
-
-    if not len(glob('.drone.yml')):
-        logging.warning('No .drone.yml file is found. This file is necessary for our automated tests,\n\t'
-                        'please, get it from any template before uploading your challenge.')
 
 
 def run(repo_path: str, repo_name: str, config: dict):

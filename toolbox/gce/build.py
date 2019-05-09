@@ -4,9 +4,17 @@ import os
 import subprocess
 from datetime import datetime
 
-from toolbox.utils import abort, get_repo_branch, run_cmd
+from toolbox.gce.config import (
+    BUILD_BRANCHES,
+    AVATAO_USER,
+    CONTROLLER_USER,
+    GOOGLE_APPLICATION_CREDENTIALS,
+    GOOGLE_PROJECT_ID,
+    PACKER_COMPUTE_ZONE,
+    SSHD_CONFIG,
+)
+from toolbox.utils import abort, get_repo_branch
 from toolbox.utils.config import parse_bool
-from toolbox.gce.config import *
 
 
 def packer_builders(repo_name: str, config: dict) -> list:
@@ -67,8 +75,8 @@ def packer_provisioners(repo_path: str) -> list:
 
 
 def run(repo_path: str, repo_name: str, config: dict):
-    if get_repo_branch(repo_path) not in ACTIVE_BRANCHES:
-        abort("Inactive branch. Active branches: %s", ACTIVE_BRANCHES)
+    if get_repo_branch(repo_path) not in BUILD_BRANCHES:
+        abort("Inactive branch. Active branches: %s", BUILD_BRANCHES)
 
     packer = json.dumps({
         'builders': packer_builders(repo_name, config),

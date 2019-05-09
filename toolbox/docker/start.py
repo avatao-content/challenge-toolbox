@@ -1,13 +1,13 @@
-from collections import defaultdict, OrderedDict
-from posixpath import join
 import atexit
 import logging
 import os
 import subprocess
 import time
+from collections import defaultdict, OrderedDict
+from posixpath import join
 
-from toolbox.utils import fatal_error
 from toolbox.docker.utils import get_image_url
+from toolbox.utils import fatal_error
 
 
 BIND_ADDR = '127.0.0.1'
@@ -23,7 +23,7 @@ CONNECTION_USAGE.update({
 })
 
 
-def get_crp_config(repo_path: str, repo_name: str, crp_config: dict) -> dict:
+def get_crp_config(repo_name: str, crp_config: dict) -> dict:
     # The order is important because of namespace and volume sharing!
     crp_config_ordered = OrderedDict()
 
@@ -67,7 +67,7 @@ def get_crp_config(repo_path: str, repo_name: str, crp_config: dict) -> dict:
     return crp_config_ordered
 
 
-def run_container(repo_name: str, short_name: str, crp_config_item: dict, share_with: str=None) \
+def run_container(repo_name: str, short_name: str, crp_config_item: dict, share_with: str = None) \
         -> (subprocess.Popen, str):
 
     name = '-'.join((crp_config_item['image'].split('/')[-1].split(':')[0], short_name))
@@ -91,7 +91,7 @@ def run_container(repo_name: str, short_name: str, crp_config_item: dict, share_
         for port, proto_l7 in crp_config_item['ports'].items():
             port_num = int(port.split('/')[0])
             drun += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]
-            logging.info('Connection: %s' % CONNECTION_USAGE[proto_l7] % port_num)
+            logging.info('Connection: %s', CONNECTION_USAGE[proto_l7] % port_num)
 
     if 'capabilities' in crp_config_item:
         drun += ['--cap-drop=ALL']
@@ -131,21 +131,17 @@ def remove_containers():
 
 
 def run(repo_path: str, repo_name: str, config: dict):
-    if 'crp_config' not in config:
-        fatal_error('There is no crp_config in config.yml')
-
     os.chdir(repo_path)
     atexit.register(remove_containers)
 
     proc_list, first = [], None
-    for short_name, crp_config_item in get_crp_config(repo_path, repo_name, config['crp_config']).items():
+    for short_name, crp_config_item in get_crp_config(repo_name, config['crp_config']).items():
         proc, container = run_container(repo_name, short_name, crp_config_item, share_with=first)
         proc_list.append(proc)
         if first is None:
             first = container
 
     logging.info('When you gracefully terminate this script [Ctrl+C] the containers will be destroyed.')
-
     for proc in proc_list:
         try:
             proc.wait()

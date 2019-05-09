@@ -1,6 +1,8 @@
 import os
 
-ACTIVE_BRANCHES = ["master", "staging"]
+BUILD_BRANCHES = ["master", "staging"]
+
+DEPLOY_BRANCHES = ["master"]
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
 

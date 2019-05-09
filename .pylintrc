@@ -1,0 +1,29 @@
+[FORMAT]
+max-line-length = 119
+
+[MESSAGES CONTROL]
+disable =
+    arguments-differ,
+    bad-continuation,
+    broad-except,
+    fixme,
+    inconsistent-return-statements,
+    invalid-name,
+    line-too-long,
+    missing-docstring,
+    no-self-use,
+    too-few-public-methods,
+    too-many-arguments,
+    ungrouped-imports,
+    wrong-import-order,
+
+[SIMILARITIES]
+# https://github.com/PyCQA/pylint/pull/2424
+min-similarity-lines=12
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
+
+[MASTER]
+# Ignore generated protobuf/grpc code
+ignore=protos features

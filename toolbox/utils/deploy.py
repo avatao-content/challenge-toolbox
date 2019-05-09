@@ -1,14 +1,10 @@
-import collections
-import hashlib
-import json
 import logging
 import os
-import subprocess
-import sys
+import uuid
 
 import requests
 
-from .utils import fatal_error
+from toolbox.utils.utils import fatal_error
 
 
 CRP_DEPLOY_HOOK = os.environ['CRP_DEPLOY_HOOK']
@@ -42,33 +38,36 @@ def walk_dir_and_hash_files(root_path: str) -> {str: {str: str}}:
     return files
 
 
-def update_hook(repo_name: str, config: dict):
+def update_hook(repo_name: str, config: dict) -> uuid.UUID:
     # List of downloadable files
     downloads = walk_dir_and_hash_files('downloads')
     # Build a request for the web hook...
-    data = {
+    payload = {
         'repo_name': repo_name,
         'repo_owner': os.environ['DRONE_REPO_OWNER'],
         'repo_commit': os.environ['DRONE_COMMIT'],
         'config': config,
         'downloads': downloads,
     }
-    template = json.dumps({'template': {'data': [
-        {'name': key, 'value': value} for key, value in data.items()
-    ]}})
 
-    logging.info('Sending update hook to %s ...' % CRP_DEPLOY_HOOK)
-    logging.debug(template)
+    logging.info('Sending update hook to %s ...', CRP_DEPLOY_HOOK)
+    logging.debug(payload)
 
     response = requests.post(
         url=CRP_DEPLOY_HOOK,
-        data=template.encode('utf-8'),
+        data=payload,
         method='POST',
         headers={
-            'Content-Type': 'application/vnd.collection+json',
+            'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
             'X-Avatao-Token': CRP_DEPLOY_TOKEN,
         })
 
     if response.status_code != 200:
         fatal_error('%d %s: %s', response.status_code, response.reason, response.content)
+
+    try:
+        data = response.json()
+        return uuid.UUID(data['challenge_id'])
+    except Exception:
+        fatal_error('Failed to get the challenge ID from the Avatao Platform.\n\t%s', response.content)

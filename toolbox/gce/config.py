@@ -1,6 +1,7 @@
 import os
 
-ACTIVE_BRANCHES = ['master', 'staging']
+BUILD_BRANCHES = ["master"]
+DEPLOY_BRANCHES = ["master"]
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
 CRP_CONFIG_KEYS = {'source_image_project_id', 'source_image_family', 'ssh_username', 'ports', 'cpu_cores', 'mem_limit_gb', 'storage_limit_gb', 'nested'}

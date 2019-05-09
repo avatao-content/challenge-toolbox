@@ -1,11 +1,11 @@
 import os
 from glob import glob
-from typing import Iterator
+from typing import Iterable, Tuple
 
-from toolbox.docker.config import *
+from toolbox.docker.config import DOCKER_REGISTRY
 
 
-def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> str:
+def get_image_url(repo_name: str, short_name: str = None, absolute: bool = True) -> str:
     """
     Return an absolute docker image URL
 
@@ -19,11 +19,11 @@ def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> 
 
     if absolute:
         return '/'.join((DOCKER_REGISTRY, repo_name))
-    else:
-        return repo_name
+
+    return repo_name
 
 
-def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool=True) -> Iterator[(str, str)]:
+def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool = True) -> Iterable[Tuple[str, str]]:
     """
     Yield (Dockerfile, image_url) pairs from the given repo_path
 
