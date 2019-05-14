@@ -51,6 +51,7 @@ def check_config(config: dict):
                           config['crp_config'].get('storage_limit_gb'))
 
     validate_bool('nested', config['crp_config'].get('nested', '0'))
+    validate_bool('internet_access', config['crp_config'].get('internet_access', '0'))
     validate_ports(config['crp_config'].get('ports', []))
     validate_flag(config)
 
