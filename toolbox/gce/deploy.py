@@ -3,7 +3,7 @@ from glob import glob
 
 from toolbox.gce.config import DEPLOY_BRANCHES, CONTROLLER_FUNCTIONS_REGION, GOOGLE_PROJECT_ID
 from toolbox.utils import abort, get_repo_branch, run_cmd
-from toolbox.utils.deploy import update_hook
+from toolbox.utils.deploy import update_hook, upload_files
 
 
 # TODO: Allow JavaScript and Go.
@@ -29,3 +29,4 @@ def run(repo_path: str, repo_name: str, config: dict):
 
     deploy_controller(repo_path, repo_name)
     update_hook(repo_name, config)
+    upload_files(repo_path)

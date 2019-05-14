@@ -1,7 +1,7 @@
 from toolbox.docker.config import DEPLOY_BRANCHES
 from toolbox.docker.utils import yield_dockerfiles
 from toolbox.utils import abort, get_repo_branch, run_cmd
-from toolbox.utils.deploy import update_hook
+from toolbox.utils.deploy import update_hook, upload_files
 
 
 def run(repo_path: str, repo_name: str, config: dict):
@@ -12,3 +12,4 @@ def run(repo_path: str, repo_name: str, config: dict):
         run_cmd(['docker', 'push', image])
 
     update_hook(repo_name, config)
+    upload_files(repo_path)

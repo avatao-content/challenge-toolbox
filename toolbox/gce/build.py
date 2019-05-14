@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+import shlex
 import subprocess
 from datetime import datetime
 
@@ -47,7 +48,7 @@ def packer_provisioners(repo_path: str) -> list:
         {
             'type': 'shell',
             'inline': [
-                'echo "{}" | sudo tee /etc/ssh/sshd_config >/dev/null'.format(SSHD_CONFIG.replace('\n', '\\n')),
+                'echo {} | sudo tee /etc/ssh/sshd_config >/dev/null'.format(shlex.quote(SSHD_CONFIG)),
                 'sudo useradd -m {}'.format(AVATAO_USER),
                 'sudo useradd -m -G google-sudoers {}'.format(CONTROLLER_USER),
             ],
