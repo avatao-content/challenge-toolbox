@@ -27,7 +27,7 @@ def check_misc():
 
 
 # pylint: disable=unused-argument
-def run(repo_path: str, repo_name: str, config: dict):
+def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc()

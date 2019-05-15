@@ -3,7 +3,6 @@ import json
 import os
 import shlex
 import subprocess
-from datetime import datetime
 
 from toolbox.gce.config import (
     BUILD_BRANCHES,
@@ -14,16 +13,16 @@ from toolbox.gce.config import (
     PACKER_COMPUTE_ZONE,
     SSHD_CONFIG,
 )
-from toolbox.utils import abort, get_repo_branch
+from toolbox.utils import abort
 from toolbox.utils.config import parse_bool
 
 
-def packer_builders(repo_name: str, config: dict) -> list:
+def packer_builders(repo_name: str, repo_branch: str, config: dict) -> list:
     compute_builder = {
         'type': 'googlecompute',
         'project_id': GOOGLE_PROJECT_ID,
         'zone': PACKER_COMPUTE_ZONE,
-        'image_name': '{}-{}'.format(repo_name, datetime.now().strftime("%Y%m%d-%H%M%S")),
+        'image_name': '-'.join((repo_name, repo_branch)),
         'image_family': repo_name,
         'source_image_family': config['crp_config']['source_image_family'],
         # Use 1 VCPU 1.7 GB RAM for building. User instances can be any size.
@@ -75,16 +74,16 @@ def packer_provisioners(repo_path: str) -> list:
     return provisioners
 
 
-def run(repo_path: str, repo_name: str, config: dict):
-    if get_repo_branch(repo_path) not in BUILD_BRANCHES:
-        abort("Inactive branch. Active branches: %s", BUILD_BRANCHES)
+def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
+    if repo_branch not in BUILD_BRANCHES:
+        abort("Inactive branch: '%s' / %s", repo_branch, BUILD_BRANCHES)
 
     packer = json.dumps({
-        'builders': packer_builders(repo_name, config),
+        'builders': packer_builders(repo_name, repo_branch, config),
         'provisioners': packer_provisioners(repo_path),
     })
     logging.debug(packer)
 
-    proc = subprocess.Popen(['packer', 'build', '-'], cwd=repo_path, stdin=subprocess.PIPE)
+    proc = subprocess.Popen(['packer', 'build', '-force', '-'], cwd=repo_path, stdin=subprocess.PIPE)
     proc.communicate(packer.encode('utf-8'))
     proc.wait()

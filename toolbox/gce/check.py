@@ -57,7 +57,8 @@ def check_config(config: dict):
 
 
 # TODO: Allow JavaScript and Go...
-def check_controller(is_static: bool):
+def check_controller(config: dict):
+    is_static = bool(config.get('flag'))
     if is_static:
         if glob('controller/*'):
             counted_error('Controllers are incompatible with static flags.')
@@ -88,8 +89,9 @@ def check_misc(repo_name: str):
                         'if your challenge has any.')
 
 
-def run(repo_path: str, repo_name: str, config: dict):
+# pylint: disable=unused-argument
+def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
+    check_controller(config)
     check_misc(repo_name)
-    check_controller(is_static=bool(config.get('flag')))

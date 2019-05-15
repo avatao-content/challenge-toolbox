@@ -10,57 +10,6 @@ DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
 _error_counter = 0
 
 
-def find_repo_path(base: str) -> str:
-    """
-    Find the first repo path (parent of config.yml) in a base directory
-
-    :param base: base directory
-    :return: the repo path
-    """
-    if os.path.exists(os.path.join(base, 'config.yml')):
-        return base
-
-    for item in glob(os.path.join(base, '**', 'config.yml'), recursive=True):
-        return os.path.dirname(item)
-
-    logging.error('Could not find a repository in %s', base)
-    sys.exit(1)
-
-
-def get_repo_branch(repo_path: str) -> str:
-    """
-    Get the checked out branch of the repository
-
-    :return string: branch
-    """
-    if os.getenv('DRONE', '0').lower() in ('true', '1'):
-        return os.environ['DRONE_BRANCH']
-
-    return subprocess.check_output(
-        ['git', 'symbolic-ref', '--short', 'HEAD'], cwd=repo_path,
-    ).decode('utf-8').rstrip('\n')
-
-
-def get_sys_args() -> (str, str):
-    """
-    Get parsed command line arguments
-
-    Absolute repository path, repository name (optional)
-    :return tuple: repo_path, repo_name
-    """
-    if os.getenv('DRONE', '0').lower() in ('true', '1'):
-        return os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME']
-
-    if not 2 <= len(sys.argv) <= 3:
-        logging.info('Usage: %s <git_repo_path> [docker_repo_name]', sys.argv[0])
-        sys.exit(1)
-
-    repo_path = find_repo_path(os.path.realpath(sys.argv[1]))
-    repo_name = sys.argv[2] if len(sys.argv) >= 3 else os.path.basename(repo_path)
-
-    return repo_path, repo_name
-
-
 def init_logger() -> None:
     """
     Configure the default python logger
@@ -93,7 +42,7 @@ def counted_error_at_exit() -> None:
 
 def fatal_error(*args, **kwargs) -> None:
     """
-    Fatal error. Abort execution.
+    Abort execution with a fatal error
     """
     counted_error(*args, **kwargs)
     counted_error_at_exit()
@@ -101,10 +50,61 @@ def fatal_error(*args, **kwargs) -> None:
 
 def abort(*args, **kwargs) -> None:
     """
-    Fatal error. Abort execution.
+    Abort execution without an additional error
     """
     logging.info(*args, **kwargs)
     counted_error_at_exit()
+
+
+def find_repo_path(base: str) -> str:
+    """
+    Find the first repo path (parent of config.yml) in a base directory
+
+    :param base: base directory
+    :return: the repo path
+    """
+    if os.path.exists(os.path.join(base, 'config.yml')):
+        return base
+
+    for item in glob(os.path.join(base, '**', 'config.yml'), recursive=True):
+        return os.path.dirname(item)
+
+    fatal_error('Could not find a repository in %s', base)
+
+
+def get_repo_branch(repo_path: str) -> str:
+    """
+    Get the checked out branch of the repository
+
+    :return string: branch
+    """
+    git_head_cmd = ['git', 'symbolic-ref', '--short', 'HEAD']
+    try:
+        return subprocess.check_output(git_head_cmd, cwd=repo_path).decode('utf-8').rstrip('\n')
+
+    except subprocess.CalledProcessError:
+        fatal_error('Failed to run: %s', git_head_cmd)
+
+
+def get_sys_args() -> (str, str, str):
+    """
+    Get parsed command line arguments
+
+    Absolute repository path, repository name (optional)
+    :return tuple: repo_path, repo_name, repo_branch
+    """
+    if os.getenv('DRONE', '0').lower() in ('true', '1'):
+        return os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME'], os.environ['DRONE_BRANCH']
+
+    if not 2 <= len(sys.argv) <= 4:
+        logging.info('Usage: %s <repo_path> [repo_name] [repo_branch]', sys.argv[0])
+        sys.exit(1)
+
+    repo_path = find_repo_path(os.path.realpath(sys.argv[1]))
+    repo_name = sys.argv[2] if len(sys.argv) >= 3 else os.path.basename(repo_path)
+    repo_branch = sys.argv[3] if len(sys.argv) >= 4 else get_repo_branch(repo_path)
+
+    return repo_path, repo_name, repo_branch
 
 
 def run_cmd(args: list, timeout: int = DEFAULT_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:

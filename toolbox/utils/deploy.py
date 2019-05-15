@@ -6,7 +6,7 @@ import requests
 from toolbox.utils.utils import fatal_error
 
 
-def update_hook(repo_name: str, config: dict):
+def update_hook(repo_name: str, repo_branch: str, config: dict):
     try:
         crp_deploy_hook = os.environ['CRP_DEPLOY_HOOK']
         crp_deploy_token = os.environ['CRP_DEPLOY_TOKEN']
@@ -14,7 +14,7 @@ def update_hook(repo_name: str, config: dict):
             # Challenge Key
             'organization': os.environ['DRONE_REPO_OWNER'],
             'repo_name': repo_name,
-            'version': os.environ['DRONE_BRANCH'],
+            'version': repo_branch,
             # Challenge Config
             'config': config,
         }
@@ -41,5 +41,5 @@ def update_hook(repo_name: str, config: dict):
         logging.debug(response.content)
 
 
-def upload_files(repo_path: str):
+def upload_files(repo_path: str, repo_name: str, repo_branch: str):
     raise NotImplementedError

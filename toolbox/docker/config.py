@@ -1,15 +1,13 @@
 import os
 
-BUILD_BRANCHES = ["master", "staging"]
-
-DEPLOY_BRANCHES = ["master"]
+BUILD_BRANCHES = ["master"]
+DEPLOY_BRANCHES = BUILD_BRANCHES
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
-
+CRP_CONFIG_ABSOLUTE_IMAGE = os.getenv('CRP_CONFIG_ABSOLUTE_IMAGE', '0').lower() in ('true', '1')
 PULL_BASEIMAGES = os.getenv('TOOLBOX_PULL_BASEIMAGES', '0').lower() in ('true', '1')
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
-
 CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only'}
 
 CAPABILITIES = {

@@ -72,9 +72,9 @@ def check_misc():
                         'if your challenge has any.')
 
 
-def run(repo_path: str, repo_name: str, config: dict):
+def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc()
-    for dockerfile, _ in yield_dockerfiles(repo_path, repo_name):
+    for dockerfile, _ in yield_dockerfiles(repo_path, repo_branch, repo_name):
         check_dockerfile(dockerfile)
