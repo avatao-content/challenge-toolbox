@@ -23,7 +23,7 @@ def packer_builders(repo_name: str, config: dict) -> list:
         'type': 'googlecompute',
         'project_id': GOOGLE_PROJECT_ID,
         'zone': PACKER_COMPUTE_ZONE,
-        'image_name': '{}-{}'.format(repo_name, datetime.now().strftime("%Y%d%m-%H%M%S")),
+        'image_name': '{}-{}'.format(repo_name, datetime.now().strftime("%Y%m%d-%H%M%S")),
         'image_family': repo_name,
         'source_image_family': config['crp_config']['source_image_family'],
         # Use 1 VCPU 1.7 GB RAM for building. User instances can be any size.

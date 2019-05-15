@@ -11,9 +11,11 @@ def update_hook(repo_name: str, config: dict):
         crp_deploy_hook = os.environ['CRP_DEPLOY_HOOK']
         crp_deploy_token = os.environ['CRP_DEPLOY_TOKEN']
         payload = {
+            # Challenge Key
+            'organization': os.environ['DRONE_REPO_OWNER'],
             'repo_name': repo_name,
-            'repo_owner': os.environ['DRONE_REPO_OWNER'],
-            'repo_branch': os.environ['DRONE_BRANCH'],
+            'version': os.environ['DRONE_BRANCH'],
+            # Challenge Config
             'config': config,
         }
     except KeyError as e:
