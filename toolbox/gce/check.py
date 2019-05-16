@@ -76,10 +76,11 @@ def check_controller(config: dict):
 
 
 def check_misc(repo_name: str):
-    check_common_files()
+    # This is a restriction of Google Cloud and must be followed.
+    if re.match(r"^[a-z][a-z0-9-]{0,61}[a-z0-9]$", repo_name) is None:
+        counted_error("Invalid repo name. Valid pattern: ^[a-z][a-z0-9-]{0,61}[a-z0-9]$")
 
-    if re.match(r"^[a-z][a-z0-9-]{0,62}[a-z0-9]$", repo_name) is None:
-        counted_error("Invalid repo name. Valid pattern: ^[a-z][a-z0-9-]{0,62}[a-z0-9]$")
+    check_common_files()
 
     if not glob('setup.sh'):
         counted_error('Missing setup.sh file. Use it for what you would use a Dockerfile for.')
