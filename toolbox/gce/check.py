@@ -3,9 +3,9 @@ import os
 import re
 from glob import glob
 
-from toolbox.gce.config import CONFIG_KEYS, CRP_CONFIG_KEYS
-from toolbox.utils import check_common_files, counted_error
-from toolbox.utils.config import validate_bool, validate_flag, validate_ports
+from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
+
+from .config import CONFIG_KEYS, CRP_CONFIG_KEYS
 
 
 # pylint: disable=too-many-branches

@@ -3,10 +3,10 @@ import os
 import re
 from glob import glob
 
-from toolbox.docker.config import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES, KERNEL_PARAMETERS
-from toolbox.docker.utils import yield_dockerfiles
-from toolbox.utils import check_common_files, counted_error
-from toolbox.utils.config import validate_bool, validate_flag, validate_ports
+from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
+
+from .config import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES, KERNEL_PARAMETERS
+from .utils import yield_dockerfiles
 
 
 def check_config(config: dict):

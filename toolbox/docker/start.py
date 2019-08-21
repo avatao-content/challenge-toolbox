@@ -6,8 +6,9 @@ import time
 from collections import defaultdict, OrderedDict
 from posixpath import join
 
-from toolbox.docker.utils import get_image_url
 from toolbox.utils import fatal_error
+
+from .utils import get_image_url
 
 
 BIND_ADDR = '127.0.0.1'

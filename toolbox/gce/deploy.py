@@ -1,9 +1,9 @@
 import os
 from glob import glob
 
-from toolbox.gce.config import CONTROLLER_FUNCTIONS_REGION, GOOGLE_PROJECT_ID
-from toolbox.utils import abort_inactive_branch, run_cmd
-from toolbox.utils.deploy import update_hook, upload_files
+from toolbox.utils import abort_inactive_branch, run_cmd, update_hook, upload_files
+
+from .config import CONTROLLER_FUNCTIONS_REGION, GOOGLE_PROJECT_ID
 
 
 # TODO: Allow JavaScript and Go.

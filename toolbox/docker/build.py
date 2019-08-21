@@ -1,8 +1,9 @@
 import time
 
-from toolbox.docker.config import PULL_BASEIMAGES
-from toolbox.docker.utils import yield_dockerfiles
 from toolbox.utils import abort_inactive_branch, run_cmd
+
+from .config import PULL_BASEIMAGES
+from .utils import yield_dockerfiles
 
 
 # pylint: disable=unused-argument

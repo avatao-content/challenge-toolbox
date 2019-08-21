@@ -1,7 +1,7 @@
-from toolbox.docker.config import CRP_CONFIG_ABSOLUTE_IMAGE
-from toolbox.docker.utils import get_image_url, yield_dockerfiles
-from toolbox.utils import abort_inactive_branch, run_cmd
-from toolbox.utils.deploy import update_hook, upload_files
+from toolbox.utils import abort_inactive_branch, run_cmd, update_hook, upload_files
+
+from .config import CRP_CONFIG_ABSOLUTE_IMAGE
+from .utils import get_image_url, yield_dockerfiles
 
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):

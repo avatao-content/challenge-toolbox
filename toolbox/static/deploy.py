@@ -1,5 +1,4 @@
-from toolbox.utils import abort_inactive_branch
-from toolbox.utils.deploy import update_hook, upload_files
+from toolbox.utils import abort_inactive_branch, update_hook, upload_files
 
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):

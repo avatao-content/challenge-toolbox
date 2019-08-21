@@ -11,16 +11,47 @@ except ImportError:
 from .utils import counted_error, fatal_error
 
 
+CURRENT_MIN_VERSION = 'v3.0'
+CURRENT_MAX_VERSION = 'v3.1'
+
 CONTROLLER_PROTOCOL = 'controller'
-
 PROTOCOLS = {'udp', 'tcp', 'ssh', 'http', 'ws', CONTROLLER_PROTOCOL}
+CRP_TYPES = {'static', 'docker', 'gce'}
 
 
-def read_config(path: str) -> dict:
+def compare_version(config: dict, min_version: str, max_version: str):
+    version = parse_version(config['version'])
+
+    if version < parse_version(min_version):
+        return -1
+    if version > parse_version(max_version):
+        return 1
+    return 0
+
+
+def validate_version(config: dict):
+    cmp = compare_version(config, CURRENT_MIN_VERSION, CURRENT_MAX_VERSION)
+    if cmp < 0:
+        fatal_error('Please, upgrade to version %s with migrate.py!', CURRENT_MIN_VERSION)
+    if cmp > 0:
+        fatal_error('Please, use a newer toolbox for version %s!', config['version'])
+
+
+def get_crp_type(config: dict) -> str:
+    crp_type = config.get('crp_type') or 'static'
+
+    if crp_type not in CRP_TYPES:
+        fatal_error("Unknown crp_type: '%s' / %s", crp_type, CRP_TYPES)
+
+    return crp_type
+
+
+def read_config(path: str, *, pre_validate: bool = True) -> dict:
     """
     Read the config.yml file
 
     :param path: path to the file or the base directory
+    :param pre_validate: check version and crp_type fields
     :return: dict
     """
     if os.path.isdir(path):
@@ -30,8 +61,9 @@ def read_config(path: str) -> dict:
         with open(path, 'r') as f:
             config = yaml.safe_load(f)
 
-        if parse_version(config["version"]) < parse_version('v3'):
-            raise DeprecationWarning("config.yml v2 and below are deprecated, please upgrade to v3")
+        if pre_validate:
+            validate_version(config)
+            get_crp_type(config)
 
         return config
 
@@ -41,23 +73,6 @@ def read_config(path: str) -> dict:
 
 def parse_bool(value) -> bool:
     return str(value).lower() in ('true', '1')
-
-
-def validate_ports(ports: list):
-    for port in ports:
-        try:
-            port, protocol = port.split('/', 1)
-            try:
-                if not 0 < int(port) < 65536:
-                    raise ValueError
-            except Exception:
-                counted_error('Invalid port number: %s. Ports must be numbers between 1 and 65535.', port)
-
-            if protocol not in PROTOCOLS:
-                counted_error('Invalid protocol in config.yml: %s. Valid protocols: %s', protocol, PROTOCOLS)
-
-        except Exception:
-            counted_error('Invalid port format. [port/protocol]')
 
 
 def validate_bool(key, value):
@@ -82,3 +97,20 @@ def validate_flag(config: dict, flag_required: bool = False):
 
     elif flag_required:
         counted_error('A static (or regex) flag must be set.')
+
+
+def validate_ports(ports: list):
+    for port in ports:
+        try:
+            port, protocol = port.split('/', 1)
+            try:
+                if not 0 < int(port) < 65536:
+                    raise ValueError
+            except Exception:
+                counted_error('Invalid port number: %s. Ports must be numbers between 1 and 65535.', port)
+
+            if protocol not in PROTOCOLS:
+                counted_error('Invalid protocol in config.yml: %s. Valid protocols: %s', protocol, PROTOCOLS)
+
+        except Exception:
+            counted_error('Invalid port format. [port/protocol]')

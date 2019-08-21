@@ -1,16 +1,12 @@
 from importlib import import_module
 
-from .config import read_config
-from .utils import counted_error_at_exit, fatal_error, get_sys_args, init_logger
+from .config import get_crp_type, read_config
+from .utils import counted_error_at_exit, get_sys_args, init_logger
 
 
 def _run_command(command: str, repo_path: str, repo_name: str, repo_branch: str, config: dict):
-    crp_type = config.get("crp_type") or "static"
-    try:
-        module = import_module('.'.join(("toolbox", crp_type, command)))
-    except ImportError:
-        fatal_error("ImportError(crp_type=%s, command=%s)", crp_type, command)
-
+    module_path = '.'.join(('toolbox', get_crp_type(config), command))
+    module = import_module(module_path)
     module.run(repo_path, repo_name, repo_branch, config)
 
 

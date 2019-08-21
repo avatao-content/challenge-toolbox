@@ -4,7 +4,9 @@ import os
 import shlex
 import subprocess
 
-from toolbox.gce.config import (
+from toolbox.utils import abort_inactive_branch, parse_bool
+
+from .config import (
     AVATAO_USER,
     CONTROLLER_USER,
     GOOGLE_APPLICATION_CREDENTIALS,
@@ -12,8 +14,6 @@ from toolbox.gce.config import (
     PACKER_COMPUTE_ZONE,
     SSHD_CONFIG,
 )
-from toolbox.utils import abort_inactive_branch
-from toolbox.utils.config import parse_bool
 
 
 def packer_builders(repo_name: str, repo_branch: str, config: dict) -> list:
