@@ -30,5 +30,5 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     config['image'] = '-'.join((repo_name, repo_branch))
     deploy_controller(repo_path, config['image'])
 
-    update_hook(repo_name, repo_branch, config)
     upload_files(repo_path, repo_name, repo_branch)
+    update_hook(repo_name, repo_branch, config)

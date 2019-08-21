@@ -17,5 +17,5 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
         crp_config_item["image"] = get_image_url(
             repo_name, repo_branch, short_name, absolute=CRP_CONFIG_ABSOLUTE_IMAGE)
 
-    update_hook(repo_name, repo_branch, config)
     upload_files(repo_path, repo_name, repo_branch)
+    update_hook(repo_name, repo_branch, config)

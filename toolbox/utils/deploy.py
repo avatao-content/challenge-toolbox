@@ -1,5 +1,6 @@
 import logging
 import os
+from glob import glob
 
 import requests
 
@@ -41,5 +42,7 @@ def update_hook(repo_name: str, repo_branch: str, config: dict):
         logging.debug(response.content)
 
 
+# pylint: disable=unused-argument
 def upload_files(repo_path: str, repo_name: str, repo_branch: str):
-    raise NotImplementedError
+    if glob(os.path.join(repo_path, 'downloads/*')):
+        raise NotImplementedError("Static file storage is not yet implemented for the new platform!")
