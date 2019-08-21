@@ -1,7 +1,7 @@
 from importlib import import_module
 
-from toolbox.utils.config import read_config
-from toolbox.utils.utils import counted_error_at_exit, fatal_error, get_sys_args, init_logger
+from .config import read_config
+from .utils import counted_error_at_exit, fatal_error, get_sys_args, init_logger
 
 
 def _run_command(command: str, repo_path: str, repo_name: str, repo_branch: str, config: dict):

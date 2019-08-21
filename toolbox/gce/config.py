@@ -1,8 +1,5 @@
 import os
 
-BUILD_BRANCHES = ["master"]
-DEPLOY_BRANCHES = BUILD_BRANCHES
-
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
 CRP_CONFIG_KEYS = {
     'source_image_project_id', 'source_image_family', 'ssh_username', 'ports',

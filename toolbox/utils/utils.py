@@ -5,6 +5,8 @@ import sys
 from glob import glob
 
 
+ACTIVE_REMOTE_BRANCHES = ["master", "staging"]
+
 DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
 
 _error_counter = 0
@@ -56,6 +58,10 @@ def abort(*args, **kwargs) -> None:
     counted_error_at_exit()
 
 
+def is_ci() -> bool:
+    return os.getenv('DRONE', '0').lower() in ('true', '1')
+
+
 def find_repo_path(base: str) -> str:
     """
     Find the first repo path (parent of config.yml) in a base directory
@@ -93,7 +99,7 @@ def get_sys_args() -> (str, str, str):
     Absolute repository path, repository name (optional)
     :return tuple: repo_path, repo_name, repo_branch
     """
-    if os.getenv('DRONE', '0').lower() in ('true', '1'):
+    if is_ci():
         return os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME'], os.environ['DRONE_BRANCH']
 
     if not 2 <= len(sys.argv) <= 4:
@@ -107,7 +113,16 @@ def get_sys_args() -> (str, str, str):
     return repo_path, repo_name, repo_branch
 
 
-def run_cmd(args: list, timeout: int = DEFAULT_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
+def abort_inactive_branch(repo_branch: str, *, allow_local: bool):
+    # Allow local execution for some crp types - e.g.: docker
+    if allow_local and not is_ci():
+        return
+
+    if repo_branch not in ACTIVE_REMOTE_BRANCHES:
+        abort("Inactive branch: '%s' / %s", repo_branch, ACTIVE_REMOTE_BRANCHES)
+
+
+def run_cmd(args: list, *, timeout: int = DEFAULT_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
     """
     Run the given command with subprocess.check_call
 

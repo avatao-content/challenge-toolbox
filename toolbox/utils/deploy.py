@@ -4,7 +4,7 @@ from glob import glob
 
 import requests
 
-from toolbox.utils.utils import fatal_error
+from .utils import fatal_error
 
 
 def update_hook(repo_name: str, repo_branch: str, config: dict):

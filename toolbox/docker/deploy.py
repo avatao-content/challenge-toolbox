@@ -1,12 +1,11 @@
-from toolbox.docker.config import CRP_CONFIG_ABSOLUTE_IMAGE, DEPLOY_BRANCHES
+from toolbox.docker.config import CRP_CONFIG_ABSOLUTE_IMAGE
 from toolbox.docker.utils import get_image_url, yield_dockerfiles
-from toolbox.utils import abort, run_cmd
+from toolbox.utils import abort_inactive_branch, run_cmd
 from toolbox.utils.deploy import update_hook, upload_files
 
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
-    if repo_branch not in DEPLOY_BRANCHES:
-        abort("Inactive branch: '%s' / %s", repo_branch, DEPLOY_BRANCHES)
+    abort_inactive_branch(repo_branch, allow_local=False)
 
     # Push absolute images URLs...
     for _, image in yield_dockerfiles(repo_path, repo_branch, repo_name):
