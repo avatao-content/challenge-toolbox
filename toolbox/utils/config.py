@@ -32,7 +32,7 @@ def compare_version(config: dict, min_version: str, max_version: str):
 def validate_version(config: dict):
     cmp = compare_version(config, CURRENT_MIN_VERSION, CURRENT_MAX_VERSION)
     if cmp < 0:
-        fatal_error('Please, upgrade to version %s with migrate.py!', CURRENT_MIN_VERSION)
+        fatal_error('Please, upgrade to version %s with upgrade.py!', CURRENT_MIN_VERSION)
     if cmp > 0:
         fatal_error('Please, use a newer toolbox for version %s!', config['version'])
 
