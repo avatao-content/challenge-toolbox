@@ -2,7 +2,7 @@
 ---
 pipeline:
   build:
-    image: eu.gcr.io/avatao-challengestore/challenge-builder
+    image: eu.gcr.io/avatao-challengestore/challenge-builder:v3
     volumes:
       - /etc/docker:/etc/docker:ro
       - /root/.docker:/root/.docker:ro
