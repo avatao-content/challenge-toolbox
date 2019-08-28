@@ -2,7 +2,7 @@
 set -aeuo pipefail
 
 if [ -n "${CI_SYSTEM_LINK-}" ]; then
-  source "/etc/docker/avatao-challenge-toolbox/${CI_SYSTEM_LINK}"
+  source "/etc/docker/avatao-challenge-toolbox/$(echo "$CI_SYSTEM_LINK" | grep -Eo '://[^/:]+' | tail -c+4)"
 else
   echo "# CI_SYSTEM_LINK is unset. Falling back to .env" >&2
   source "$(dirname "$0")/.env"

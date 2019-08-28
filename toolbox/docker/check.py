@@ -22,19 +22,19 @@ def check_config(config: dict):
         if invalid_keys:
             counted_error('Invalid key(s) found in crp_config: %s', invalid_keys)
 
-        if 'image' in item and item['image'].find('/') > 0:
+        if 'image' in item and item['image'].find('/') >= 0:
             counted_error('If the image is explicitly defined, it must be relative to the registry '
                           '- e.g. challenge:solvable.')
 
         if 'capabilities' in item:
             invalid_caps = set(item['capabilities']) - CAPABILITIES
-            if invalid_caps > 0:
+            if invalid_caps:
                 counted_error('Forbidden capabilities: %s\n\tAllowed capabilities: %s',
                               invalid_caps, CAPABILITIES)
 
         if 'kernel_params' in item:
             invalid_parameters = set(item['kernel_params']) - KERNEL_PARAMETERS
-            if invalid_parameters > 0:
+            if invalid_parameters:
                 counted_error('Forbidden kernel parameters: %s\n\tAllowed parameters: %s',
                               invalid_parameters, KERNEL_PARAMETERS)
 

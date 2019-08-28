@@ -34,6 +34,13 @@ def counted_error(*args, **kwargs) -> None:
     logging.error(*args, **kwargs)
 
 
+def get_error_counter() -> int:
+    """
+    Return the current number of non-fatal errors
+    """
+    return _error_counter
+
+
 def counted_error_at_exit() -> None:
     """
     Call at the end of execution to handle errors

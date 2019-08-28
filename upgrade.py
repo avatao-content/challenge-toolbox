@@ -33,11 +33,11 @@ def upgrade_v2_to_v3(repo_path: str, config: dict):
 
         for item in config['crp_config'].values():
             if 'mem_limit' in item:
-                item['mem_limit_mb'] = str(item['mem_limit']).rstrip('MBmb')
+                item['mem_limit_mb'] = int(str(item['mem_limit']).rstrip('MBmb'))
                 del item['mem_limit']
 
     # Obsolete config keys
-    for key in ('type', 'name', 'skills', 'recommendations', 'owners'):
+    for key in ('type', 'name', 'difficulty', 'skills', 'recommendations', 'owners'):
         if key in config:
             del config[key]
 

@@ -27,8 +27,7 @@ def update_hook(repo_name: str, repo_branch: str, config: dict):
 
     response = requests.post(
         url=crp_deploy_hook,
-        data=payload,
-        method='POST',
+        json=payload,
         headers={
             'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',

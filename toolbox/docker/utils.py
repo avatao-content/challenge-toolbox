@@ -15,15 +15,17 @@ def get_image_url(repo_name: str, repo_branch: str, short_name: str, absolute: b
     :param absolute: [optional] return the absolute URL using the default registry?
     :return: absolute URL
     """
-    repo_name = ':'.join((repo_name, short_name))
-
     if repo_branch != 'master':
-        repo_name = '-'.join((repo_name, repo_branch))
+        tag = '-'.join((short_name, repo_branch))
+    else:
+        tag = short_name
+
+    image = ':'.join((repo_name, tag))
 
     if absolute:
-        return '/'.join((DOCKER_REGISTRY, repo_name))
+        return '/'.join((DOCKER_REGISTRY, image))
 
-    return repo_name
+    return image
 
 
 def yield_dockerfiles(repo_path: str, repo_name: str, repo_branch: str, absolute: bool = True) -> Iterable[Tuple[str, str]]:
