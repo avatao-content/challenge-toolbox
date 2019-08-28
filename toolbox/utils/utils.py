@@ -5,7 +5,7 @@ import sys
 from glob import glob
 
 
-ACTIVE_REMOTE_BRANCHES = ["master", "staging"]
+ACTIVE_REMOTE_BRANCHES = ["master", "staging", "demo"]
 
 DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
 
