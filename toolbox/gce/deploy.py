@@ -26,8 +26,8 @@ def deploy_controller(repo_path: str, image: str) -> list:
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     abort_inactive_branch(repo_branch, allow_local=False)
 
-    config['image'] = '-'.join((repo_name, repo_branch))
-    deploy_controller(repo_path, config['image'])
+    config['crp_config']['image'] = '-'.join((repo_name, repo_branch))
+    deploy_controller(repo_path, config['crp_config']['image'])
 
     upload_files(repo_path, repo_name, repo_branch)
     update_hook(repo_name, repo_branch, config)
