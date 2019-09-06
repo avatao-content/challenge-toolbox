@@ -22,7 +22,7 @@ def check(request: flask.Request):
         return flask.jsonify({
             "solved": True,  # set this!
             "message": stdout.read().decode('utf-8'),  # optional
-            "multiplier": 1.0,  # optional [0.0-1.0]
+            "metadata": {},
         })
 
 
