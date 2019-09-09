@@ -5,7 +5,7 @@ from glob import glob
 
 from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
 
-from .config import CONFIG_KEYS, CRP_CONFIG_KEYS
+from .config import CONFIG_KEYS, CRP_CONFIG_KEYS, MAX_CPU_CORES
 
 
 # pylint: disable=too-many-branches
@@ -25,30 +25,29 @@ def check_config(config: dict):
         counted_error('Missing source_image_family - e.g. debian-9')
 
     try:
-        cpu_cores = int(config['crp_config'].get('cpu_cores', 1))
-        if cpu_cores < 1 or (cpu_cores > 1 and cpu_cores % 2 != 0) or cpu_cores > 64:
+        cpu_cores = int(config['crp_config'].get('cpu_cores', 0))
+        if cpu_cores < 1 or (cpu_cores > 1 and cpu_cores % 2 != 0) or cpu_cores > MAX_CPU_CORES:
             raise ValueError
     except Exception:
-        counted_error('Invalid cpu_cores value: %s. It must be 1 or an even number.',
-                      config['crp_config'].get('cpu_cores'))
+        counted_error('Invalid cpu_cores value: %s. It must be 1 or an even number up to %s.',
+                      config['crp_config'].get('cpu_cores'), MAX_CPU_CORES)
 
     else:
-        if 'mem_limit_gb' in config['crp_config']:
-            try:
-                mem_limit_gb = float(config['crp_config']['mem_limit_gb'])
-                if mem_limit_gb < 0.9 * cpu_cores or mem_limit_gb > 6.5 * cpu_cores or mem_limit_gb % 0.25 != 0:
-                    raise ValueError
-            except Exception:
-                counted_error('Invalid mem_limit value: %s. It must be between 0.9 * cpu_cores and 6.5 * cpu_cores in 0.25 increments.',
-                              config['crp_config'].get('mem_limit_gb'))
-
-    if 'storage_limit_gb' in config['crp_config']:
+        # We must know the number of CPU cores.
         try:
-            if not 10 <= int(config['crp_config']['storage_limit_gb']) <= 100:
+            mem_limit_gb = float(config['crp_config'].get('mem_limit_gb', 0))
+            if mem_limit_gb < 0.9 * cpu_cores or mem_limit_gb > 6.5 * cpu_cores or mem_limit_gb % 0.25 != 0:
                 raise ValueError
         except Exception:
-            counted_error('Invalid storage_limit_gb value: %s. It must be between 10 and 100 GigaBytes.',
-                          config['crp_config'].get('storage_limit_gb'))
+            counted_error('Invalid mem_limit value: %s. It must be between 0.9 * cpu_cores and 6.5 * cpu_cores in 0.25 increments.',
+                            config['crp_config'].get('mem_limit_gb'))
+
+    try:
+        if not 10 <= int(config['crp_config'].get('storage_limit_gb', 0)) <= 100:
+            raise ValueError
+    except Exception:
+        counted_error('Invalid storage_limit_gb value: %s. It must be between 10 and 100 GigaBytes.',
+                        config['crp_config'].get('storage_limit_gb'))
 
     validate_bool('nested', config['crp_config'].get('nested', '0'))
     validate_bool('internet_access', config['crp_config'].get('internet_access', '0'))

@@ -11,9 +11,15 @@ from .config import (
     CONTROLLER_USER,
     GOOGLE_APPLICATION_CREDENTIALS,
     GOOGLE_PROJECT_ID,
+    MIN_CPU_PLATFORM,
     PACKER_COMPUTE_ZONE,
+    PACKER_PREEMPTIBLE,
     SSHD_CONFIG,
 )
+
+
+def _get_machine_type(config: dict) -> str:
+    return f"custom-{config['crp_config']['cpu_cores']}-{int(config['crp_config']['mem_limit_gb'] * 1024)}"
 
 
 def packer_builders(repo_name: str, repo_branch: str, config: dict) -> list:
@@ -21,15 +27,15 @@ def packer_builders(repo_name: str, repo_branch: str, config: dict) -> list:
         'type': 'googlecompute',
         'project_id': GOOGLE_PROJECT_ID,
         'zone': PACKER_COMPUTE_ZONE,
+        'machine_type': _get_machine_type(config),
+        'disk_size': config['crp_config']['storage_limit_gb'],
         'image_name': '-'.join((repo_name, repo_branch)),
         'image_family': repo_name,
         'source_image_family': config['crp_config']['source_image_family'],
-        # Use 1 VCPU 1.7 GB RAM for building. User instances can be any size.
-        'machine_type': 'n1-standard-1',
-        'min_cpu_platform': 'Intel Skylake',
-        'disk_size': config['crp_config']['storage_limit_gb'],
         'ssh_username': config['crp_config'].get('ssh_username', 'packer'),
         'communicator': 'ssh',
+        'min_cpu_platform': MIN_CPU_PLATFORM,
+        'preemptible': PACKER_PREEMPTIBLE,
     }
 
     if parse_bool(config.get('nested', '0')):

@@ -1,4 +1,5 @@
 import os
+from toolbox.utils import parse_bool
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
 CRP_CONFIG_KEYS = {
@@ -8,7 +9,12 @@ CRP_CONFIG_KEYS = {
 
 GOOGLE_PROJECT_ID = os.environ.get('GOOGLE_PROJECT_ID')
 GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
 PACKER_COMPUTE_ZONE = os.environ.get('CLOUDSDK_COMPUTE_ZONE', 'europe-west1-d')
+PACKER_PREEMPTIBLE = parse_bool(os.environ.get('CLOUDSDK_PREEMPTIBLE', 'true'))
+
+MIN_CPU_PLATFORM = 'Intel Skylake'
+MAX_CPU_CORES = 32
 
 AVATAO_USER = 'user'
 CONTROLLER_USER = 'controller'
