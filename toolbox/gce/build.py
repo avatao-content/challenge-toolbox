@@ -4,7 +4,7 @@ import os
 import shlex
 import subprocess
 
-from toolbox.utils import abort_inactive_branch, parse_bool
+from toolbox.utils import abort_inactive_branch, parse_bool, fatal_error
 
 from .config import (
     AVATAO_USER,
@@ -84,4 +84,5 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
 
     proc = subprocess.Popen(['packer', 'build', '-force', '-'], cwd=repo_path, stdin=subprocess.PIPE)
     proc.communicate(packer.encode('utf-8'))
-    proc.wait()
+    if proc.wait() > 0:
+        fatal_error('Failed to build GCE VM image!')
