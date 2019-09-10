@@ -53,8 +53,8 @@ def packer_provisioners(repo_path: str) -> list:
             'type': 'shell',
             'inline': [
                 'echo {} | sudo tee /etc/ssh/sshd_config >/dev/null'.format(shlex.quote(SSHD_CONFIG)),
-                'sudo useradd -m {}'.format(AVATAO_USER),
-                'sudo useradd -m -G google-sudoers {}'.format(CONTROLLER_USER),
+                'sudo useradd -m -s /bin/bash {}'.format(AVATAO_USER),
+                'sudo useradd -m -s /bin/bash -G google-sudoers {}'.format(CONTROLLER_USER),
             ],
         },
         {
@@ -66,9 +66,9 @@ def packer_provisioners(repo_path: str) -> list:
             'type': 'shell',
             'inline': [
                 'sudo cp -av --no-preserve=ownership /var/tmp/rootfs/* /',
+                'sudo rm -rf /var/tmp/rootfs',
                 'sudo chown -R {0}: /home/{0}'.format(AVATAO_USER),
                 'sudo chown -R {0}: /home/{0}'.format(CONTROLLER_USER),
-                'sudo rm -rf /var/tmp/rootfs',
             ],
         },
         {
