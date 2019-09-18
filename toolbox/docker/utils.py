@@ -2,7 +2,7 @@ import os
 from glob import glob
 from typing import Iterable, Tuple
 
-from .config import DOCKER_REGISTRY
+from toolbox.config.docker import DOCKER_REGISTRY
 
 
 def get_image_url(repo_name: str, repo_branch: str, short_name: str, absolute: bool = True) -> str:

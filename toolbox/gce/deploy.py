@@ -1,9 +1,8 @@
 import os
 from glob import glob
 
+from toolbox.config.gce import CONTROLLER_FUNCTIONS_REGION, GOOGLE_PROJECT_ID
 from toolbox.utils import abort_inactive_branch, run_cmd, update_hook, upload_files
-
-from .config import CONTROLLER_FUNCTIONS_REGION, GOOGLE_PROJECT_ID
 
 
 # TODO: Allow JavaScript and Go.
@@ -30,4 +29,4 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     deploy_controller(repo_path, config['crp_config']['image'])
 
     upload_files(repo_path, repo_name, repo_branch)
-    update_hook(repo_name, repo_branch, config)
+    update_hook(repo_path, repo_name, repo_branch, config)

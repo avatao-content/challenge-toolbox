@@ -1,8 +1,8 @@
 import time
 
+from toolbox.config.docker import PULL_BASEIMAGES
 from toolbox.utils import abort_inactive_branch, run_cmd
 
-from .config import PULL_BASEIMAGES
 from .utils import yield_dockerfiles
 
 

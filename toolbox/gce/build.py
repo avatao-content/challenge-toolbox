@@ -4,9 +4,7 @@ import os
 import shlex
 import subprocess
 
-from toolbox.utils import abort_inactive_branch, parse_bool, fatal_error
-
-from .config import (
+from toolbox.config.gce import (
     AVATAO_USER,
     CONTROLLER_USER,
     GOOGLE_APPLICATION_CREDENTIALS,
@@ -16,6 +14,7 @@ from .config import (
     PACKER_PREEMPTIBLE,
     SSHD_CONFIG,
 )
+from toolbox.utils import abort_inactive_branch, parse_bool, fatal_error
 
 
 def _get_machine_type(config: dict) -> str:

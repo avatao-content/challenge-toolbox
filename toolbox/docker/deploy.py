@@ -1,6 +1,6 @@
+from toolbox.config.docker import ABSOLUTE_IMAGES
 from toolbox.utils import abort_inactive_branch, run_cmd, update_hook, upload_files
 
-from .config import CRP_CONFIG_ABSOLUTE_IMAGE
 from .utils import get_image_url, yield_dockerfiles
 
 
@@ -14,7 +14,7 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     # ...but set relative URLs by default for flexibility.
     for short_name, crp_config_item in config["crp_config"].items():
         crp_config_item["image"] = get_image_url(
-            repo_name, repo_branch, short_name, absolute=CRP_CONFIG_ABSOLUTE_IMAGE)
+            repo_name, repo_branch, short_name, absolute=ABSOLUTE_IMAGES)
 
     upload_files(repo_path, repo_name, repo_branch)
-    update_hook(repo_name, repo_branch, config)
+    update_hook(repo_path, repo_name, repo_branch, config)

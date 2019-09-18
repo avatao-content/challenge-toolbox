@@ -8,15 +8,9 @@ try:
 except ImportError:
     from pkg_resources import parse_version
 
+from toolbox.config.common import CRP_TYPES, CURRENT_MAX_VERSION, CURRENT_MIN_VERSION, PROTOCOLS
+
 from .utils import counted_error, fatal_error
-
-
-CURRENT_MIN_VERSION = 'v3.0'
-CURRENT_MAX_VERSION = 'v3.1'
-
-CONTROLLER_PROTOCOL = 'controller'
-PROTOCOLS = {'udp', 'tcp', 'ssh', 'http', 'ws', CONTROLLER_PROTOCOL}
-CRP_TYPES = {'static', 'docker', 'gce'}
 
 
 def compare_version(config: dict, min_version: str, max_version: str):

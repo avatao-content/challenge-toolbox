@@ -3,9 +3,8 @@ import os
 import re
 from glob import glob
 
+from toolbox.config.gce import CONFIG_KEYS, CRP_CONFIG_KEYS, MAX_CPU_CORES
 from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
-
-from .config import CONFIG_KEYS, CRP_CONFIG_KEYS, MAX_CPU_CORES
 
 
 # pylint: disable=too-many-branches

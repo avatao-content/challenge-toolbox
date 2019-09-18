@@ -4,10 +4,7 @@ import subprocess
 import sys
 from glob import glob
 
-
-ACTIVE_REMOTE_BRANCHES = ["master", "staging", "demo"]
-
-DEFAULT_TIMEOUT = 60 * 60  # timeout for commands
+from toolbox.config import ACTIVE_REMOTE_BRANCHES, DEFAULT_COMMAND_TIMEOUT, IS_CI, ci_sys_args
 
 _error_counter = 0
 
@@ -106,8 +103,8 @@ def get_sys_args() -> (str, str, str):
     Absolute repository path, repository name (optional)
     :return tuple: repo_path, repo_name, repo_branch
     """
-    if is_ci():
-        return os.environ['DRONE_WORKSPACE'], os.environ['DRONE_REPO_NAME'], os.environ['DRONE_BRANCH']
+    if IS_CI:
+        return ci_sys_args()
 
     if not 2 <= len(sys.argv) <= 4:
         logging.info('Usage: %s <repo_path> [repo_name] [repo_branch]', sys.argv[0])
@@ -129,12 +126,12 @@ def abort_inactive_branch(repo_branch: str, *, allow_local: bool):
         abort("Inactive branch: '%s' / %s", repo_branch, ACTIVE_REMOTE_BRANCHES)
 
 
-def run_cmd(args: list, *, timeout: int = DEFAULT_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
+def run_cmd(args: list, *, timeout: int = DEFAULT_COMMAND_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
     """
     Run the given command with subprocess.check_call
 
     :param args: list of args for Popen
-    :param timeout: [optional] process timeout (defaults to DEFAULT_TIMEOUT)
+    :param timeout: [optional] process timeout (defaults to 1 hour)
     :param raise_errors: [optional] raise errors instead of exiting? (defaults to False)
     :param kwargs: [optional] additional key arguments
     :raise subprocess.CalledProcessError

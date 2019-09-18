@@ -1,8 +1,9 @@
 import os
+from toolbox.utils import parse_bool
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
-CRP_CONFIG_ABSOLUTE_IMAGE = os.getenv('CRP_CONFIG_ABSOLUTE_IMAGE', '0').lower() in ('true', '1')
-PULL_BASEIMAGES = os.getenv('TOOLBOX_PULL_BASEIMAGES', '0').lower() in ('true', '1')
+ABSOLUTE_IMAGES = parse_bool(os.getenv('TOOLBOX_ABSOLUTE_IMAGES', 'false'))
+PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
 CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only'}

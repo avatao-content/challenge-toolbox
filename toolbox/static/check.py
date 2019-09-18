@@ -2,9 +2,8 @@ import logging
 import os
 from glob import glob
 
+from toolbox.config.static import CONFIG_KEYS
 from toolbox.utils import check_common_files, counted_error, validate_flag
-
-from .config import CONFIG_KEYS
 
 
 def check_config(config: dict):
