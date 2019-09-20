@@ -126,19 +126,22 @@ def abort_inactive_branch(repo_branch: str, *, allow_local: bool):
         abort("Inactive branch: '%s' / %s", repo_branch, ACTIVE_REMOTE_BRANCHES)
 
 
-def run_cmd(args: list, *, timeout: int = DEFAULT_COMMAND_TIMEOUT, raise_errors: bool = False, **kwargs) -> int:
+def run_cmd(args: list, *, timeout: int = DEFAULT_COMMAND_TIMEOUT, raise_errors: bool = False, check_output: bool = False, **kwargs):
     """
     Run the given command with subprocess.check_call
 
     :param args: list of args for Popen
     :param timeout: [optional] process timeout (defaults to 1 hour)
     :param raise_errors: [optional] raise errors instead of exiting? (defaults to False)
+    :param check_output: [optional] use check_output instead of check_call? (defaults to False)
     :param kwargs: [optional] additional key arguments
     :raise subprocess.CalledProcessError
     :return int
     """
     try:
         logging.debug('Running %s ...', args)
+        if check_output:
+            return subprocess.check_output(args, timeout=timeout, **kwargs)
         return subprocess.check_call(args, timeout=timeout, **kwargs)
 
     except subprocess.CalledProcessError:

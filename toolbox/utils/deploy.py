@@ -1,38 +1,69 @@
+import functools
 import hashlib
 import logging
 import os
-import functools
-from glob import glob
+import subprocess
 
 import requests
 
-from toolbox.config import CRP_DEPLOY_HOOK, CRP_DEPLOY_TOKEN, CRP_FILES_SALT, DOWNLOADABLE_FILES_BUCKET, ORGANIZATION
+from toolbox.config import CRP_DEPLOY_HOOK, CRP_DEPLOY_TOKEN, DOWNLOADABLE_FILES_BUCKET, ORGANIZATION
 
 from .utils import fatal_error, run_cmd
 
 
-@functools.lru_cache(maxsize=32)
-def get_obfuscated_path_prefix(repo_name: str, repo_branch: str) -> str:
-    if not CRP_FILES_SALT:
-        fatal_error('CRP_FILES_SALT must be set!')
+def _hash_directory(path):
+    digest = hashlib.sha1()
+    for root, _, files in os.walk(path):
+        for names in files:
+            file_path = os.path.join(root, names)
+            if os.path.isfile(file_path):
+                with open(file_path, 'rb') as f:
+                    while True:
+                        buf = f.read(1024 * 1024)
+                        if not buf:
+                            break
+                        digest.update(buf)
 
-    secret = '/'.join((ORGANIZATION, repo_name, repo_branch, CRP_FILES_SALT)).encode('utf-8')
-    return hashlib.sha512(secret).hexdigest()[:40]
+    return digest.hexdigest()
+
+
+@functools.lru_cache(maxsize=8)
+def _get_downloads_path_prefix(repo_path: str, repo_name: str, repo_branch: str) -> str:
+    challenge_key_hash = hashlib.sha1('/'.join((ORGANIZATION, repo_name, repo_branch)).encode('utf-8')).hexdigest()
+    downloads_hash = _hash_directory(os.path.join(repo_path, 'downloads'))
+    return '/'.join((challenge_key_hash, downloads_hash))
 
 
 def list_downloadable_files(repo_path: str, repo_name: str, repo_branch: str) -> list:
-    return [
-        '/'.join((get_obfuscated_path_prefix(repo_name, repo_branch), os.path.basename(path)))
-        for path in glob(os.path.join(repo_path, 'downloads', '*'))
-        if os.path.isfile(path)
-    ]
+    downloads_path = os.path.join(repo_path, 'downloads')
+    result = []
+    for root, _, files in os.walk(downloads_path):
+        prefix = _get_downloads_path_prefix(repo_path, repo_name, repo_branch)
+        for filename in files:
+            relpath = os.path.relpath(os.path.join(root, filename), downloads_path)
+            result.append('/'.join((prefix, relpath)))
+    return result
 
 
 def upload_files(repo_path: str, repo_name: str, repo_branch: str):
     downloads_path = os.path.join(repo_path, 'downloads')
-    if glob(os.path.join(downloads_path, '*')):
-        remote_path = '/'.join((DOWNLOADABLE_FILES_BUCKET, get_obfuscated_path_prefix(repo_name, repo_branch)))
-        run_cmd(['gsutil', '-m', 'rsync', '-c', '-d', '-e', downloads_path + '/', remote_path + '/'])
+    if not list(os.walk(downloads_path)):
+        return
+
+    challenge_key_prefix, downloads_hash = _get_downloads_path_prefix(repo_path, repo_name, repo_branch).split('/')
+    gs_parent_path = '/'.join((DOWNLOADABLE_FILES_BUCKET, challenge_key_prefix))
+    gs_target_path = '/'.join((gs_parent_path, downloads_hash))
+
+    try:
+        ls_current = run_cmd(['gsutil', 'ls', gs_parent_path], raise_errors=True, check_output=True)
+        current_content = list(map(lambda s: s.rstrip('/'), ls_current.decode('utf-8').rstrip().split('\n')))
+    except subprocess.CalledProcessError:
+        current_content = []
+
+    if gs_target_path not in current_content:
+        run_cmd(['gsutil', 'cp', '-r', downloads_path, gs_target_path])
+        if current_content:
+            run_cmd(['gsutil', 'rm', '-r', *current_content])
 
 
 def update_hook(repo_path: str, repo_name: str, repo_branch: str, config: dict):
