@@ -14,7 +14,7 @@ from .utils import get_image_url
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
 ULIMIT_NOFILE = '8192:16384'
-MEMORY_LIMIT = '100M'
+MEMORY_LIMIT = '100'
 SECRET = 'secret'
 
 CONNECTION_USAGE = defaultdict(lambda: 'nc ' + BIND_ADDR + ' %d')
@@ -80,7 +80,7 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
         '-e', 'SECRET=%s' % SECRET,  # for compatibility!
         '--name=%s' % name,
         '--label=com.avatao.typed_crp_id=docker',
-        '--memory=%s' % crp_config_item.get('mem_limit', MEMORY_LIMIT),
+        '--memory=%s' % crp_config_item.get('mem_limit_mb', MEMORY_LIMIT) + 'M',
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
         '--read-only',
