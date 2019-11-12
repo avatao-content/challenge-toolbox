@@ -11,8 +11,10 @@ crp_type: "docker"
 crp_config:
     controller:
         ports: ["5555/controller"]
+        read_only: true
     solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
         # For example ["SETGID", "SETUID"]
         # capabilities: [] # Not needed if empty
         ports: ["2222/ssh"]
+        read_only: true

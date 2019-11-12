@@ -12,8 +12,10 @@ crp_config:
     controller:
         ports: ["5555/controller"]
         mem_limit_mb: 200
+        read_only: true
     solvable:
         # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
         # For example ["SETGID", "SETUID"]
         # capabilities: [] # Not needed if empty
         ports: ["8888/http"]
+        read_only: true

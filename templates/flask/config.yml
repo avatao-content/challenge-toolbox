@@ -14,6 +14,8 @@ crp_config:
         # For example ["SETGID", "SETUID"]
         # capabilities: [] # Not needed if empty
         ports: ["5555/controller"]
+        read_only: true
     solvable:
         # capabilities: [] # Not needed if empty
         ports: ["8888/http"]
+        read_only: true

@@ -83,7 +83,6 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
         '--memory=%s' % crp_config_item.get('mem_limit_mb', MEMORY_LIMIT) + 'M',
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
-        '--read-only',
     ]
 
     if 'ports' in crp_config_item:
@@ -98,6 +97,9 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
 
     if 'kernel_params' in crp_config_item:
         drun += ['--sysctl=%s=%s' % (key, value) for key, value in crp_config_item['kernel_params'].items()]
+
+    if crp_config_item.get('read_only', False):
+        drun += ['--read-only']
 
     if share_with is None:
         # Disable DNS as there will be no internet access in production
