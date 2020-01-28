@@ -10,6 +10,9 @@ from .utils import yield_dockerfiles
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     abort_inactive_branch(repo_branch, allow_local=True)
 
+    if config['archive']:
+        return
+
     for dockerfile, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
         build_cmd = ['docker', 'build', '-f', dockerfile, '-t', image]
         if PULL_BASEIMAGES:
