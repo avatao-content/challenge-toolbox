@@ -2,8 +2,10 @@ import os
 from toolbox.utils import parse_bool
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
-ABSOLUTE_IMAGES = parse_bool(os.getenv('TOOLBOX_ABSOLUTE_IMAGES', 'false'))
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
+
+# Required with the next-gen k8s infra.
+ABSOLUTE_IMAGES = True
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'archive'}
 CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only'}
