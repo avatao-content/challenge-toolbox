@@ -1,8 +1,10 @@
 #!/bin/bash
 set -aeuo pipefail
 
-if [ -n "${CI_SYSTEM_LINK-}" ]; then
-  source "/etc/docker/avatao-challenge-toolbox/$(echo "$CI_SYSTEM_LINK" | grep -Eo '://[^/:]+' | tail -c+4)"
+env | grep ^DRONE | grep -Ev "PASSWORD|SECRET|TOKEN" >&2
+
+if [ -n "${DRONE_SYSTEM_HOSTNAME-}" ]; then
+  source "/etc/docker/avatao-challenge-toolbox/${DRONE_SYSTEM_HOSTNAME}"
 else
   echo "# CI_SYSTEM_LINK is unset. Falling back to .env" >&2
   source "$(dirname "$0")/.env"
@@ -16,5 +18,4 @@ if [ -n "${GOOGLE_PROJECT_ID-}" ]; then
   gcloud config set project "$GOOGLE_PROJECT_ID"
 fi
 
-env | grep ^DRONE >&2
 exec "$@"
