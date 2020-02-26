@@ -8,6 +8,7 @@ RUN yum -y install epel-release \
         ${PYTHON3_PKG}-setuptools \
         ${PYTHON3_PKG}-pip \
         docker-ce-cli \
+        git \
         google-cloud-sdk \
         unzip \
     && yum clean all
