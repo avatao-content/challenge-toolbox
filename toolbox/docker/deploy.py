@@ -7,7 +7,7 @@ from .utils import get_image_url, yield_dockerfiles
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     abort_inactive_branch(repo_branch, allow_local=False)
 
-    if not config['archive']:
+    if not config.get('archive'):
         # Push absolute images URLs...
         for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
             run_cmd(['docker', 'push', image])
