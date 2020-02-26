@@ -2,11 +2,12 @@
 set -aeuo pipefail
 
 env | grep ^DRONE | grep -Ev "PASSWORD|SECRET|TOKEN" >&2
+git submodule update --init --checkout --recursive --remote
 
 if [ -n "${DRONE_SYSTEM_HOSTNAME-}" ]; then
   source "/etc/docker/avatao-challenge-toolbox/${DRONE_SYSTEM_HOSTNAME}"
 else
-  echo "# CI_SYSTEM_LINK is unset. Falling back to .env" >&2
+  echo "# DRONE_SYSTEM_HOSTNAME is unset. Falling back to .env" >&2
   source "$(dirname "$0")/.env"
 fi
 
