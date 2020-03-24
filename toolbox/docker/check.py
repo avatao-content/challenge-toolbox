@@ -6,15 +6,16 @@ from glob import glob
 from toolbox.config.docker import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES, KERNEL_PARAMETERS
 from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
 
-from .utils import yield_dockerfiles
+from .utils import sorted_container_configs, yield_dockerfiles
 
 
-def check_config(config: dict):
+def check_config(config: dict):  # pylint: disable=too-many-branches
     invalid_keys = set(config.keys()) - set(CONFIG_KEYS)
     if invalid_keys:
         counted_error('Invalid key(s) found in config.yml: %s', invalid_keys)
 
-    for item in config['crp_config'].values():
+    first = True
+    for _, item in sorted_container_configs(config['crp_config']):
         if not isinstance(item, dict):
             counted_error('Items of crp_config must be dictionaries.')
 
@@ -43,8 +44,15 @@ def check_config(config: dict):
                 counted_error('Invalid mem_limit_mb: %s. It should be an integer between 4 and 1024 MegaBytes.',
                               item['mem_limit_mb'])
 
+        if 'volumes' in item:
+            if not first:
+                counted_error('Only the first container [solvable, controller, ...] can set shared volumes.')
+            else:
+                logging.warning('Shared volumes are manually set. Is this what you want?')
+
         validate_bool('read_only', config.get('read_only', '0'))
         validate_ports(config['crp_config'].get('ports', []))
+        first = False
 
     validate_flag(config)
 
@@ -55,8 +63,8 @@ def check_dockerfile(filename):
         with open(filename, 'r') as f:
             d = f.read()
             if re.search(repo_pattern, d) is None:
-                counted_error('Please use avatao base images for your challenges. Our base images'
-                              ' are available at https://hub.docker.com/u/avatao/')
+                counted_error('Please use avatao base images for your challenges. Our base images '
+                              'are available at https://hub.docker.com/u/avatao/')
     except FileNotFoundError as e:
         counted_error('Could not open %s', e.filename)
 

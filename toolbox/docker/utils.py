@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from typing import Iterable, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 from toolbox.config.docker import DOCKER_REGISTRY
 
@@ -40,3 +40,17 @@ def yield_dockerfiles(repo_path: str, repo_name: str, repo_branch: str, absolute
         short_name = os.path.basename(os.path.dirname(dockerfile))
         image = get_image_url(repo_name, repo_branch, short_name, absolute)
         yield dockerfile, image
+
+
+def sorted_container_configs(containers: Dict[str, Dict]) -> List[Tuple[str, Dict]]:
+    def sort_key(item: Tuple[str, Dict]):
+        # The solvable must come first to share its volumes and namespaces
+        if item[0] == "solvable":
+            return 0
+        # Then the controller if defined
+        if item[0] == "controller":
+            return 1
+        # Then any other solvable in their current order
+        return 2
+
+    return sorted(containers.items(), key=sort_key)

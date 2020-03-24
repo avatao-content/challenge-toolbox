@@ -8,7 +8,7 @@ PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
 ABSOLUTE_IMAGES = True
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'archive'}
-CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only'}
+CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only', 'volumes'}
 
 CAPABILITIES = {
     # all linux capabilities:
