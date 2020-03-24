@@ -3,13 +3,15 @@ import logging
 import os
 import subprocess
 import time
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
+from copy import deepcopy
 from posixpath import join
+from typing import Any, Dict, Tuple
+from uuid import uuid4
 
 from toolbox.utils import fatal_error
 
 from .utils import get_image_url
-
 
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
@@ -23,9 +25,15 @@ CONNECTION_USAGE.update({
     'http': 'http://' + BIND_ADDR + ':%d',
 })
 
+# Hack to allow parallel executions. There are also such labels in production.
+INSTANCE_LABEL = "com.avatao.instance_id"
+INSTANCE_ID = uuid4()
 
-def get_crp_config(repo_name: str, repo_branch: str, crp_config: dict) -> dict:
+
+def get_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Dict[str, Dict]:
+    # This is not how things work anymore but the end result is the same...
     # The order is important because of namespace and volume sharing!
+    crp_config = deepcopy(crp_config)
     crp_config_ordered = OrderedDict()
 
     # The main solvable always comes first if it's defined
@@ -66,11 +74,11 @@ def get_crp_config(repo_name: str, repo_branch: str, crp_config: dict) -> dict:
     return crp_config_ordered
 
 
-def run_container(crp_config_item: dict, short_name: str, share_with: str = None) \
-        -> (subprocess.Popen, str):
+def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: str = None) \
+        -> Tuple[subprocess.Popen, str]:
 
-    name = '-'.join((crp_config_item['image'].split('/')[-1].split(':')[0], short_name))
-    # TODO: set AVATAO_{PORTS,PROXY_PORTS,PROXY_SERVICES} env vars here as well!
+    container_name = '-'.join((crp_config_item['image'].split('/')[-1].split(':')[0], short_name))
+    # TODO: set AVATAO_PROXY_SERVICES env var here as well!
     drun = [
         'docker', 'run',
         '-e', 'AVATAO_CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
@@ -78,8 +86,8 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
         '-e', 'AVATAO_SHORT_NAME=%s' % short_name,
         '-e', 'AVATAO_SECRET=%s' % SECRET,
         '-e', 'SECRET=%s' % SECRET,  # for compatibility!
-        '--name=%s' % name,
-        '--label=com.avatao.typed_crp_id=docker',
+        '--name=%s' % container_name,
+        '--label=%s=%s' % (INSTANCE_LABEL, INSTANCE_ID),
         '--memory=%s' % crp_config_item.get('mem_limit_mb', MEMORY_LIMIT) + 'M',
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
@@ -117,9 +125,9 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
     try:
         logging.debug(' '.join(map(str, drun)))
         proc = subprocess.Popen(drun)
-        time.sleep(2)
+        time.sleep(5)
 
-        return proc, name
+        return proc, container_name
 
     except subprocess.CalledProcessError:
         fatal_error('Failed to run %s. Please make sure that is was built.' % drun[-1])
@@ -127,23 +135,28 @@ def run_container(crp_config_item: dict, short_name: str, share_with: str = None
 
 def remove_containers():
     subprocess.Popen(
-        ['sh', '-c', 'docker rm -fv $(docker ps -aq --filter=label=com.avatao.typed_crp_id=docker)'],
+        ['sh', '-c', 'docker rm -fv $(docker ps -aq --filter=label=%s=%s)' % (INSTANCE_LABEL, INSTANCE_ID)],
         stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
+
+
+def start_containers(repo_name: str, repo_branch: str, config: dict) -> Dict[str, subprocess.Popen]:
+    proc_map, first = OrderedDict(), None
+    for short_name, crp_config_item in get_crp_config(repo_name, repo_branch, config['crp_config']).items():
+        proc, container_name = run_container(crp_config_item, short_name, share_with=first)
+        proc_map[container_name] = proc
+        if first is None:
+            first = container_name
+
+    return proc_map
 
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     atexit.register(remove_containers)
-
-    proc_list, first = [], None
-    for short_name, crp_config_item in get_crp_config(repo_name, repo_branch, config['crp_config']).items():
-        proc, container = run_container(crp_config_item, short_name, share_with=first)
-        proc_list.append(proc)
-        if first is None:
-            first = container
+    proc_map = start_containers(repo_name, repo_branch, config)
 
     logging.info('When you gracefully terminate this script [Ctrl+C] the containers will be destroyed.')
-    for proc in proc_list:
+    for proc in proc_map.values():
         try:
             proc.wait()
         except KeyboardInterrupt:
