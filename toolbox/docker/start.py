@@ -85,9 +85,6 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         drun += ['--cap-drop=ALL']
         drun += ['--cap-add=%s' % cap for cap in crp_config_item['capabilities']]
 
-    if 'kernel_params' in crp_config_item:
-        drun += ['--sysctl=%s=%s' % (key, value) for key, value in crp_config_item['kernel_params'].items()]
-
     if crp_config_item.get('read_only', False):
         drun += ['--read-only']
 

@@ -9,7 +9,7 @@ ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')
 ABSOLUTE_IMAGES = True
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'archive'}
-CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'kernel_params', 'read_only', 'volumes'}
+CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'capabilities', 'read_only', 'volumes'}
 
 CAPABILITIES = {
     # all linux capabilities:
@@ -23,10 +23,4 @@ CAPABILITIES = {
 } - {  # blacklisted capabilities (subject to change):
     'MAC_ADMIN', 'MAC_OVERRIDE', 'SYS_ADMIN', 'SYS_MODULE', 'SYS_RESOURCE',
     'LINUX_IMMUTABLE', 'SYS_BOOT', 'BLOCK_SUSPEND', 'WAKE_ALARM',
-}
-
-# Allowed kernel parameters to set via the --sysctl docker run option:
-# This may be extended manually on a case-by-case basis.
-KERNEL_PARAMETERS = {
-    "net.ipv4.ip_forward",
 }

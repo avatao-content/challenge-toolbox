@@ -3,7 +3,7 @@ import os
 import re
 from glob import glob
 
-from toolbox.config.docker import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES, KERNEL_PARAMETERS
+from toolbox.config.docker import CONFIG_KEYS, CRP_CONFIG_ITEM_KEYS, CAPABILITIES
 from toolbox.utils import check_common_files, counted_error, validate_bool, validate_flag, validate_ports
 
 from .utils import sorted_container_configs, yield_dockerfiles
@@ -32,12 +32,6 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
             if invalid_caps:
                 counted_error('Forbidden capabilities: %s\n\tAllowed capabilities: %s',
                               invalid_caps, CAPABILITIES)
-
-        if 'kernel_params' in item:
-            invalid_parameters = set(item['kernel_params']) - KERNEL_PARAMETERS
-            if invalid_parameters:
-                counted_error('Forbidden kernel parameters: %s\n\tAllowed parameters: %s',
-                              invalid_parameters, KERNEL_PARAMETERS)
 
         if 'mem_limit_mb' in item:
             if not str(item['mem_limit_mb']).isnumeric() or not 4 < int(item['mem_limit_mb']) < 1024:
