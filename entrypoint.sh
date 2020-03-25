@@ -1,7 +1,7 @@
 #!/bin/bash
 set -aeuo pipefail
 
-env | grep ^DRONE | grep -Ev "PASSWORD|SECRET|TOKEN" >&2
+env | grep -E "^DRONE_\w*(BRANCH|COMMIT|REPO|SYSTEM|WORKSPACE)" | grep -Ev "^\w*(PASSWORD|SECRET|TOKEN)" >&2
 git submodule update --init --checkout --recursive --remote
 
 if [ -n "${DRONE_SYSTEM_HOSTNAME-}" ]; then
