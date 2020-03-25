@@ -36,6 +36,7 @@ def test_and_update_config(repo_name: str, repo_branch: str, config: dict):
 
     except Exception as e:
         logging.exception(e)
+        # sys.exit raises SystemExit in Python which will be re-raised after the finally block.
         fatal_error("Failed to run or inspect containers!")
 
     finally:
