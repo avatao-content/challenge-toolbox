@@ -3,6 +3,7 @@ from toolbox.utils import parse_bool
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
+ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')
 
 # Required with the next-gen k8s infra.
 ABSOLUTE_IMAGES = True
