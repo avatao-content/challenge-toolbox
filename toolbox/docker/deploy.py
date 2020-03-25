@@ -4,7 +4,7 @@ import os
 from subprocess import check_output
 
 from toolbox.config.docker import ABSOLUTE_IMAGES, ARCHIVE_BRANCH
-from toolbox.utils import abort_inactive_branch, fatal_error, run_cmd, update_hook, upload_files
+from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
 
 from .utils import get_image_url, sorted_container_configs, yield_dockerfiles
 from .start import start_containers, remove_containers
@@ -45,12 +45,16 @@ def test_and_update_config(repo_name: str, repo_branch: str, config: dict):
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     abort_inactive_branch(repo_branch, allow_local=False)
+    is_archived = parse_bool(config.get('archive'))
     os.chdir(repo_path)
 
-    built_branch = repo_branch if not config.get('archive') else ARCHIVE_BRANCH
-    test_and_update_config(repo_name, built_branch, config)
+    if is_archived:
+        for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
+            run_cmd(['docker', 'pull', image])
 
-    if not config.get('archive'):
+    test_and_update_config(repo_name, repo_branch if not is_archived else ARCHIVE_BRANCH, config)
+
+    if not is_archived:
         for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
             run_cmd(['docker', 'push', image])
 
