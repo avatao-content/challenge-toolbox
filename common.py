@@ -59,13 +59,13 @@ def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> 
     :param absolute: [optional] return the absolute URL using the default registry?
     :return: absolute URL
     """
-    if short_name is not None:
-        repo_name = ':'.join((repo_name, short_name))
+    tag = '-'.join((short_name, 'legacy'))
+    image = ':'.join((repo_name, tag))
 
     if absolute:
-        return posixpath.join(DOCKER_REGISTRY, repo_name)
-    else:
-        return repo_name
+        return '/'.join((DOCKER_REGISTRY, image))
+
+    return image
 
 
 def yield_dockerfiles(repo_path: str, repo_name: str, absolute: bool=True):
