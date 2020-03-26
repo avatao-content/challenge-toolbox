@@ -59,8 +59,12 @@ def get_image_url(repo_name: str, short_name: str=None, absolute: bool=True) -> 
     :param absolute: [optional] return the absolute URL using the default registry?
     :return: absolute URL
     """
-    tag = '-'.join((short_name, 'legacy'))
-    image = ':'.join((repo_name, tag))
+    if short_name is not None:
+        tag = '-'.join((short_name, 'legacy'))
+        image = ':'.join((repo_name, tag))
+    else:
+        # This is only useful for making absolute image URLs...
+        image = repo_name
 
     if absolute:
         return '/'.join((DOCKER_REGISTRY, image))
