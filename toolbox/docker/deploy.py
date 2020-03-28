@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-from subprocess import check_output
 
 from toolbox.config.docker import ABSOLUTE_IMAGES, ARCHIVE_BRANCH
 from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
@@ -20,7 +19,9 @@ def test_and_update_config(repo_name: str, repo_branch: str, config: dict):
         # Get the first container's name (and process) then inspect its volumes.
         volumes_list = []
         for container_name, _ in start_containers(repo_name, repo_branch, config).items():
-            volumes_json = check_output(['docker', 'inspect', '-f', '{{json .Config.Volumes}}', container_name])
+            volumes_json = run_cmd(
+                ['docker', 'inspect', '-f', '{{json .Config.Volumes}}', container_name],
+                timeout=5, check_output=True)
             volumes_list = list(json.loads(volumes_json).keys())
             break
 

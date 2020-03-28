@@ -104,10 +104,15 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
     try:
         logging.debug(' '.join(map(str, drun)))
         proc = subprocess.Popen(drun)
+
+        # Crude way of telling whether it actually stays up
         time.sleep(5)
+        if proc.poll() is not None:
+            raise ValueError
+
         return proc, container_name
 
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, ValueError):
         fatal_error('Failed to run %s. Please make sure that is was built.' % drun[-1])
 
 
