@@ -90,7 +90,7 @@ def get_repo_branch(repo_path: str) -> str:
     """
     git_head_cmd = ['git', 'symbolic-ref', '--short', 'HEAD']
     try:
-        return subprocess.check_output(git_head_cmd, cwd=repo_path).decode('utf-8').rstrip('\n')
+        return subprocess.check_output(git_head_cmd, cwd=repo_path).decode('utf-8').rstrip()
 
     except subprocess.CalledProcessError:
         fatal_error('Failed to run: %s', git_head_cmd)

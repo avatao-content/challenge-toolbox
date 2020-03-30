@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Tuple
 from uuid import uuid4
 
 from toolbox.config.docker import FORWARD_PORTS
-from toolbox.utils import fatal_error
+from toolbox.utils import parse_bool, fatal_error
 
 from .utils import get_image_url, sorted_container_configs
 
@@ -60,13 +60,14 @@ def get_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]
     return contaner_configs
 
 
-def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: str = None) \
-        -> Tuple[subprocess.Popen, str]:
+def get_container_command(
+    crp_config_item: Dict[str, Any], short_name: str, share_with: str = None
+) -> Tuple[subprocess.Popen, str, str]:
 
     container_name = '-'.join((str(INSTANCE_ID), short_name))
     image = crp_config_item['image']
 
-    drun = [
+    command = [
         'docker', 'run',
         '-e', 'AVATAO_CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
         '-e', 'AVATAO_USER_ID=00000000-0000-0000-0000-000000000000',
@@ -84,47 +85,79 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
     if 'ports' in crp_config_item and FORWARD_PORTS:
         for port, proto_l7 in crp_config_item['ports'].items():
             port_num = int(port.split('/')[0])
-            drun += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]
+            command += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]
             logging.info('Connection: %s', CONNECTION_USAGE[proto_l7] % port_num)
 
     if 'capabilities' in crp_config_item:
-        drun += ['--cap-drop=ALL']
-        drun += ['--cap-add=%s' % cap for cap in crp_config_item['capabilities']]
+        command += ['--cap-drop=ALL']
+        command += ['--cap-add=%s' % cap for cap in crp_config_item['capabilities']]
 
     if crp_config_item.get('read_only', False):
-        drun += ['--read-only']
+        command += ['--read-only']
 
     if share_with is None:
         # Disable DNS as there will be no internet access in production
-        drun += ['--dns=0.0.0.0', '--hostname=avatao']
+        command += ['--dns=0.0.0.0', '--hostname=avatao']
     else:
         # Share the first container's network namespace and volumes
-        drun += [
+        command += [
             '--network=container:%s' % share_with,
             '--volumes-from=%s' % share_with,
         ]
 
     # Absolute URL of the image
-    drun += [image]
+    command += [image]
+    return command, container_name
+
+
+def poll_container(proc: subprocess.Popen, container_name: str, *, retries: int, sleeps: int):
+    for i in range(0, retries):
+        logging.debug('Waiting %ds for %s [%d/%d]', sleeps, container_name, i + 1, retries)
+        time.sleep(sleeps)
+
+        # Check whether the process exited
+        if proc.poll() is not None:
+            raise ValueError('Container exited!')
+
+        try:
+            # Check whether the container is running yet
+            running: str = subprocess.check_output(
+                ['docker', 'inspect', '-f', '{{.State.Running}}', container_name],
+                stderr=subprocess.DEVNULL).decode('utf-8').strip()
+
+            if parse_bool(running):
+                break
+        except subprocess.CalledProcessError:
+            pass
+    else:
+        raise ValueError('Container timed out!')
+
+
+def run_container(
+    crp_config_item: Dict[str, Any], short_name: str, share_with: str = None
+) -> Tuple[subprocess.Popen, str]:
+
+    command, container_name = get_container_command(crp_config_item, short_name, share_with)
+    image = crp_config_item['image']
 
     try:
         # Check whether the image exists to avoid horrific edge-cases
-        image_output = subprocess.check_output(['docker', 'images', '-q', image], timeout=15)
+        image_output: str = subprocess.check_output(['docker', 'images', '-q', image]).decode('utf-8').rstrip()
         if not image_output:
-            fatal_error('Image %s not found. Please, make sure that is was built.' % image)
+            fatal_error('Image %s not found! Please, make sure it exists.' % image)
 
-        logging.debug(' '.join(map(str, drun)))
-        proc = subprocess.Popen(drun)
+        logging.debug(' '.join(map(str, command)))
+        proc = subprocess.Popen(command)
 
-        # Crude way of telling whether it actually stays up
-        time.sleep(10)
-        if proc.poll() is not None:
-            raise ValueError
+        # There is no God.
+        poll_container(proc, container_name, retries=10, sleeps=5)
+        # Ready but PID 1 might not be so wait some more...
+        poll_container(proc, container_name, retries=1, sleeps=5)
 
         return proc, container_name
 
     except (subprocess.CalledProcessError, ValueError):
-        fatal_error('Failed to run %s. Please, make sure that is was built.' % image)
+        fatal_error('Failed to run %s!' % image)
 
 
 def remove_containers():
