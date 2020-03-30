@@ -17,8 +17,10 @@ from .utils import get_image_url, sorted_container_configs
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
 ULIMIT_NOFILE = '8192:16384'
-MEMORY_LIMIT = '100'
 SECRET = 'secret'
+
+DEFAULT_MEMORY_LIMIT_MB = 100  # MiB
+DEFAULT_CPUS_LIMIT = 1  # 100m requested, 1000m limit
 
 CONNECTION_USAGE = defaultdict(lambda: 'nc ' + BIND_ADDR + ' %d')
 CONNECTION_USAGE.update({
@@ -73,7 +75,8 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         '-e', 'SECRET=%s' % SECRET,  # for compatibility!
         '--name=%s' % container_name,
         '--label=%s=%s' % (INSTANCE_LABEL, INSTANCE_ID),
-        '--memory=%s' % crp_config_item.get('mem_limit_mb', MEMORY_LIMIT) + 'M',
+        '--memory=%s' % crp_config_item.get('mem_limit_mb', DEFAULT_MEMORY_LIMIT_MB) + 'M',
+        '--cpus=%s' % DEFAULT_CPUS_LIMIT,
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
     ]
