@@ -9,6 +9,7 @@ from posixpath import join
 from typing import Any, Dict, List, Tuple
 from uuid import uuid4
 
+from toolbox.config.docker import FORWARD_PORTS
 from toolbox.utils import fatal_error
 
 from .utils import get_image_url, sorted_container_configs
@@ -77,7 +78,7 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
     ]
 
-    if 'ports' in crp_config_item:
+    if 'ports' in crp_config_item and FORWARD_PORTS:
         for port, proto_l7 in crp_config_item['ports'].items():
             port_num = int(port.split('/')[0])
             drun += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]
