@@ -22,4 +22,6 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
 
         build_cmd.append(repo_path)
         run_cmd(build_cmd)
-        time.sleep(1)
+
+        # Let the engine cool off
+        time.sleep(5)

@@ -61,6 +61,8 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         -> Tuple[subprocess.Popen, str]:
 
     container_name = '-'.join((str(INSTANCE_ID), short_name))
+    image = crp_config_item['image']
+
     drun = [
         'docker', 'run',
         '-e', 'AVATAO_CHALLENGE_ID=00000000-0000-0000-0000-000000000000',
@@ -99,9 +101,14 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         ]
 
     # Absolute URL of the image
-    drun += [crp_config_item['image']]
+    drun += [image]
 
     try:
+        # Check whether the image exists to avoid horrific edge-cases
+        image_output = subprocess.check_output(['docker', 'images', '-q', image], timeout=15)
+        if not image_output:
+            fatal_error('Image %s not found. Please, make sure that is was built.' % image)
+
         logging.debug(' '.join(map(str, drun)))
         proc = subprocess.Popen(drun)
 
@@ -113,7 +120,7 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         return proc, container_name
 
     except (subprocess.CalledProcessError, ValueError):
-        fatal_error('Failed to run %s. Please make sure that is was built.' % drun[-1])
+        fatal_error('Failed to run %s. Please, make sure that is was built.' % image)
 
 
 def remove_containers():
