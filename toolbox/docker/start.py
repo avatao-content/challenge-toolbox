@@ -106,7 +106,7 @@ def run_container(crp_config_item: Dict[str, Any], short_name: str, share_with: 
         proc = subprocess.Popen(drun)
 
         # Crude way of telling whether it actually stays up
-        time.sleep(5)
+        time.sleep(10)
         if proc.poll() is not None:
             raise ValueError
 
