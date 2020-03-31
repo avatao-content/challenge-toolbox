@@ -15,7 +15,7 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
         logging.warning('Skipping build. This challenge is archived.')
         return
 
-    for dockerfile, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
+    for dockerfile, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config):
         build_cmd = ['docker', 'build', '-f', dockerfile, '-t', image]
         if PULL_BASEIMAGES:
             build_cmd.append('--pull')

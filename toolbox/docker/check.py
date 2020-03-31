@@ -57,7 +57,7 @@ def check_dockerfile(filename):
         with open(filename, 'r') as f:
             d = f.read()
             if re.search(repo_pattern, d) is None:
-                counted_error('Please use avatao base images for your challenges. Our base images '
+                counted_error('Please, use avatao base images for your challenges. Our base images '
                               'are available at https://hub.docker.com/u/avatao/')
     except FileNotFoundError as e:
         counted_error('Could not open %s', e.filename)
@@ -70,7 +70,7 @@ def check_misc():
     check_common_files()
 
     if not glob('src/*'):
-        logging.warning('Missing or empty "src" directory. Please place your source files there '
+        logging.warning('Missing or empty "src" directory. Please, place your source files there '
                         'if your challenge has any.')
 
 
@@ -78,5 +78,5 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     check_config(config)
     check_misc()
-    for dockerfile, _ in yield_dockerfiles(repo_path, repo_branch, repo_name):
+    for dockerfile, _ in yield_dockerfiles(repo_path, repo_branch, repo_name, config):
         check_dockerfile(dockerfile)

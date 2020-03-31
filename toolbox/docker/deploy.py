@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from toolbox.config.docker import ABSOLUTE_IMAGES, ARCHIVE_BRANCH
+from toolbox.config.docker import ARCHIVE_BRANCH
 from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
 
 from .utils import get_image_url, sorted_container_configs, yield_dockerfiles
@@ -10,9 +10,8 @@ from .start import start_containers, remove_containers
 
 
 def test_and_update_config(repo_name: str, repo_branch: str, config: dict):
-    for short_name, crp_config_item in config["crp_config"].items():
-        crp_config_item["image"] = get_image_url(
-            repo_name, repo_branch, short_name, absolute=ABSOLUTE_IMAGES)
+    for short_name, crp_config_item in config['crp_config'].items():
+        crp_config_item['image'] = get_image_url(repo_name, repo_branch, config['crp_config'], short_name)
 
     # By running the containers, we also test whether the challenge can be started.
     try:
@@ -27,12 +26,12 @@ def test_and_update_config(repo_name: str, repo_branch: str, config: dict):
 
         if volumes_list:
             # Store the volumes in the first container's crp_config item.
-            for _, crp_config_item in sorted_container_configs(config["crp_config"]):
-                if "volumes" not in crp_config_item:
-                    crp_config_item["volumes"] = volumes_list
-                    logging.debug("Automatically set shared volumes: %s", volumes_list)
+            for _, crp_config_item in sorted_container_configs(config['crp_config']):
+                if 'volumes' not in crp_config_item:
+                    crp_config_item['volumes'] = volumes_list
+                    logging.debug('Automatically set shared volumes: %s', volumes_list)
                 else:
-                    logging.debug("Ignoring inspected volumes: %s", volumes_list)
+                    logging.debug('Ignoring inspected volumes: %s', volumes_list)
                 break
 
     except Exception as e:
@@ -50,13 +49,13 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
 
     if is_archived:
-        for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
+        for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config):
             run_cmd(['docker', 'pull', image])
 
     test_and_update_config(repo_name, repo_branch if not is_archived else ARCHIVE_BRANCH, config)
 
     if not is_archived:
-        for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch):
+        for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config):
             run_cmd(['docker', 'push', image])
 
     upload_files(repo_path, repo_name, repo_branch)

@@ -43,9 +43,7 @@ def get_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]
     # Also set absolute image URLs here
     ports = {}
     for short_name, crp_config_item in contaner_configs:
-        # Set the absolute image URL for this container
-        if 'image' not in crp_config_item:
-            crp_config_item['image'] = get_image_url(repo_name, repo_branch, short_name)
+        crp_config_item['image'] = get_image_url(repo_name, repo_branch, crp_config, short_name)
 
         # Convert ['port/L7_proto'] format to {'port/L4_proto': 'L7_proto'}
         # * We do not differentiate udp at layer 7
