@@ -34,8 +34,8 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
                               invalid_caps, CAPABILITIES)
 
         if 'mem_limit_mb' in item:
-            if not str(item['mem_limit_mb']).isnumeric() or not 4 < int(item['mem_limit_mb']) < 1024:
-                counted_error('Invalid mem_limit_mb: %s. It should be an integer between 4 and 1024 MegaBytes.',
+            if not str(item['mem_limit_mb']).isnumeric() or not 8 < int(item['mem_limit_mb']) < 1024:
+                counted_error('Invalid mem_limit_mb: %s. It should be an integer between 8 and 1024 MegaBytes.',
                               item['mem_limit_mb'])
 
         if 'volumes' in item:
