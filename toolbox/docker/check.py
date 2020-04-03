@@ -76,7 +76,9 @@ def check_misc():
 
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
+
     check_config(config)
     check_misc()
-    for dockerfile, _ in yield_dockerfiles(repo_path, repo_branch, repo_name, config):
+
+    for dockerfile, _ in yield_dockerfiles(repo_path, repo_branch, repo_name, config['crp_config']):
         check_dockerfile(dockerfile)

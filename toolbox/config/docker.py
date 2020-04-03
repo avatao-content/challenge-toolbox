@@ -1,7 +1,10 @@
 import os
+import re
 from toolbox.utils import parse_bool
 
-DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore')
+DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore').rstrip('/')
+DOCKER_REGISTRY_MIRRORS = [i.rstrip('/') for i in re.split(r'[\s|,]+', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i]
+
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
 FORWARD_PORTS = parse_bool(os.getenv('TOOLBOX_FORWARD_PORTS', 'true'))
 ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')

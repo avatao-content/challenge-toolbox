@@ -33,7 +33,7 @@ INSTANCE_LABEL = "com.avatao.instance_id"
 INSTANCE_ID = uuid4()
 
 
-def get_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> List[Tuple[Dict[str, Dict]]]:
+def parse_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> List[Tuple[str, Dict]]:
     # This is not how things work anymore but the end result is the same...
     # The order is important because of namespace and volume sharing!
     crp_config = deepcopy(crp_config)
@@ -43,7 +43,7 @@ def get_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]
     # Also set absolute image URLs here
     ports = {}
     for short_name, crp_config_item in contaner_configs:
-        crp_config_item['image'] = get_image_url(repo_name, repo_branch, crp_config, short_name)
+        crp_config_item['image'] = get_image_url(repo_name, repo_branch, short_name, crp_config_item)
 
         # Convert ['port/L7_proto'] format to {'port/L4_proto': 'L7_proto'}
         # * We do not differentiate udp at layer 7
@@ -164,9 +164,9 @@ def remove_containers():
         stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
 
 
-def start_containers(repo_name: str, repo_branch: str, config: dict) -> Dict[str, subprocess.Popen]:
+def start_containers(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Dict[str, subprocess.Popen]:
     proc_map, first = OrderedDict(), None
-    for short_name, crp_config_item in get_crp_config(repo_name, repo_branch, config['crp_config']):
+    for short_name, crp_config_item in parse_crp_config(repo_name, repo_branch, crp_config):
         proc, container_name = run_container(crp_config_item, short_name, share_with=first)
         proc_map[container_name] = proc
         if first is None:
@@ -178,7 +178,7 @@ def start_containers(repo_name: str, repo_branch: str, config: dict) -> Dict[str
 def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     os.chdir(repo_path)
     atexit.register(remove_containers)
-    proc_map = start_containers(repo_name, repo_branch, config)
+    proc_map = start_containers(repo_name, repo_branch, config['crp_config'])
 
     logging.info('When you gracefully terminate this script [Ctrl+C] the containers will be destroyed.')
     for proc in proc_map.values():
