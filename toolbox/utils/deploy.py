@@ -72,7 +72,7 @@ def update_hook(repo_path: str, repo_name: str, repo_branch: str, config: dict):
 
     payload = {
         # Challenge Key
-        'organization': ORGANIZATION,
+        'repo_owner': ORGANIZATION,
         'repo_name': repo_name,
         'version': repo_branch,
         # Challenge Config
