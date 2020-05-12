@@ -6,7 +6,7 @@ import subprocess
 
 import requests
 
-from toolbox.config import CRP_DEPLOY_HOOK, CRP_DEPLOY_TOKEN, DOWNLOADABLE_FILES_BUCKET, ORGANIZATION
+from toolbox.config import CRP_DEPLOY_HOOK, CRP_DEPLOY_TOKEN, DOWNLOADABLE_FILES_BUCKET, REPO_OWNER
 
 from .utils import fatal_error, run_cmd
 
@@ -29,7 +29,7 @@ def _hash_directory(path):
 
 @functools.lru_cache(maxsize=8)
 def _get_downloads_path_prefix(repo_path: str, repo_name: str, repo_branch: str) -> str:
-    challenge_key_hash = hashlib.sha1('/'.join((ORGANIZATION, repo_name, repo_branch)).encode('utf-8')).hexdigest()
+    challenge_key_hash = hashlib.sha1('/'.join((REPO_OWNER, repo_name, repo_branch)).encode('utf-8')).hexdigest()
     downloads_hash = _hash_directory(os.path.join(repo_path, 'downloads'))
     return '/'.join((challenge_key_hash, downloads_hash))
 
@@ -72,7 +72,7 @@ def update_hook(repo_path: str, repo_name: str, repo_branch: str, config: dict):
 
     payload = {
         # Challenge Key
-        'repo_owner': ORGANIZATION,
+        'repo_owner': REPO_OWNER,
         'repo_name': repo_name,
         'version': repo_branch,
         # Challenge Config

@@ -2,11 +2,13 @@ import os
 import re
 from toolbox.utils import parse_bool
 
+from .deploy import IS_CI
+
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore').rstrip('/')
 DOCKER_REGISTRY_MIRRORS = [i.rstrip('/') for i in re.split(r'[\s|,]+', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i]
 
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
-FORWARD_PORTS = parse_bool(os.getenv('TOOLBOX_FORWARD_PORTS', 'true'))
+FORWARD_PORTS = parse_bool(os.getenv('TOOLBOX_FORWARD_PORTS', not IS_CI))
 ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'archive'}

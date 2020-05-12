@@ -1,18 +1,23 @@
 #!/bin/bash
 set -aeuo pipefail
 
-env | grep -E "^DRONE_\w*(BRANCH|COMMIT|REPO|SYSTEM|WORKSPACE)" | grep -Ev "^\w*(PASSWORD|SECRET|TOKEN)" >&2
 git submodule update --init --checkout --recursive --remote
 
 if [ -n "${DRONE_SYSTEM_HOSTNAME-}" ]; then
   source "/etc/docker/avatao-challenge-toolbox/${DRONE_SYSTEM_HOSTNAME}"
-else
-  echo "# DRONE_SYSTEM_HOSTNAME is unset. Falling back to .env" >&2
+elif [ -e "$(dirname "$0")/.env" ]; then
   source "$(dirname "$0")/.env"
+elif [ -e "./.env" ]; then
+  source "./.env"
 fi
 
 if [ -n "${GOOGLE_APPLICATION_CREDENTIALS-}" ]; then
   gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+fi
+
+if [ -n "${PROJECT_ID-}" ] && [ -n "${BUILD_ID-}" ]; then # Google Cloud Build
+  export GOOGLE_PROJECT_ID="$PROJECT_ID"
+  export CI=true
 fi
 
 if [ -n "${GOOGLE_PROJECT_ID-}" ]; then
