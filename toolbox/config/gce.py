@@ -1,7 +1,7 @@
 import os
 from toolbox.utils import parse_bool
 
-CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input'}
+CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'downloads'}
 CRP_CONFIG_KEYS = {
     'source_image_project_id', 'source_image_family', 'ssh_username', 'ports',
     'cpu_cores', 'mem_limit_gb', 'storage_limit_gb', 'nested', 'internet_access',

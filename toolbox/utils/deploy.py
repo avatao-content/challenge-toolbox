@@ -34,7 +34,7 @@ def _get_downloads_path_prefix(repo_path: str, repo_name: str, repo_branch: str)
     return '/'.join((challenge_key_hash, downloads_hash))
 
 
-def list_downloadable_files(repo_path: str, repo_name: str, repo_branch: str) -> list:
+def list_auto_downloadable_files(repo_path: str, repo_name: str, repo_branch: str) -> list:
     downloads_path = os.path.join(repo_path, 'downloads')
     result = []
     for root, _, files in os.walk(downloads_path):
@@ -70,6 +70,8 @@ def update_hook(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     if not CRP_DEPLOY_HOOK or not CRP_DEPLOY_TOKEN:
         fatal_error('CRP_DEPLOY_HOOK/CRP_DEPLOY_TOKEN must be set!')
 
+    # config['downloads'] is manual, whilst list_auto_downloadable_files are uploaded to Avatao.
+    files = config.get('downloads', []) + list_auto_downloadable_files(repo_path, repo_name, repo_branch)
     payload = {
         # Challenge Key
         'repo_owner': REPO_OWNER,
@@ -77,7 +79,7 @@ def update_hook(repo_path: str, repo_name: str, repo_branch: str, config: dict):
         'version': repo_branch,
         # Challenge Config
         'config': config,
-        'files': list_downloadable_files(repo_path, repo_name, repo_branch),
+        'files': files,
     }
 
     logging.debug('Sending update hook to %s ...', CRP_DEPLOY_HOOK)
