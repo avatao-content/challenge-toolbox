@@ -29,15 +29,23 @@ We recorded a [tutorial video series](https://www.youtube.com/watch?v=wlaEQlXo8N
 * Choose a challenge template from the `templates` directory
 * Build challenge: `./build.py <challenge_folder>` (e.g., `python3 ./build.py templates/xss`)
 * Start challenge: `./start.py <challenge_folder>` (e.g., `python3 ./start.py templates/xss`)
-* Check challenge format: `./check-format.py <challenge_folder>` (e.g., `python3 ./check-format.py templates/xss`)
-* Check challenge solution `./check-solution.py <optional_flag>` (e.g., `python3 ./check-solution.py flag`)
+* Check challenge format: `./check.py <challenge_folder>` (e.g., `python3 ./check.py templates/xss`)
 * Create tests to check the correct solution
 * Cleanup: `./docker-cleanup.sh`
 
+### **Avatao Tutorial Framework \[TFW]**
+
+Before we dive into the tried and true challenge templates, we must note that the next-generation Tutorial Framework is a separate project with several components which you can find on the following links:
+
+- [baseimage-tutorial-framework](https://github.com/avatao-content/baseimage-tutorial-framework)
+- [frontend-tutorial-framework](https://github.com/avatao-content/frontend-tutorial-framework)
+- [test-tutorial-framework](https://github.com/avatao-content/test-tutorial-framework)
+
+At Avatao, we mostly use the Tutorial Framework for new challenge development but the TFW still needs the challenge-toolbox to be deployed.
 
 ### **Start with a challenge template**
 
-So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., ubuntu, controller, exploitation, web-ide). These templates contain examples for static and container-based challenges. Please use the one which fit your needs and customize it as you like.
+So as to ease challenge development we've prepared templates for different challenge types using our [base images](https://hub.docker.com/u/avatao/) (e.g., debian, ubuntu, controller, exploitation). These templates contain examples for static and container-based challenges. Please, use the one which fits your needs and customize it as you like.
 
 - [Static challenges without containers](templates/file)
 - [Challenges running a server and accept client connections via telnet](templates/telnet)  
@@ -87,38 +95,29 @@ When a controller-solvable pair is started, you can address them internally as `
 
 ### **Modify and check format**
 
-In the next step, please modify the cloned template in accordance with 
-your challenge. If you have prepared everything, run our checker script of this guide repository by simply
-typing.
+In the next step, please modify the cloned template in accordance with  your challenge.
+If you have prepared everything, run our checker script of this guide repository by simply typing:
 
-    ./check-fomat.py <repository_path>
-    
+    ./check.py <repository_path>
+
 For example, if your challenge is located at path `/home/user/my-challenge`, your command is the following.
 
-    ./check-format.py /home/user/my-challenge
+    ./check.py /home/user/my-challenge
 
 ![check](img/check.png)
 
 
-Note that `check-format.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
-Please fine-tune your files until you see errors. This script will help you a lot:
+Note that `check.py` will fail until you start your challenge, however, it is good to verify if everything is in place.
+Please, fine-tune your files until you see errors. This script will help you a lot:
 
-1. Checks if your files are in place
-2. Checks if your configuration (config.yml) and markdown files (e.g., writeup.md) are correct
+1. Checks if your files are in place.
+2. Checks if your configuration (config.yml) and markdown files (e.g., writeup.md) are correct.
 3. Invokes solution check and the **test** function automatically for docker-based challenges to check if your challenge is working well. 
-
-
-### **Manual solution checking**  
-
-Avatao platform calls into the controller via HTTP with the (optional) flag that user submitted. You will be able test that functionality locally with following command:  
-
-    ./check-solution.py <optional_flag>
- 
 
 
 ### **Manual challenge testing**  
 
-Before every challenge deployment on avatao, we automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](templates/c/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
+We can automatically test if the challenge is working properly. To do that, you need to implement the `test` function in the controller's `server.py`. You can find [here](templates/c/controller/opt/server.py) an example `test` function implementation for C programming challenges. 
 
 After implementing the `test` function you can simply run `curl` to make sure that everything works well.  
 
@@ -128,7 +127,7 @@ Similarly to solution checking, the `test` function returns with HTTP 200 status
 returns with the build log. Otherwise the HTTP status code is 500.
 
 
-### **Clean**
+### **Cleanup**
 
 Sometimes it is worth removing stalled and dangling images. To do that simply
 run our clean-up script:
@@ -180,7 +179,7 @@ _Reference_:
 ### **Challenge debugging**
 
 It might take too much time to keep waiting for `build.py` and `start.py` to finish when you want to debug your challenge. 
-It is much simpler to start your challenges with `start.py` and the run 
+It is much simpler to start your challenges with `start.py` and the run :
 
     docker exec -ti <name> bash
 
@@ -217,32 +216,11 @@ In order to avoid trivial user cheats flags can be dynamically generated every t
         return jsonify(solved=True)
     ```
 
-### **Writeup guide**
-
-1. Every challenge should have an own separate `writeup.md` file under the `metadata` directory.
-2. Add the challenge name in H1 style as the example [writeup.md](skeleton/metadata/writeup.md) shows it.
-3. The writeup should have at least 3 sections.
-4. The cost of first section should be 0%, because it's just a detailed "What to do here?".
-5. Each section describes a relevant part from the complete solution. Thus, users should be able to solve the challenge by simply following the instructions of each section. 
-6. Every section begins with "## " which is an atx-style header (H2) and continues with a name which summarizes well the contents of the section (e.g., contains specific keywords). Take care of inserting a space after "##" to be compatible with the markdown standard.
-7. When a user requests hints we first show him the section names mentioned above with the cost of **10%** of the challenge score. We suppose that the name of sections helps users enough to continue the challenge or at least they can choose which section to open. In this way, we only deduct the cost of requested sections and this additional **10%** from the challenge score. 
-8. Under each section the "Cost: x%" tag shows the percentage that we deduct from the challenge score if a user asks for this part of the solution. The sum of costs of all but the last sections should be equal to **90%**! 
-9. The last section should be called `Complete solution` which does not have a cost as it is only revealed when somebody asks for the complete solution. In that case we show him the entire writeup.
-*IMPORTANT* We highly recommend to insert a few lines of notes about mitigations (e.g., how to fix the vulnerability) if the challenge is an offensive one.  
-
 ## Documentation
 
 [Please read the docs for more information](docs/README.md).
 
 ## Troubleshooting  
-
-### *I'm getting port already taken errors when starting a solvable-controller pair*  
-Please don't try to run more than one solvable-controller pairs.  
-If it is not the case, something else went wrong and kill all docker containers using:  
-
-    docker kill $(docker ps -q)
-
-If you get docker usage message upon killing, then there were no running containers.  
 
 ### *Solvable starts, but connection attempts fail with:*  
 
@@ -251,11 +229,11 @@ If you get docker usage message upon killing, then there were no running contain
 You run a command in solvable which blocks the start of SSH daemon. Fix the problematic command, and rebuild. This weird behavior is observed because docker accepts connection attempts to published ports but then resets them if the published port isn't really listening.  
 
 ### *I need to enter the container for error checking:*
-Just build the container with `build.py`, check the built image with `docker image` and :  
+Just build the container with `build.py`, check the built image with `docker image` and run:  
 
-    docker run -ti <repository|ID> bash
+    docker run -ti --rm <repository|ID> bash
 
-The container will get removed, when you exit it.  
+The container will get removed, when you exit it.
 
 ### *I need to enter a running container as root to figure something out*  
 

@@ -1,4 +1,4 @@
-FROM avatao/webide-c:ubuntu-16.04
+FROM avatao/debian:buster
 
 COPY ./solvable/ /
 

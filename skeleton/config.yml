@@ -1,38 +1,13 @@
-# Version of the config.yml
-version: "v2.0.0"
+---
+version: v3
+enable_flag_input: true
+flag: flag
 
-# Name of the challenge
-name: "A brand new avatao challenge"
-
-# Challenge difficulty: 10 - 500
-difficulty: 100
-
-# Enable inputbox to submit flag: true | false
-enable_flag_input: false
-
-# If the solution is a fix string (static flag) you can add it here
-flag: "flag"
-
-# Skills related to the challenge: ["SQL injection","Web","Linux"]
-skills: ["skill1", "skill2", "skill3"]
-
-# Recommended readings
-#    www.docker.com: 'Docker website'
-#    www.ubuntu.com: 'Ubuntu webpage'
-recommendations:
-    <url>: '<name>'
-
-# The emails of the Intellectual Property (IP) owners. Note that it is also possible that the owner is the same as the content creator.
-owners: ["your@mail.com"]
-
-# CRP Config
+crp_type: docker
 crp_config:
-    controller:
-        # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
-        # For example ["SETGID","SETUID"]
-        #capabilities: [] # Not needed if empty
-        ports: ['5555/controller']
-    solvable:
-        #capabilities: [] # Not needed if empty
-        ports: ['8888/http']
-
+  controller:
+    ports:
+    - 5555/controller
+  solvable:
+    ports:
+    - 8888/http
