@@ -6,6 +6,9 @@ __pycache__
 *.s[a-w][a-z]
 .netrwhist
 
+## VS Code ###
+.vscode
+
 ### IntelliJ ###
 *.iml
 .idea
