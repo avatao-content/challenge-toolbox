@@ -62,10 +62,6 @@ def abort(*args, **kwargs) -> None:
     counted_error_at_exit()
 
 
-def is_ci() -> bool:
-    return os.getenv('DRONE', '0').lower() in ('true', '1')
-
-
 def find_repo_path(base: str) -> str:
     """
     Find the first repo path (parent of config.yml) in a base directory
@@ -119,7 +115,7 @@ def get_sys_args() -> (str, str, str):
 
 def abort_inactive_branch(repo_branch: str, *, allow_local: bool):
     # Allow local execution for some crp types - e.g.: docker
-    if allow_local and not is_ci():
+    if allow_local and not IS_CI:
         return
 
     if repo_branch not in ACTIVE_REMOTE_BRANCHES:
