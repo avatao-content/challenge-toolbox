@@ -38,6 +38,11 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
                 counted_error('Invalid mem_limit_mb: %s. It should be an integer between 8 and 1024 MegaBytes.',
                               item['mem_limit_mb'])
 
+        if 'cpu_limit_ms' in item:
+            if not str(item['cpu_limit_ms']).isnumeric() or not 100 < int(item['cpu_limit_ms']) < 4000:
+                counted_error('Invalid cpu_limit_ms: %s. It should be an integer between 100 and 4000 CPU milliseconds.',
+                              item['cpu_limit_ms'])
+
         if 'volumes' in item:
             if not first:
                 counted_error('Only the first container [solvable, controller, ...] can set shared volumes.')
