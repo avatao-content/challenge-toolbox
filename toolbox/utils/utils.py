@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from glob import glob
+from typing import Tuple
 
 from toolbox.config import ACTIVE_REMOTE_BRANCHES, DEFAULT_COMMAND_TIMEOUT, IS_CI, ci_sys_args
 
@@ -92,7 +93,7 @@ def get_repo_branch(repo_path: str) -> str:
         fatal_error('Failed to run: %s', git_head_cmd)
 
 
-def get_sys_args() -> (str, str, str):
+def get_sys_args() -> Tuple[str, str, str]:
     """
     Get parsed command line arguments
 
