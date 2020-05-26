@@ -74,6 +74,7 @@ def get_container_command(
         '-e', 'SECRET=%s' % SECRET,  # for compatibility!
         '--name=%s' % container_name,
         '--label=%s=%s' % (INSTANCE_LABEL, INSTANCE_ID),
+        '--cpus=%s' % round(int(crp_config_item.get('cpu_limit_ms', 1000)) / 1000, 2),
         '--memory=%s' % crp_config_item.get('mem_limit_mb', DEFAULT_MEMORY_LIMIT_MB) + 'M',
         '--cpus=%s' % DEFAULT_CPUS_LIMIT,
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
