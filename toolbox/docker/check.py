@@ -34,12 +34,12 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
                               invalid_caps, CAPABILITIES)
 
         if 'mem_limit_mb' in item:
-            if not str(item['mem_limit_mb']).isnumeric() or not 8 < int(item['mem_limit_mb']) < 1024:
+            if not str(item['mem_limit_mb']).isnumeric() or not 8 <= int(item['mem_limit_mb']) <= 1024:
                 counted_error('Invalid mem_limit_mb: %s. It should be an integer between 8 and 1024 MegaBytes.',
                               item['mem_limit_mb'])
 
         if 'cpu_limit_ms' in item:
-            if not str(item['cpu_limit_ms']).isnumeric() or not 100 < int(item['cpu_limit_ms']) < 4000:
+            if not str(item['cpu_limit_ms']).isnumeric() or not 100 <= int(item['cpu_limit_ms']) <= 4000:
                 counted_error('Invalid cpu_limit_ms: %s. It should be an integer between 100 and 4000 CPU milliseconds.',
                               item['cpu_limit_ms'])
 
