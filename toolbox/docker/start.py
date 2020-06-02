@@ -9,7 +9,7 @@ from posixpath import join
 from typing import Any, Dict, List, Tuple
 from uuid import uuid4
 
-from toolbox.config.docker import FORWARD_PORTS
+from toolbox.config.docker import ENABLE_CPU_LIMITS, FORWARD_PORTS
 from toolbox.utils import parse_bool, fatal_error
 
 from .utils import get_image_url, sorted_container_configs
@@ -19,8 +19,8 @@ ULIMIT_NPROC = '2048:4096'
 ULIMIT_NOFILE = '8192:16384'
 SECRET = 'secret'
 
+DEFAULT_CPU_LIMIT_MS = 1000  # 1 vCPU
 DEFAULT_MEMORY_LIMIT_MB = 100  # MiB
-DEFAULT_CPUS_LIMIT = 1  # 100m requested, 1000m limit
 
 CONNECTION_USAGE = defaultdict(lambda: 'nc ' + BIND_ADDR + ' %d')
 CONNECTION_USAGE.update({
@@ -74,14 +74,16 @@ def get_container_command(
         '-e', 'SECRET=%s' % SECRET,  # for compatibility!
         '--name=%s' % container_name,
         '--label=%s=%s' % (INSTANCE_LABEL, INSTANCE_ID),
-        '--cpus=%s' % round(int(crp_config_item.get('cpu_limit_ms', 1000)) / 1000, 2),
-        '--memory=%s' % crp_config_item.get('mem_limit_mb', DEFAULT_MEMORY_LIMIT_MB) + 'M',
-        '--cpus=%s' % DEFAULT_CPUS_LIMIT,
+        '--memory=%sM' % crp_config_item.get('mem_limit_mb', DEFAULT_MEMORY_LIMIT_MB),
         '--ulimit=nproc=%s' % ULIMIT_NPROC,
         '--ulimit=nofile=%s' % ULIMIT_NOFILE,
     ]
 
-    if 'ports' in crp_config_item and FORWARD_PORTS:
+    if ENABLE_CPU_LIMITS:
+        cpus = round(int(crp_config_item.get('cpu_limit_ms', DEFAULT_CPU_LIMIT_MS)) / 1000, 2)
+        command.append('--cpus=%s' % cpus)
+
+    if FORWARD_PORTS and 'ports' in crp_config_item:
         for port, proto_l7 in crp_config_item['ports'].items():
             port_num = int(port.split('/')[0])
             command += ['-p', '%s:%d:%s' % (BIND_ADDR, port_num, port)]

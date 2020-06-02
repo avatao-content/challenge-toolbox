@@ -8,6 +8,7 @@ DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore'
 DOCKER_REGISTRY_MIRRORS = [i.rstrip('/') for i in re.split(r'[\s|,]', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i]
 
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
+ENABLE_CPU_LIMITS = parse_bool(os.getenv('TOOLBOX_ENABLE_CPU_LIMITS', not IS_CI))
 FORWARD_PORTS = parse_bool(os.getenv('TOOLBOX_FORWARD_PORTS', not IS_CI))
 ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')
 
