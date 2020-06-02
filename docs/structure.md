@@ -45,24 +45,28 @@ In this section we detail the directory structure of challenges. Under the [skel
     - **version**: Version number of the config file.  Currently it is `v2.0.0`.
     - **flag** \[optional\]: If a docker challenge has static flag or the challenge itself is static then insert your flag here. In that case we won't need to start up a distinct container for solution checking. **IMPORTANT**: _However, you have to still create controller for docker-based challenges with the `test` function implemented. This way, we make sure that your challenge is working properly and can be solved._ 
     - **enable_flag_input**: Solution submission can happen in two ways. The first option is that the user submits a text (flag) in an input field on the platform. In this case please set it *true* to tell the platform to create an input field for the solution submission. The second option is when the solution checking works by checking the state changes (e.g., files created, configuration modified) inside the container the user is working on. For example, when the user solves a programming challenge and the controller executes multiple unit tests to accept their code. In that case please set it *false* as their source code is the solution.
-    - **crp_config \[docker\]**: The configuration on how to run the containers can be set here
+    - **crp_config \[docker\]**: The configuration on how to run the containers can be set here.
         - **controller**:        
-            - **capabilities**: Place here the list of required linux/docker capabilities for the controller. Have only the minimal capability (CAP drop all by default), and add only those you really need.
-             [Read more.](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) e.g.: \["SETGID","SETUID"\]
-            - **ports**: A list containing strings in a style of 'port_number/protocol' for the controller it should be \['5555/controller'\] by default
-            - **mem_limit**: The memory limit for the controller. This is a string that ends with a capital M for megabyte e.g.: '100M'
-           (Maximum '999M')
+            - **capabilities**: Place here the list of required linux capabilities for the controller.  
+             [Read more](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities). For example: `["SETGID", "SETUID"]` or `[]`
+            - **read_only**: Set to true for read-only rootfs (except volumes). Recommended!
+            - **mem_limit_mb**: The memory limit for the controller in MegaBytes between 8 and 1024.
+            - **cpu_limit_ms**: The CPU limit for the controller in miliseconds/milicores between 100 and 4000 (1000 = 1 core).
+            - **ports**: A list of strings in the format of `port_number/protocol` for the controller. Usually `["5555/controller"]`.
         - **solvable**:
-            - **capabilities**: Place here the list of required linux/docker capabilities for the solvable.
-            - **ports**: A list containing strings in a style of 'port_number/protocol'
-            - **mem_limit**: Same as the controller            
+            - **capabilities**: Place here the list of required linux capabilities for the solvable.  
+             [Read more](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities). For example: `["SETGID", "SETUID"]` or `[]`
+            - **read_only**: Set to true for read-only rootfs (except volumes). Recommended!
+            - **mem_limit_mb**: The memory limit for the solvable in MegaBytes between 8 and 1024.
+            - **cpu_limit_ms**: The CPU limit for the solvable in miliseconds/milicores between 100 and 4000 (1000 = 1 core).
+            - **ports**: A list of strings in the format of `port_number/protocol`.
                 ```
-                available ports and protocols:
+                Available ports and protocols:
                     PORT/tcp
                     PORT/udp
                     8888/http
                     2222/ssh
-                    PORT/ws            
+                    9999/ws
                 ```
 - **README.md** [optional]: Any additional information that you would like to tell about the challenge. If the original challenge is licensed this should be the extended README.md of that challenge.
 - **CHANGELOG** [optional]: If you modified an existing licensed challenge, please summarize what your changes were.

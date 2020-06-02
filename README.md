@@ -30,14 +30,13 @@ We recorded a [tutorial video series](https://www.youtube.com/watch?v=wlaEQlXo8N
 * Build challenge: `./build.py <challenge_folder>` (e.g., `python3 ./build.py templates/xss`)
 * Start challenge: `./start.py <challenge_folder>` (e.g., `python3 ./start.py templates/xss`)
 * Check challenge format: `./check.py <challenge_folder>` (e.g., `python3 ./check.py templates/xss`)
-* Create tests to check the correct solution
 * Cleanup: `./docker-cleanup.sh`
 
 ### **Avatao Tutorial Framework \[TFW]**
 
 Before we dive into the tried and true challenge templates, we must note that the next-generation Tutorial Framework is a separate project with several components which you can find on the following links:
 
-- [baseimage-tutorial-framework](https://github.com/avatao-content/baseimage-tutorial-framework)
+- [baseimage-tutorial-framework](https://github.com/avatao-content/baseimage-tutorial-framework) + [TFW Wiki](https://github.com/avatao-content/baseimage-tutorial-framework/wiki)
 - [frontend-tutorial-framework](https://github.com/avatao-content/frontend-tutorial-framework)
 - [test-tutorial-framework](https://github.com/avatao-content/test-tutorial-framework)
 

@@ -5,9 +5,20 @@ flag: flag
 
 crp_type: docker
 crp_config:
-  controller:
-    ports:
-    - 5555/controller
+  # First container, the main solvable.
   solvable:
-    ports:
-    - 8888/http
+    # List of port/protocol connections to expose.
+    ports: ["8888/http"]
+    # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
+    # For example ["SETGID", "SETUID"]
+    capabilities: []
+    # Read-only rootfs (except volumes)
+    read_only: true
+    # Default memory limit (same if not set)
+    mem_limit_mb: 128
+    # Default CPU limit in miliseconds/milicores (1000 = 1 core) (10% guaranteed)
+    cpu_limit_ms: 1000
+  # Second container, the solution checker, etc.
+  controller:
+    ports: ["5555/controller"]
+    read_only: true
