@@ -1,4 +1,4 @@
-FROM avatao/ubuntu:14.04
+FROM avatao/debian:buster
 
 COPY ./solvable/ /
 

@@ -1,4 +1,4 @@
-FROM avatao/controller:ubuntu-14.04
+FROM avatao/controller:debian-buster
 MAINTAINER Turcsanyi Gergo <2rcsanyi.g@gmail.com>
 
 COPY ./controller/ /

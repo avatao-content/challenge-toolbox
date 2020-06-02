@@ -1,4 +1,4 @@
-FROM avatao/ubuntu:14.04
+FROM avatao/debian:buster
 MAINTAINER Turcsanyi Gergo <gergo.turcsanyi@avatao.com>
 
 COPY ./solvable/ /

@@ -1,3 +1,3 @@
-FROM avatao/controller:ubuntu-14.04
+FROM avatao/controller:debian-buster
 
 COPY ./controller/ /
