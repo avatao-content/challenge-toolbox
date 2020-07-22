@@ -151,7 +151,8 @@ def run_container(
         proc = subprocess.Popen(command)
 
         # There is no God.
-        poll_container(proc, container_name, retries=10, sleeps=5)
+        # (ಥ﹏ಥ)
+        poll_container(proc, container_name, retries=20, sleeps=5)
         # Ready but PID 1 might not be so wait some more...
         poll_container(proc, container_name, retries=1, sleeps=5)
 
