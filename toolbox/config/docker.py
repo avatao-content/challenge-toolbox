@@ -5,7 +5,7 @@ from toolbox.utils import parse_bool
 from .deploy import IS_CI
 
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore').rstrip('/')
-DOCKER_REGISTRY_MIRRORS = [i.rstrip('/') for i in re.split(r'[\s|,]', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i]
+DOCKER_REGISTRY_MIRRORS = {i.rstrip('/') for i in re.split(r'[\s|,]', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i}
 
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))
 ENABLE_CPU_LIMITS = parse_bool(os.getenv('TOOLBOX_ENABLE_CPU_LIMITS', not IS_CI))

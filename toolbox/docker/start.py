@@ -111,7 +111,7 @@ def get_container_command(
     return command, container_name
 
 
-def poll_container(proc: subprocess.Popen, container_name: str, *, retries: int, sleeps: int):
+def poll_container(proc: subprocess.Popen, container_name: str, *, retries: int, sleeps: float):
     for i in range(0, retries):
         logging.debug('Waiting %ds for %s [%d/%d]', sleeps, container_name, i + 1, retries)
         time.sleep(sleeps)
@@ -150,11 +150,10 @@ def run_container(
         logging.debug(' '.join(map(str, command)))
         proc = subprocess.Popen(command)
 
-        # There is no God.
         # (ಥ﹏ಥ)
-        poll_container(proc, container_name, retries=20, sleeps=5)
+        poll_container(proc, container_name, retries=15, sleeps=5.0)
         # Ready but PID 1 might not be so wait some more...
-        poll_container(proc, container_name, retries=1, sleeps=5)
+        time.sleep(5.0)
 
         return proc, container_name
 
