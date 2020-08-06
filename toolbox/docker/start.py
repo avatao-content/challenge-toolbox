@@ -151,7 +151,7 @@ def run_container(
         proc = subprocess.Popen(command)
 
         # (ಥ﹏ಥ)
-        poll_container(proc, container_name, retries=15, sleeps=5.0)
+        poll_container(proc, container_name, retries=30, sleeps=5.0)
         # Ready but PID 1 might not be so wait some more...
         time.sleep(5.0)
 
