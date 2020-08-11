@@ -1,8 +1,9 @@
 # Toolbox Documentation
 
-- [Main introduction](../README.md)
+- [Main Introduction](../README.md)
 - [General concepts](concepts.md)
-- [Directory structrure](structure.md)
+- [Directory Structrure](structure.md)
+- [Build Pipeline Environment](environment.md)
 
 # Tutorial Framework Components
 
