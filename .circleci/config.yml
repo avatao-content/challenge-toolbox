@@ -22,11 +22,10 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
-      - attach_workspace:
-          at: .
+      - checkout
       - run:
           name: Configure the environment
-          command: ./entrypoint.sh
+          command: . entrypoint.sh
       - run:
           name: Build the challenge-toolbox image
           command: |
