@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 # This script can be used as an entrypoint for build jobs
-# or it can be "sourced" without parameters.
+# or it can be "sourced" without parameters. Supports POSIX shells.
 set -aeuo pipefail
 
 if [ -e "$(dirname "$0")/.env" ]; then
@@ -19,10 +19,13 @@ fi
 
 # Configure Google Cloud SDK
 if command -v gcloud &>/dev/null; then
+  if [ -n "${GOOGLE_SERVICE_ACCOUNT_KEY-}" ]; then
+    export GOOGLE_APPLICATION_CREDENTIALS="/tmp/challenge-toolbox-google-service-account-key.json"
+    echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > "$GOOGLE_APPLICATION_CREDENTIALS"
+  fi
+
   if [ -n "${GOOGLE_APPLICATION_CREDENTIALS-}" ]; then
     gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-  elif [ -n "${GOOGLE_SERVICE_ACCOUNT_KEY-}" ]; then
-    gcloud auth activate-service-account --key-file=<(echo "$GOOGLE_SERVICE_ACCOUNT_KEY")
   fi
 
   if [ -n "${GOOGLE_PROJECT_ID-}" ]; then
@@ -37,13 +40,9 @@ if git rev-parse --git-dir &>/dev/null; then
 fi
 
 # Log into docker registries from environment variables:
-# DOCKER_LOGIN_[ID]_SERVER
-# DOCKER_LOGIN_[ID]_USERNAME
-# DOCKER_LOGIN_[ID]_PASSWORD
-env \
-  | grep -Po "^DOCKER_LOGIN_[\w_]+_(?=SERVER=)" \
-  | xargs -r -I[] sh -c \
-  'docker login -u "$[]USERNAME" -p "$[]PASSWORD" "$[]SERVER"'
+# DOCKER_LOGIN_[ID]_{SERVER,USERNAME,PASSWORD}
+env | grep -Eo "^DOCKER_LOGIN_[A-Z0-9_]+_" | sort -u | xargs -r -I[] sh -c \
+  'echo "$[]PASSWORD" | docker login --password-stdin -u "$[]USERNAME" "$[]SERVER"'
 
 # Execute the parameters...
 if [ $# -ne 0 ]; then
