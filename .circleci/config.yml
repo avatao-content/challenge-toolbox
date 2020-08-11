@@ -1,0 +1,37 @@
+version: 2.1
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - docker-build-push:
+          filters:
+            branches:
+              only: "/v[0-9.]+/"
+            tags:
+              ignore: "/.*/"
+          context: challenge-toolbox
+
+executors:
+  docker-executor:
+    docker:
+      - image: docker.io/docker:stable
+
+jobs:
+  docker-build-push:
+    executor: docker-executor
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - attach_workspace:
+          at: .
+      - run:
+          name: Configure the environment
+          command: ./entrypoint.sh
+      - run:
+          name: Build the challenge-toolbox image
+          command: |
+            docker build -t eu.gcr.io/${GOOGLE_PROJECT_ID}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_BRANCH} .
+      - run:
+          name: Push the challenge-toolbox image
+          command: |
+            docker push eu.gcr.io/${GOOGLE_PROJECT_ID}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_BRANCH}
