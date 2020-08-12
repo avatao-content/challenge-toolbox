@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import logging
 import shutil
-import subprocess
 import os
 import yaml
 from glob import glob
@@ -12,20 +11,16 @@ from toolbox.utils import (
     compare_version,
     abort,
     counted_error_at_exit,
+    fatal_error,
     get_sys_args,
     init_logger,
     read_config,
+    run_cmd,
 )
 
 
-def upgrade_v2_to_v3(repo_path: str, config: dict):
-    cmp = compare_version(config, 'v2', 'v2.999')
-    if cmp < 0:
-        abort('Unknown legacy version!')
-    if cmp > 0:
-        abort('Unknown future version!')
-
-    config['version'] = 'v3'
+def upgrade_v2_0_to_v3_0(repo_path: str, config: dict):
+    config['version'] = 'v3.0'
 
     # There were only docker and static type of challenges in v2
     if glob(os.path.join(repo_path, '*', 'Dockerfile')):
@@ -53,20 +48,39 @@ def upgrade_v2_to_v3(repo_path: str, config: dict):
         yaml.safe_dump(drone_config, f)
 
     shutil.rmtree(os.path.join(repo_path, 'metadata'))
-    subprocess.check_call(['git', 'commit', '-q', '-m', 'Upgrade to spec v3', '.drone.yml', 'config.yml', 'metadata'], cwd=repo_path)
-
+    run_cmd(['git', 'commit', '-q', '-m', 'Upgrade to spec v3', '.drone.yml', 'config.yml', 'metadata'], cwd=repo_path)
     logging.info('Challenge metadata needs to be migrated to the new platform!')
-    logging.info('Run git push when you are ready.')
 
+def upgrade_v3_0_to_v3_1(repo_path: str, config: dict):
+    config['version'] = 'v3.1'
+
+    with open(os.path.join(repo_path, 'config.yml'), 'w') as f:
+        f.write('---\n# Upgraded from v3.0\n')
+        yaml.safe_dump(config, f)
+
+    run_cmd(['git', 'commit', '-q', '-m', 'Upgrade to spec v3.1', 'config.yml'], cwd=repo_path)
+    logging.info('This is just a version bump.')
 
 # pylint: disable=unused-argument
 def run(repo_path: str, repo_name: str, repo_branch: str):
     config = read_config(repo_path, pre_validate=False)
+    upgradeed = False
 
     if compare_version(config, CURRENT_MIN_VERSION, CURRENT_MAX_VERSION) >= 0:
         abort('Nothing to do.')
 
-    upgrade_v2_to_v3(repo_path, config)
+    if compare_version(config, 'v2.0', 'v2.0') == 0:
+        upgrade_v2_0_to_v3_0(repo_path, config)
+        upgradeed = True
+
+    if compare_version(config, 'v3.0', 'v3.0') == 0:
+        upgrade_v3_0_to_v3_1(repo_path, config)
+        upgradeed = True
+
+    if not upgradeed:
+        fatal_error('Unknown version!')
+
+    logging.info('Run git push when you are ready.')
 
 
 if __name__ == '__main__':

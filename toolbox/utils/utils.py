@@ -5,7 +5,7 @@ import sys
 from glob import glob
 from typing import Tuple
 
-from toolbox.config import ACTIVE_REMOTE_BRANCHES, DEFAULT_COMMAND_TIMEOUT, IS_CI, ci_sys_args
+from toolbox.config import ACTIVE_REMOTE_BRANCHES, DEFAULT_COMMAND_TIMEOUT, IS_CI
 
 _error_counter = 0
 
@@ -100,9 +100,6 @@ def get_sys_args() -> Tuple[str, str, str]:
     Absolute repository path, repository name (optional)
     :return tuple: repo_path, repo_name, repo_branch
     """
-    if IS_CI:
-        return ci_sys_args()
-
     if not 2 <= len(sys.argv) <= 4:
         logging.info('Usage: %s <repo_path> [repo_name] [repo_branch]', sys.argv[0])
         sys.exit(1)

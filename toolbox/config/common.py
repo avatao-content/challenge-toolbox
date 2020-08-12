@@ -1,4 +1,4 @@
-CURRENT_MIN_VERSION = 'v3.0'
+CURRENT_MIN_VERSION = 'v3.1'
 CURRENT_MAX_VERSION = 'v3.1'
 
 # Once the Next platform supports challenge versions this can be extended.

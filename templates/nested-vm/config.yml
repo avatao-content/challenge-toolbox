@@ -1,4 +1,4 @@
-version: "v3"
+version: v3.1
 
 #Enable inputbox to submit flag: true | false
 enable_flag_input: false
