@@ -61,7 +61,7 @@ def upload_files(repo_path: str, repo_name: str, repo_branch: str):
         current_content = []
 
     if gs_target_path not in current_content:
-        run_cmd(['gsutil', 'cp', '-r', downloads_path, gs_target_path])
+        run_cmd(['gsutil', '-h', 'Content-Disposition: attachment', 'cp', '-r', downloads_path, gs_target_path])
         if current_content:
             run_cmd(['gsutil', 'rm', '-r', *current_content])
 
