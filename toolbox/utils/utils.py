@@ -148,8 +148,8 @@ def check_common_files(repo_path: str = None):
     if repo_path is None:
         repo_path = os.getcwd()
 
-    if not glob(os.path.join(repo_path, '.drone.yml')):
-        logging.warning('No .drone.yml file is found. This file is necessary for our automated tests,\n\t'
+    if not glob(os.path.join(repo_path, '.circleci/config.yml')):
+        logging.warning('No .circleci/config.yml file is found. This file is necessary for our automated tests,\n\t'
                         'please, get it from any template before uploading your challenge.')
 
     if not glob(os.path.join(repo_path, 'CHANGELOG')):
@@ -162,3 +162,17 @@ def check_common_files(repo_path: str = None):
 
     if not glob(os.path.join(repo_path, 'README.md')):
         logging.warning('No README.md file is found. Readmes help others to understand your challenge.')
+
+
+def git_submodule_init(repo_path: str = None):
+    if repo_path is None:
+        repo_path = os.getcwd()
+
+    run_cmd(
+        [
+            'if git rev-parse --git-dir &>/dev/null; then '
+            'git submodule update --init --checkout --recursive; fi'
+        ],
+        cwd=repo_path,
+        shell=True,
+    )

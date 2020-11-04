@@ -1,7 +1,7 @@
 from importlib import import_module
 
 from .config import get_crp_type, read_config
-from .utils import counted_error_at_exit, get_error_counter, get_sys_args, init_logger
+from .utils import counted_error_at_exit, get_error_counter, get_sys_args, git_submodule_init, init_logger
 
 
 def _run_command(command: str, repo_path: str, repo_name: str, repo_branch: str, config: dict):
@@ -17,6 +17,7 @@ def run(*commands):
     init_logger()
     repo_path, repo_name, repo_branch = get_sys_args()
     config = read_config(repo_path)
+    git_submodule_init(repo_path)
 
     for command in commands:
         _run_command(command, repo_path, repo_name, repo_branch, config)

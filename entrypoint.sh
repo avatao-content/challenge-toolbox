@@ -33,12 +33,6 @@ if command -v gcloud &>/dev/null; then
   fi
 fi
 
-# Ensure git submodules are up-to-date...
-# This only makes sense if the current directory is the workspace.
-if git rev-parse --git-dir &>/dev/null; then
-  git submodule update --init --checkout --recursive
-fi
-
 # Log into docker registries from environment variables:
 # DOCKER_LOGIN_[ID]_{SERVER,USERNAME,PASSWORD}
 env | grep -Eo "^DOCKER_LOGIN_[A-Z0-9_]+_" | sort -u | xargs -r -I[] sh -c \
