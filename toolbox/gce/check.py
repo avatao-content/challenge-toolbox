@@ -50,7 +50,7 @@ def check_config(config: dict):
 
     validate_bool('nested', config['crp_config'].get('nested', '0'))
     validate_bool('internet_access', config['crp_config'].get('internet_access', '0'))
-    validate_ports(config['crp_config'].get('ports', []))
+    validate_ports(config['crp_config'].get('ports', []), config['crp_config'].get('buttons', None))
     validate_flag(config)
 
 

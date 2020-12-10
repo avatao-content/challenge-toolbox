@@ -8,7 +8,7 @@ try:
 except ImportError:
     from pkg_resources import parse_version
 
-from toolbox.config.common import CRP_TYPES, CURRENT_MAX_VERSION, CURRENT_MIN_VERSION, PROTOCOLS
+from toolbox.config.common import BUTTON_CONFIG_KEYS, CRP_TYPES, CURRENT_MAX_VERSION, CURRENT_MIN_VERSION, PROTOCOLS
 
 from .utils import counted_error, fatal_error
 
@@ -93,10 +93,12 @@ def validate_flag(config: dict, flag_required: bool = False):
         counted_error('A static (or regex) flag must be set.')
 
 
-def validate_ports(ports: list):
+def validate_ports(ports: list, buttons: dict = None):  # pylint: disable=too-many-branches
+    unique_ports = set()
     for port in ports:
         try:
             port, protocol = port.split('/', 1)
+            unique_ports.add(port)
             try:
                 if not 0 < int(port) < 65536:
                     raise ValueError
@@ -108,3 +110,18 @@ def validate_ports(ports: list):
 
         except Exception:
             counted_error('Invalid port format. [port/protocol]')
+
+    if len(unique_ports) != len(ports):
+        counted_error('Duplicate port numbers found.')
+
+    if buttons is not None:
+        if not isinstance(buttons, dict):
+            counted_error('The buttons field must be a dict.')
+        else:
+            for button_key, button in buttons.items():
+                if button_key not in ports:
+                    counted_error('Button key %s is not found in ports.', button_key)
+
+                for key in button.keys():
+                    if key not in BUTTON_CONFIG_KEYS:
+                        counted_error('Key %s is invalid for button %s.', key, button_key)

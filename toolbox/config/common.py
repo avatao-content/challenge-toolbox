@@ -8,3 +8,5 @@ DEFAULT_COMMAND_TIMEOUT = 60 * 60
 CONTROLLER_PROTOCOL = 'controller'
 PROTOCOLS = {'udp', 'tcp', 'ssh', 'http', 'ws', CONTROLLER_PROTOCOL}
 CRP_TYPES = {'docker', 'gce', 'static'}
+
+BUTTON_CONFIG_KEYS = {'text', 'color'}

@@ -49,8 +49,8 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
             else:
                 logging.warning('Shared volumes are manually set. Is this what you want?')
 
-        validate_bool('read_only', config.get('read_only', '0'))
-        validate_ports(config['crp_config'].get('ports', []))
+        validate_bool('read_only', item.get('read_only', '0'))
+        validate_ports(item.get('ports', []), item.get('buttons', None))
         first = False
 
     validate_flag(config)

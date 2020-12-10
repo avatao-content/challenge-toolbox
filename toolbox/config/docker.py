@@ -13,7 +13,7 @@ FORWARD_PORTS = parse_bool(os.getenv('TOOLBOX_FORWARD_PORTS', not IS_CI))
 ARCHIVE_BRANCH = os.getenv('TOOLBOX_ARCHIVE_BRANCH', 'master')
 
 CONFIG_KEYS = {'version', 'crp_type', 'crp_config', 'flag', 'enable_flag_input', 'downloads', 'archive'}
-CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'mem_limit_mb', 'cpu_limit_ms', 'capabilities', 'read_only', 'volumes'}
+CRP_CONFIG_ITEM_KEYS = {'image', 'ports', 'buttons', 'mem_limit_mb', 'cpu_limit_ms', 'capabilities', 'read_only', 'volumes'}
 
 CAPABILITIES = {
     # all linux capabilities:
