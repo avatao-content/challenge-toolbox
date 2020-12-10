@@ -1,5 +1,5 @@
 CURRENT_MIN_VERSION = 'v3.1'
-CURRENT_MAX_VERSION = 'v3.1'
+CURRENT_MAX_VERSION = 'v3.2'
 
 # Once the Next platform supports challenge versions this can be extended.
 ACTIVE_REMOTE_BRANCHES = {'master', 'staging'}
