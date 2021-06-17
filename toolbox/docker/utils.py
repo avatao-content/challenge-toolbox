@@ -20,7 +20,7 @@ def get_image_url(repo_name: str, repo_branch: str, short_name: str, crp_config_
             tag = short_name
         image = ':'.join((repo_name, tag))
 
-    if not image.startswith(DOCKER_REGISTRY):
+    if not image.startswith(DOCKER_REGISTRY + '/'):
         return '/'.join((DOCKER_REGISTRY, image))
 
     return image
