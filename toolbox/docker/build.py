@@ -1,10 +1,26 @@
 import logging
 import time
+from typing import Optional
 
 from toolbox.config.docker import PULL_BASEIMAGES
 from toolbox.utils import abort_inactive_branch, parse_bool, run_cmd
 
 from .utils import yield_dockerfiles
+
+
+def build_image(image: str, path: str, dockerfile: Optional[str] = None):
+    build_cmd = ['docker', 'build', '-t', image]
+    if dockerfile is not None:
+        build_cmd += ['-f', dockerfile]
+
+    if PULL_BASEIMAGES:
+        build_cmd.append('--pull')
+
+    build_cmd.append(path)
+    run_cmd(build_cmd)
+
+    # Let the engine cool off
+    time.sleep(5)
 
 
 # pylint: disable=unused-argument
@@ -16,12 +32,4 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
         return
 
     for dockerfile, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config['crp_config']):
-        build_cmd = ['docker', 'build', '-f', dockerfile, '-t', image]
-        if PULL_BASEIMAGES:
-            build_cmd.append('--pull')
-
-        build_cmd.append(repo_path)
-        run_cmd(build_cmd)
-
-        # Let the engine cool off
-        time.sleep(5)
+        build_image(image, repo_path, dockerfile)
