@@ -13,13 +13,6 @@ RUN yum -y install epel-release \
         unzip \
     && yum clean all
 
-ARG PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/1.3.3/packer_1.3.3_linux_amd64.zip"
-ARG PACKER_SHA256="2e3ea8f366d676d6572ead7e0c773158dfea0aed9c6a740c669d447bcb48d65f"
-RUN curl -L -o /tmp/packer.zip "${PACKER_DOWNLOAD_URL}" \
-    && echo "${PACKER_SHA256} /tmp/packer.zip" | sha256sum -c - \
-    && unzip -o -j -d /usr/local/bin /tmp/packer.zip packer \
-    && rm -f /tmp/packer.zip
-
 COPY toolbox/ /opt/avatao/toolbox/
 COPY *.py *.sh requirements.txt /opt/avatao/
 WORKDIR /opt/avatao/
