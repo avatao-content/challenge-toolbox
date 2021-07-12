@@ -1,12 +1,9 @@
-import re
 import os
 from glob import glob
 from typing import Any, Dict, Iterable, List, Tuple
 
 from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS
-from toolbox.utils import run_cmd
-
-IMAGE_RE = re.compile(rf'^(?:{re.escape(DOCKER_REGISTRY)}/)?(.+)$')
+from toolbox.utils import run_cmd, fatal_error
 
 
 def get_image_url(repo_name: str, repo_branch: str, short_name: str, crp_config_item: Dict[str, Any]) -> str:
@@ -38,8 +35,12 @@ def push_images(images: List[str]):
 
 def mirror_images(images: List[str]):
     for image in images:
+        if not image.startswith(DOCKER_REGISTRY + '/'):
+            fatal_error("Invalid docker registry for mirroring!")
+
+        relative_image = image[len(DOCKER_REGISTRY) + 1:]
         for mirror in DOCKER_REGISTRY_MIRRORS:
-            mirror_image = '/'.join((mirror, IMAGE_RE.match(image).group(1)))
+            mirror_image = '/'.join((mirror, relative_image))
             try:
                 run_cmd(['docker', 'tag', image, mirror_image])
                 run_cmd(['docker', 'push', mirror_image])
