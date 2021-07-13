@@ -6,13 +6,13 @@ from typing import Dict, Iterable
 from toolbox.config.docker import ARCHIVE_BRANCH
 from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
 
-from .utils import get_image_url, mirror_images, pull_images, push_images, sorted_container_configs
+from .utils import get_challenge_image_url, mirror_images, pull_images, push_images, sorted_container_configs
 from .start import start_containers, remove_containers
 
 
 def set_image_urls(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Iterable[str]:
     for short_name, crp_config_item in crp_config.items():
-        crp_config_item['image'] = get_image_url(repo_name, repo_branch, short_name, crp_config_item)
+        crp_config_item['image'] = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config_item)
         yield crp_config_item['image']
 
 

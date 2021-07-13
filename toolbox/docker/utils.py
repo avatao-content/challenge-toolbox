@@ -6,8 +6,19 @@ from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS
 from toolbox.utils import run_cmd, fatal_error
 
 
-def get_image_url(repo_name: str, repo_branch: str, short_name: str, crp_config_item: Dict[str, Any]) -> str:
-    # Accept pre-set images which can only be relative in config.yml or set by us.
+def get_image_url(image: str) -> str:
+    if image.startswith(DOCKER_REGISTRY + '/'):
+        return image
+    if '/' not in image:
+        return '/'.join((DOCKER_REGISTRY, image))
+
+    fatal_error("Invalid image: %s for registry: %s", image, DOCKER_REGISTRY)
+
+
+def get_challenge_image_url(
+    repo_name: str, repo_branch: str, short_name: str, crp_config_item: Dict[str, Any]
+) -> str:
+    # Accept pre-set images which can only be relative in config.yml.
     image = crp_config_item.get('image')
 
     if not image:
@@ -17,10 +28,7 @@ def get_image_url(repo_name: str, repo_branch: str, short_name: str, crp_config_
             tag = short_name
         image = ':'.join((repo_name, tag))
 
-    if not image.startswith(DOCKER_REGISTRY + '/'):
-        return '/'.join((DOCKER_REGISTRY, image))
-
-    return image
+    return get_image_url(image)
 
 
 def pull_images(images: List[str]):
@@ -33,12 +41,18 @@ def push_images(images: List[str]):
         run_cmd(['docker', 'push', image])
 
 
+def strip_image_registry(image: str) -> str:
+    if '/' not in image:
+        return image
+    if image.startswith(DOCKER_REGISTRY + '/'):
+        return image[len(DOCKER_REGISTRY) + 1:]
+
+    fatal_error("Invalid image to strip: %s with registry: %s", image, DOCKER_REGISTRY)
+
+
 def mirror_images(images: List[str]):
     for image in images:
-        if not image.startswith(DOCKER_REGISTRY + '/'):
-            fatal_error("Invalid docker registry for mirroring!")
-
-        relative_image = image[len(DOCKER_REGISTRY) + 1:]
+        relative_image = strip_image_registry(image)
         for mirror in DOCKER_REGISTRY_MIRRORS:
             mirror_image = '/'.join((mirror, relative_image))
             try:
@@ -54,7 +68,7 @@ def yield_dockerfiles(
 
     for dockerfile in glob(os.path.join(repo_path, '*', 'Dockerfile')):
         short_name = os.path.basename(os.path.dirname(dockerfile))
-        image = get_image_url(repo_name, repo_branch, short_name, crp_config[short_name])
+        image = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config[short_name])
         yield dockerfile, image
 
 

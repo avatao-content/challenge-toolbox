@@ -12,7 +12,7 @@ from uuid import uuid4
 from toolbox.config.docker import ENABLE_CPU_LIMITS, FORWARD_PORTS
 from toolbox.utils import parse_bool, fatal_error
 
-from .utils import get_image_url, sorted_container_configs
+from .utils import get_challenge_image_url, sorted_container_configs
 
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
@@ -43,7 +43,7 @@ def parse_crp_config(repo_name: str, repo_branch: str, crp_config: Dict[str, Dic
     # Also set absolute image URLs here
     ports = {}
     for short_name, crp_config_item in contaner_configs:
-        crp_config_item['image'] = get_image_url(repo_name, repo_branch, short_name, crp_config_item)
+        crp_config_item['image'] = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config_item)
 
         # Convert ['port/L7_proto'] format to {'port/L4_proto': 'L7_proto'}
         # * We do not differentiate udp at layer 7

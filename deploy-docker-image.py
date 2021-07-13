@@ -6,9 +6,8 @@ import logging
 import sys
 from typing import Optional, Tuple
 
-from toolbox.config.docker import DOCKER_REGISTRY
 from toolbox.docker.build import build_image
-from toolbox.docker.utils import mirror_images, push_images
+from toolbox.docker.utils import get_image_url, mirror_images, push_images
 from toolbox.utils import counted_error_at_exit, init_logger
 
 
@@ -25,9 +24,7 @@ def get_sys_args() -> Tuple[str, str, Optional[str]]:
 
 
 def run(image: str, path: str, dockerfile: Optional[str] = None):
-    if not image.startswith(DOCKER_REGISTRY + '/'):
-        image = '/'.join((DOCKER_REGISTRY, image))
-
+    image = get_image_url(image)
     build_image(image, path, dockerfile)
     push_images([image])
     mirror_images([image])
