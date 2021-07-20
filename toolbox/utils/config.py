@@ -95,6 +95,7 @@ def validate_flag(config: dict, flag_required: bool = False):
 
 def validate_ports(ports: list, buttons: dict = None):  # pylint: disable=too-many-branches
     unique_ports = set()
+    ssh_ports_count = 0
     for port in ports:
         try:
             port, protocol = port.split('/', 1)
@@ -108,11 +109,17 @@ def validate_ports(ports: list, buttons: dict = None):  # pylint: disable=too-ma
             if protocol not in PROTOCOLS:
                 counted_error('Invalid protocol in config.yml: %s. Valid protocols: %s', protocol, PROTOCOLS)
 
+            if protocol == 'ssh':
+                ssh_ports_count += 1
+
         except Exception:
             counted_error('Invalid port format. [port/protocol]')
 
     if len(unique_ports) != len(ports):
         counted_error('Duplicate port numbers found.')
+
+    if ssh_ports_count > 1:
+        counted_error('More than one SSH ports. Please, use a single SSH connection.')
 
     if buttons is not None:
         if not isinstance(buttons, dict):
