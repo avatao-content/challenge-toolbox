@@ -9,4 +9,4 @@ CONTROLLER_PROTOCOL = 'controller'
 PROTOCOLS = {'udp', 'tcp', 'ssh', 'http', 'ws', CONTROLLER_PROTOCOL}
 CRP_TYPES = {'docker', 'gce', 'static'}
 
-BUTTON_CONFIG_KEYS = {'text', 'color'}
+BUTTON_CONFIG_KEYS = {'text', 'hidden'}
