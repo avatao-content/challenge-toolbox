@@ -1,4 +1,5 @@
 import os
+import subprocess
 from glob import glob
 from typing import Any, Dict, Iterable, List, Tuple
 
@@ -22,21 +23,14 @@ def get_challenge_image_url(
     # Accept pre-set images which can only be relative in config.yml.
     image = crp_config_item.get('image')
 
-    image_pre_set_in_config = True
     if not image:
-        image_pre_set_in_config = False
         if repo_branch != 'master':
             tag = '-'.join((short_name, repo_branch))
         else:
             tag = short_name
         image = ':'.join((repo_name, tag))
 
-    image_url = get_image_url(image)
-
-    if image_pre_set_in_config:
-        pull_images([image_url])
-
-    return image_url
+    return get_image_url(image)
 
 
 def pull_images(images: List[str]):
@@ -92,3 +86,10 @@ def sorted_container_configs(crp_config: Dict[str, Dict]) -> List[Tuple[str, Dic
         return 2
 
     return sorted(crp_config.items(), key=sort_key)
+
+
+def image_exists(image: str) -> bool:
+    image_output: str = subprocess.check_output(['docker', 'images', '-q', image]).decode('utf-8').rstrip()
+    if not image_output:
+        return False
+    return True
