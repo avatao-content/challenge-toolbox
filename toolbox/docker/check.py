@@ -23,10 +23,6 @@ def check_config(config: dict):  # pylint: disable=too-many-branches
         if invalid_keys:
             counted_error('Invalid key(s) found in crp_config: %s', invalid_keys)
 
-        if 'image' in item and item['image'].find('/') >= 0:
-            counted_error('If the image is explicitly defined, it must be relative to the registry '
-                          '- e.g. challenge:solvable.')
-
         if 'capabilities' in item:
             invalid_caps = set(item['capabilities']) - CAPABILITIES
             if invalid_caps:

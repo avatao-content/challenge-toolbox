@@ -2,13 +2,14 @@ import os
 from glob import glob
 from typing import Any, Dict, Iterable, List, Tuple
 
-from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS
+from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS, WHITELISTED_DOCKER_REGISTRIES
 from toolbox.utils import run_cmd, fatal_error
 
 
 def get_image_url(image: str) -> str:
-    if image.startswith(DOCKER_REGISTRY + '/'):
-        return image
+    for registry in WHITELISTED_DOCKER_REGISTRIES:
+        if image.startswith(registry + '/'):
+            return image
     if '/' not in image:
         return '/'.join((DOCKER_REGISTRY, image))
 
@@ -21,14 +22,21 @@ def get_challenge_image_url(
     # Accept pre-set images which can only be relative in config.yml.
     image = crp_config_item.get('image')
 
+    image_pre_set_in_config = True
     if not image:
+        image_pre_set_in_config = False
         if repo_branch != 'master':
             tag = '-'.join((short_name, repo_branch))
         else:
             tag = short_name
         image = ':'.join((repo_name, tag))
 
-    return get_image_url(image)
+    image_url = get_image_url(image)
+
+    if image_pre_set_in_config:
+        pull_images([image_url])
+
+    return image_url
 
 
 def pull_images(images: List[str]):
