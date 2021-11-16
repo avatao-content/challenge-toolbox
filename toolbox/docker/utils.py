@@ -14,7 +14,7 @@ def get_image_url(image: str) -> str:
     if '/' not in image:
         return '/'.join((DOCKER_REGISTRY, image))
 
-    fatal_error("Invalid image: %s for registry: %s", image, DOCKER_REGISTRY)
+    fatal_error("Invalid image: %s registry not in whitelist: %s", image, str(WHITELISTED_DOCKER_REGISTRIES))
 
 
 def get_challenge_image_url(
@@ -33,9 +33,9 @@ def get_challenge_image_url(
     return get_image_url(image)
 
 
-def pull_images(images: List[str]):
+def pull_images(images: List[str], raise_errors=False):
     for image in images:
-        run_cmd(['docker', 'pull', image])
+        run_cmd(['docker', 'pull', image], raise_errors=raise_errors)
 
 
 def push_images(images: List[str]):

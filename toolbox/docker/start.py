@@ -144,9 +144,10 @@ def run_container(
     try:
         # Check whether the image exists to avoid horrific edge-cases
         if not image_exists(image):
-            logging.debug(f'Image {image} not found, trying to pull...')
-            pull_images([image])
-            if not image_exists(image):
+            logging.debug('Image %s not found, trying to pull...' % image)
+            try:
+                pull_images([image], raise_errors=True)
+            except subprocess.CalledProcessError:
                 fatal_error('Image %s not found! Please, make sure it exists.' % image)
 
         logging.debug(' '.join(map(str, command)))
