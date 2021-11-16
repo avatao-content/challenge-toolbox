@@ -1,18 +1,20 @@
 import os
+import subprocess
 from glob import glob
 from typing import Any, Dict, Iterable, List, Tuple
 
-from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS
+from toolbox.config.docker import DOCKER_REGISTRY, DOCKER_REGISTRY_MIRRORS, WHITELISTED_DOCKER_REGISTRIES
 from toolbox.utils import run_cmd, fatal_error
 
 
 def get_image_url(image: str) -> str:
-    if image.startswith(DOCKER_REGISTRY + '/'):
-        return image
+    for registry in WHITELISTED_DOCKER_REGISTRIES:
+        if image.startswith(registry + '/'):
+            return image
     if '/' not in image:
         return '/'.join((DOCKER_REGISTRY, image))
 
-    fatal_error("Invalid image: %s for registry: %s", image, DOCKER_REGISTRY)
+    fatal_error("Invalid image: %s registry not in whitelist: %s", image, str(WHITELISTED_DOCKER_REGISTRIES))
 
 
 def get_challenge_image_url(
@@ -31,9 +33,9 @@ def get_challenge_image_url(
     return get_image_url(image)
 
 
-def pull_images(images: List[str]):
+def pull_images(images: List[str], raise_errors=False):
     for image in images:
-        run_cmd(['docker', 'pull', image])
+        run_cmd(['docker', 'pull', image], raise_errors=raise_errors)
 
 
 def push_images(images: List[str]):
@@ -84,3 +86,10 @@ def sorted_container_configs(crp_config: Dict[str, Dict]) -> List[Tuple[str, Dic
         return 2
 
     return sorted(crp_config.items(), key=sort_key)
+
+
+def image_exists(image: str) -> bool:
+    image_output: str = subprocess.check_output(['docker', 'images', '-q', image]).decode('utf-8').rstrip()
+    if not image_output:
+        return False
+    return True

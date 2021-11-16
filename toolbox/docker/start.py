@@ -12,7 +12,7 @@ from uuid import uuid4
 from toolbox.config.docker import ENABLE_CPU_LIMITS, FORWARD_PORTS
 from toolbox.utils import parse_bool, fatal_error
 
-from .utils import get_challenge_image_url, sorted_container_configs
+from .utils import get_challenge_image_url, sorted_container_configs, pull_images, image_exists
 
 BIND_ADDR = '127.0.0.1'
 ULIMIT_NPROC = '2048:4096'
@@ -143,9 +143,12 @@ def run_container(
 
     try:
         # Check whether the image exists to avoid horrific edge-cases
-        image_output: str = subprocess.check_output(['docker', 'images', '-q', image]).decode('utf-8').rstrip()
-        if not image_output:
-            fatal_error('Image %s not found! Please, make sure it exists.' % image)
+        if not image_exists(image):
+            logging.debug('Image %s not found, trying to pull...' % image)
+            try:
+                pull_images([image], raise_errors=True)
+            except subprocess.CalledProcessError:
+                fatal_error('Image %s not found! Please, make sure it exists.' % image)
 
         logging.debug(' '.join(map(str, command)))
         proc = subprocess.Popen(command)
