@@ -6,8 +6,14 @@ from typing import Dict, Iterable
 from toolbox.config.docker import ARCHIVE_BRANCH
 from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
 
-from .utils import mirror_images, pull_images, push_images, sorted_container_configs, yield_dockerfiles
+from .utils import get_challenge_image_url, mirror_images, pull_images, push_images, sorted_container_configs
 from .start import start_containers, remove_containers
+
+
+def set_image_urls(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Iterable[str]:
+    for short_name, crp_config_item in crp_config.items():
+        crp_config_item['image'] = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config_item)
+        yield crp_config_item['image']
 
 
 def start_and_set_volumes(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]):
@@ -47,9 +53,7 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     built_branch = ARCHIVE_BRANCH if is_archived else repo_branch
     os.chdir(repo_path)
 
-    images = []
-    for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config['crp_config']):
-        images.append(image)
+    images = list(set_image_urls(repo_name, built_branch, config['crp_config']))
 
     if is_archived:
         pull_images(images)
