@@ -144,14 +144,14 @@ def run_container(
     try:
         # Check whether the image exists to avoid horrific edge-cases
         if not image_exists(image):
-            logging.debug('Image %s not found, trying to pull...' % image)
+            logging.debug('Image %s not found, trying to pull...', image)
             try:
                 pull_images([image], raise_errors=True)
             except subprocess.CalledProcessError:
-                fatal_error('Image %s not found! Please, make sure it exists.' % image)
+                fatal_error('Image %s not found! Please, make sure it exists.', image)
 
         logging.debug(' '.join(map(str, command)))
-        proc = subprocess.Popen(command)
+        proc = subprocess.Popen(command)  # pylint: disable=consider-using-with
 
         # (ಥ﹏ಥ)
         poll_container(proc, container_name, retries=30, sleeps=5.0)
@@ -165,9 +165,12 @@ def run_container(
 
 
 def remove_containers():
-    subprocess.Popen(
+    with subprocess.Popen(
         ['sh', '-c', 'docker rm -fv $(docker ps -aq --filter=label=%s=%s)' % (INSTANCE_LABEL, INSTANCE_ID)],
-        stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL).wait()
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+    ) as proc:
+        proc.wait()
 
 
 def start_containers(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Dict[str, subprocess.Popen]:

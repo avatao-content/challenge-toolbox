@@ -8,19 +8,20 @@ from toolbox.utils import run_cmd, fatal_error
 
 
 def get_image_url(image: str) -> str:
-    for registry in WHITELISTED_DOCKER_REGISTRIES:
-        if image.startswith(registry + '/'):
-            return image
     if '/' not in image:
         return '/'.join((DOCKER_REGISTRY, image))
 
-    fatal_error("Invalid image: %s registry not in whitelist: %s", image, str(WHITELISTED_DOCKER_REGISTRIES))
+    for registry in WHITELISTED_DOCKER_REGISTRIES:
+        if image.startswith(registry + '/'):
+            return image
+
+    fatal_error("Invalid image: %s Registry not in whitelist: %s", image, WHITELISTED_DOCKER_REGISTRIES)
 
 
 def get_challenge_image_url(
     repo_name: str, repo_branch: str, short_name: str, crp_config_item: Dict[str, Any]
 ) -> str:
-    # Accept pre-set images which can only be relative in config.yml.
+    # Accept pre-set images from config.yml
     image = crp_config_item.get('image')
 
     if not image:
@@ -33,7 +34,7 @@ def get_challenge_image_url(
     return get_image_url(image)
 
 
-def pull_images(images: List[str], raise_errors=False):
+def pull_images(images: List[str], raise_errors: bool = False):
     for image in images:
         run_cmd(['docker', 'pull', image], raise_errors=raise_errors)
 
@@ -46,10 +47,12 @@ def push_images(images: List[str]):
 def strip_image_registry(image: str) -> str:
     if '/' not in image:
         return image
-    if image.startswith(DOCKER_REGISTRY + '/'):
-        return image[len(DOCKER_REGISTRY) + 1:]
 
-    fatal_error("Invalid image to strip: %s with registry: %s", image, DOCKER_REGISTRY)
+    for registry in WHITELISTED_DOCKER_REGISTRIES:
+        if image.startswith(registry + '/'):
+            return image[len(registry) + 1:]
+
+    fatal_error("Invalid image to strip: %s Registry not in whitelist: %s", image, WHITELISTED_DOCKER_REGISTRIES)
 
 
 def mirror_images(images: List[str]):
@@ -72,6 +75,16 @@ def yield_dockerfiles(
         short_name = os.path.basename(os.path.dirname(dockerfile))
         image = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config[short_name])
         yield dockerfile, image
+
+
+def yield_all_image_urls(
+    repo_path: str, repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]
+) -> Iterable[Tuple[str, str, bool]]:
+
+    built_images = [image for _, image in yield_dockerfiles(repo_path, repo_name, repo_branch, crp_config)]
+    for short_name, crp_config_item in crp_config.items():
+        image = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config_item)
+        yield short_name, image, image in built_images
 
 
 def sorted_container_configs(crp_config: Dict[str, Dict]) -> List[Tuple[str, Dict]]:

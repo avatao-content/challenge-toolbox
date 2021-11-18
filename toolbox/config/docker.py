@@ -4,8 +4,12 @@ from toolbox.utils import parse_bool
 
 from .deploy import IS_CI
 
+# The main registry to push challenge images to.
 DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', 'eu.gcr.io/avatao-challengestore').rstrip('/')
+# Optional set of registries to mirror DOCKER_REGISTRY for challenge clusters. Do not use these explicitly.
 DOCKER_REGISTRY_MIRRORS = {i.rstrip('/') for i in re.split(r'[\s|,]', os.getenv('DOCKER_REGISTRY_MIRRORS', '')) if i}
+# Allow other registries for external images in config.yml - such as the Tutorial Framework on Docker Hub.
+# - Baseimages can be mirrored too where they are built.
 WHITELISTED_DOCKER_REGISTRIES = [DOCKER_REGISTRY, "avatao", "docker.io/avatao"]
 
 PULL_BASEIMAGES = parse_bool(os.getenv('TOOLBOX_PULL_BASEIMAGES', 'false'))

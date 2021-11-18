@@ -5,7 +5,7 @@ from typing import Optional
 from toolbox.config.docker import PULL_BASEIMAGES
 from toolbox.utils import abort_inactive_branch, parse_bool, run_cmd
 
-from .utils import yield_dockerfiles
+from .utils import pull_images, yield_dockerfiles, yield_all_image_urls
 
 
 def build_image(image: str, path: str, dockerfile: Optional[str] = None):
@@ -33,3 +33,8 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
 
     for dockerfile, image in yield_dockerfiles(repo_path, repo_name, repo_branch, config['crp_config']):
         build_image(image, repo_path, dockerfile)
+
+    pull_images([
+        image for _, image, is_built in yield_all_image_urls(repo_path, repo_name, repo_branch, config['crp_config'])
+        if not is_built  # external images such as TFW
+    ])

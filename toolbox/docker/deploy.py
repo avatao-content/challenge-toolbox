@@ -1,19 +1,25 @@
 import json
 import logging
 import os
-from typing import Dict, Iterable
+from typing import Dict, List, Tuple
 
 from toolbox.config.docker import ARCHIVE_BRANCH
 from toolbox.utils import abort_inactive_branch, fatal_error, parse_bool, run_cmd, update_hook, upload_files
 
-from .utils import get_challenge_image_url, mirror_images, pull_images, push_images, sorted_container_configs
+from .utils import mirror_images, pull_images, push_images, sorted_container_configs, yield_all_image_urls
 from .start import start_containers, remove_containers
 
 
-def set_image_urls(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]) -> Iterable[str]:
-    for short_name, crp_config_item in crp_config.items():
-        crp_config_item['image'] = get_challenge_image_url(repo_name, repo_branch, short_name, crp_config_item)
-        yield crp_config_item['image']
+def set_image_urls(
+    repo_path, repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]
+) -> Tuple[List[str], List[str]]:
+
+    built_images = []
+    external_images = []
+    for short_name, image, is_built in yield_all_image_urls(repo_path, repo_name, repo_branch, crp_config):
+        crp_config[short_name]['image'] = image
+        (built_images if is_built else external_images).append(image)
+    return built_images, external_images
 
 
 def start_and_set_volumes(repo_name: str, repo_branch: str, crp_config: Dict[str, Dict]):
@@ -53,16 +59,16 @@ def run(repo_path: str, repo_name: str, repo_branch: str, config: dict):
     built_branch = ARCHIVE_BRANCH if is_archived else repo_branch
     os.chdir(repo_path)
 
-    images = list(set_image_urls(repo_name, built_branch, config['crp_config']))
+    built_images, external_images = set_image_urls(repo_path, repo_name, built_branch, config['crp_config'])
 
     if is_archived:
-        pull_images(images)
+        pull_images(built_images + external_images)
 
     start_and_set_volumes(repo_name, built_branch, config['crp_config'])
 
     if not is_archived:
-        push_images(images)
+        push_images(built_images)
 
-    mirror_images(images)
+    mirror_images(built_images)
     upload_files(repo_path, repo_name, repo_branch)
     update_hook(repo_path, repo_name, repo_branch, config)

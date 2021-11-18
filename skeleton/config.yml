@@ -13,7 +13,6 @@ crp_config:
     buttons:
       8888/http:
         text: "Click Here"
-        color: "black"
     # Required Linux capabilities (See http://man7.org/linux/man-pages/man7/capabilities.7.html for the full list).
     # For example ["SETGID", "SETUID"]
     capabilities: []
