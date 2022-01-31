@@ -28,15 +28,6 @@ The challenge toolbox is a small component which allows you to create, run and c
 * Check challenge format: `./check.py <challenge_folder>` (e.g., `python3 ./check.py templates/xss`)
 * Cleanup: `./docker-cleanup.sh`
 
-### **Avatao Tutorial Framework \[TFW]**
-
-Before we dive into the tried and true challenge templates, we must note that the next-generation Tutorial Framework is a separate project with several components which you can find on the following links:
-
-- [baseimage-tutorial-framework](https://github.com/avatao-content/baseimage-tutorial-framework) + [TFW Wiki](https://github.com/avatao-content/baseimage-tutorial-framework/wiki)
-- [frontend-tutorial-framework](https://github.com/avatao-content/frontend-tutorial-framework)
-- [test-tutorial-framework](https://github.com/avatao-content/test-tutorial-framework)
-
-At Avatao, we mostly use the Tutorial Framework for new challenge development but the TFW still needs the challenge-toolbox to be deployed.
 
 ### **Start with a challenge template**
 
