@@ -16,7 +16,6 @@ RUN yum -y install epel-release \
 COPY toolbox/ /opt/avatao/toolbox/
 COPY *.py *.sh requirements.txt /opt/avatao/
 WORKDIR /opt/avatao/
-RUN python -m pip install -U pip
 RUN pip3 install -r requirements.txt
 
 ENV PATH="/opt/avatao:${PATH}" \
