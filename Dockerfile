@@ -10,6 +10,7 @@ RUN yum -y install epel-release \
         docker-ce-cli \
         git \
         google-cloud-sdk \
+        make \
         unzip \
     && yum clean all
 
