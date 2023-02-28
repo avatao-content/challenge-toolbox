@@ -36,7 +36,7 @@ fi
 # Log into docker registries from environment variables:
 # DOCKER_LOGIN_[ID]_{SERVER,USERNAME,PASSWORD}
 env | grep -Eo "^DOCKER_LOGIN_[A-Z0-9_]+_" | sort -u | xargs -r -I[] sh -c \
-  'echo "$[]PASSWORD" | docker login --password-stdin -u "$[]USERNAME" "$[]SERVER"'
+  'echo "$[]PASSWORD" | docker login --username "$[]USERNAME" "$[]SERVER"  --password-stdin '
 
 # Execute the parameters...
 if [ $# -ne 0 ]; then
